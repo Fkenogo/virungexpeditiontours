@@ -1,12 +1,410 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle2, Star, Users, Shield, Clock, Heart } from "lucide-react";
+import heroGorilla from "@/assets/hero-gorilla.jpg";
+import goldenMonkeys from "@/assets/golden-monkeys.jpg";
+import akageraSafari from "@/assets/akagera-safari.jpg";
+import chimpanzees from "@/assets/chimpanzees.jpg";
+import virungaMountains from "@/assets/virunga-mountains.jpg";
+import canopyWalkway from "@/assets/canopy-walkway.jpg";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative h-[600px] md:h-[700px] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={heroGorilla} 
+            alt="Mountain gorillas in Virunga Mountains" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+        </div>
+        
+        <div className="container mx-auto px-4 z-10 text-center text-white">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in-up">
+            Discover the Heart of Africa with<br />Virunga Expedition Tours
+          </h1>
+          <p className="text-lg md:text-xl mb-8 max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: "0.2s" }}>
+            Experience unforgettable gorilla trekking, wildlife safaris, and volcano adventures across Rwanda, Uganda, and Eastern DRC
+          </p>
+          
+          <div className="flex flex-wrap gap-4 justify-center animate-fade-in" style={{ animationDelay: "0.4s" }}>
+            <Button asChild size="lg" className="bg-secondary hover:bg-secondary-light text-secondary-foreground">
+              <Link to="/tours">Explore Rwanda Tours</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="bg-white/10 hover:bg-white/20 text-white border-white">
+              <Link to="/contact">Request Custom Quote</Link>
+            </Button>
+            <Button asChild size="lg" className="bg-[#25D366] hover:bg-[#20BD5A] text-white">
+              <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">
+                WhatsApp Us
+              </a>
+            </Button>
+          </div>
+
+          {/* Trust Badges */}
+          <div className="mt-12 flex flex-wrap justify-center gap-6 text-sm animate-fade-in" style={{ animationDelay: "0.6s" }}>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-secondary" />
+              <span>Licensed by Rwanda Development Board</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-secondary" />
+              <span>Member of Rwanda Travel & Tourism Association</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-secondary" />
+              <span>500+ Happy Travelers</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-secondary" />
+              <span>Expert Local Guides</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Introduction Section */}
+      <section className="section-padding bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Welcome to Virunga Expedition Tours</h2>
+            <div className="space-y-4 text-lg text-muted-foreground">
+              <p>
+                We are your gateway to Rwanda's most extraordinary wildlife experiences. Based in Kigali and specializing in the spectacular Virunga Mountains region, we create unforgettable adventures that connect you with endangered mountain gorillas, rare primates, and Africa's most breathtaking landscapes.
+              </p>
+              <p>
+                Whether you dream of tracking mountain gorillas in Volcanoes National Park, watching chimpanzees swing through ancient rainforests, or embarking on Big Five safaris in Akagera, we curate personalized journeys that exceed expectations.
+              </p>
+              <p>
+                With deep local expertise, international standards, and a commitment to sustainable tourism, Virunga Expedition Tours transforms your African safari dreams into reality.
+              </p>
+            </div>
+            <div className="flex gap-4 justify-center mt-8">
+              <Button asChild variant="default" size="lg">
+                <Link to="/about">Learn More About Us</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link to="/tours">View Our Tours</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Tours */}
+      <section className="section-padding bg-muted">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Featured Rwanda Tours</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="card-hover overflow-hidden">
+              <div className="relative h-64">
+                <img src={heroGorilla} alt="Mountain Gorilla Trekking" className="w-full h-full object-cover" />
+                <Badge className="absolute top-4 right-4 bg-secondary">Most Popular</Badge>
+              </div>
+              <CardHeader>
+                <CardTitle>Mountain Gorilla Trekking</CardTitle>
+                <CardDescription>The Experience of a Lifetime</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm mb-4">
+                  Come face-to-face with endangered mountain gorillas in their natural habitat. This once-in-a-lifetime encounter in Volcanoes National Park will leave you transformed.
+                </p>
+                <Button asChild className="w-full">
+                  <Link to="/tours/gorilla-trekking">Explore Gorilla Trekking →</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="card-hover overflow-hidden">
+              <div className="relative h-64">
+                <img src={goldenMonkeys} alt="Golden Monkey Tracking" className="w-full h-full object-cover" />
+              </div>
+              <CardHeader>
+                <CardTitle>Golden Monkey Tracking</CardTitle>
+                <CardDescription>Playful Bamboo Forest Primates</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm mb-4">
+                  Watch endangered golden monkeys leap through bamboo forests in a blur of amber fur and joyful energy. Perfect for families and photographers.
+                </p>
+                <Button asChild className="w-full">
+                  <Link to="/tours/golden-monkey">Discover Golden Monkeys →</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="card-hover overflow-hidden">
+              <div className="relative h-64">
+                <img src={akageraSafari} alt="Akagera Safari" className="w-full h-full object-cover" />
+              </div>
+              <CardHeader>
+                <CardTitle>Akagera Safari</CardTitle>
+                <CardDescription>Rwanda's Big Five Experience</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm mb-4">
+                  Spot lions, elephants, rhinos, buffalo, and leopards on thrilling game drives and boat safaris in Rwanda's premier savannah park.
+                </p>
+                <Button asChild className="w-full">
+                  <Link to="/tours/akagera-safari">Explore Akagera Safari →</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="text-center mt-8">
+            <Button asChild size="lg" variant="outline">
+              <Link to="/tours">View All Rwanda Tours</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us */}
+      <section className="section-padding bg-background">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Why Travel with Virunga Expedition Tours?</h2>
+          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+            We combine local expertise with international standards to create exceptional safari experiences
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="text-center p-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                <Users className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Expert Local Guides</h3>
+              <p className="text-muted-foreground">
+                Our passionate, licensed guides bring deep knowledge of Rwanda's wildlife, culture, and conservation. Every journey becomes a rich learning experience.
+              </p>
+            </div>
+
+            <div className="text-center p-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                <CheckCircle2 className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Seamless Planning</h3>
+              <p className="text-muted-foreground">
+                From gorilla permit bookings to accommodation and transport, we handle every detail so you can focus on the adventure.
+              </p>
+            </div>
+
+            <div className="text-center p-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                <Heart className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Sustainable Tourism</h3>
+              <p className="text-muted-foreground">
+                Your journey supports gorilla conservation, local communities, and environmental protection across the Virunga region.
+              </p>
+            </div>
+
+            <div className="text-center p-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                <Star className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Customized Itineraries</h3>
+              <p className="text-muted-foreground">
+                No cookie-cutter tours. We design personalized experiences matching your interests, budget, and travel style.
+              </p>
+            </div>
+
+            <div className="text-center p-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                <Shield className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">RTTA Certified</h3>
+              <p className="text-muted-foreground">
+                As proud members of the Rwanda Travel & Tourism Association, we uphold the highest standards of professionalism and service.
+              </p>
+            </div>
+
+            <div className="text-center p-6">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                <Clock className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Hassle-Free Bookings</h3>
+              <p className="text-muted-foreground">
+                We secure gorilla permits, book accommodations, arrange transport, and provide 24/7 support throughout your journey.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Destinations Overview */}
+      <section className="section-padding bg-muted">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Explore Beyond Rwanda</h2>
+          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+            While Rwanda is our home and specialty, Virunga Expedition Tours connects you to incredible experiences across the Virunga Massif region.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="card-hover">
+              <div className="relative h-48">
+                <img src={virungaMountains} alt="Rwanda" className="w-full h-full object-cover" />
+              </div>
+              <CardHeader>
+                <CardTitle>Rwanda – Our Primary Destination</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm mb-4">
+                  <li>• Volcanoes National Park</li>
+                  <li>• Nyungwe Forest</li>
+                  <li>• Akagera National Park</li>
+                </ul>
+                <Button asChild className="w-full">
+                  <Link to="/destinations#rwanda">Explore Rwanda →</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="card-hover">
+              <div className="relative h-48">
+                <img src={chimpanzees} alt="Uganda" className="w-full h-full object-cover" />
+              </div>
+              <CardHeader>
+                <CardTitle>Western Uganda – Extended Adventures</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm mb-4">
+                  <li>• Bwindi Impenetrable Forest</li>
+                  <li>• Mgahinga Gorilla Park</li>
+                  <li>• Queen Elizabeth Park</li>
+                </ul>
+                <Button asChild className="w-full">
+                  <Link to="/destinations#uganda">Discover Uganda →</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="card-hover">
+              <div className="relative h-48">
+                <img src={canopyWalkway} alt="Eastern DRC" className="w-full h-full object-cover" />
+              </div>
+              <CardHeader>
+                <CardTitle>Eastern DRC – For the Adventurous</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm mb-4">
+                  <li>• Virunga National Park</li>
+                  <li>• Nyiragongo Volcano</li>
+                  <li>• Kahuzi-Biega</li>
+                </ul>
+                <Button asChild className="w-full">
+                  <Link to="/destinations#drc">Explore Eastern DRC →</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="section-padding bg-background">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">What Our Travelers Say</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="card-hover">
+              <CardHeader>
+                <div className="flex gap-1 mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-5 w-5 fill-secondary text-secondary" />
+                  ))}
+                </div>
+                <CardDescription>Jennifer M., Australia • March 2024</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">
+                  "The gorilla trek was absolutely life-changing. Our guide from Virunga Expedition Tours was knowledgeable, patient, and made sure everything went smoothly. Standing meters from a silverback gorilla is something I'll never forget!"
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="card-hover">
+              <CardHeader>
+                <div className="flex gap-1 mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-5 w-5 fill-secondary text-secondary" />
+                  ))}
+                </div>
+                <CardDescription>David & Sarah T., UK • August 2024</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">
+                  "We booked a 7-day Rwanda safari and it exceeded every expectation. From Akagera's game drives to Nyungwe's chimps to the incredible gorilla encounter - everything was perfectly organized. Highly recommend!"
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="card-hover">
+              <CardHeader>
+                <div className="flex gap-1 mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-5 w-5 fill-secondary text-secondary" />
+                  ))}
+                </div>
+                <CardDescription>Marie L., Canada • June 2024</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">
+                  "As a solo traveler, I was nervous about logistics. Virunga Expedition Tours handled everything - permits, transport, accommodation. I just showed up and experienced magic. The golden monkeys were a bonus highlight!"
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="text-center mt-8">
+            <Button asChild variant="outline" size="lg">
+              <Link to="/about">Read More Reviews</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="section-padding bg-primary text-primary-foreground">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Experience Rwanda?</h2>
+          <p className="text-lg mb-8 max-w-2xl mx-auto opacity-90">
+            Let us create your perfect African adventure. Whether it's gorillas, safaris, or cultural experiences, our team is ready to craft your dream itinerary.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="bg-white/10 p-6 rounded-lg backdrop-blur">
+              <h3 className="font-bold mb-2">Request a Custom Quote</h3>
+              <p className="text-sm opacity-90 mb-4">Tell us your travel dates, interests, and group size</p>
+              <Button asChild className="bg-secondary hover:bg-secondary-light text-secondary-foreground w-full">
+                <Link to="/contact">Get Quote</Link>
+              </Button>
+            </div>
+
+            <div className="bg-white/10 p-6 rounded-lg backdrop-blur">
+              <h3 className="font-bold mb-2">WhatsApp Us Now</h3>
+              <p className="text-sm opacity-90 mb-4">Get instant answers to your questions</p>
+              <Button asChild className="bg-[#25D366] hover:bg-[#20BD5A] text-white w-full">
+                <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">Chat Now</a>
+              </Button>
+            </div>
+
+            <div className="bg-white/10 p-6 rounded-lg backdrop-blur">
+              <h3 className="font-bold mb-2">Call Us</h3>
+              <p className="text-sm opacity-90 mb-4">Speak with our travel experts</p>
+              <Button asChild variant="outline" className="bg-white/10 hover:bg-white/20 text-white border-white w-full">
+                <a href="tel:+250783007010">+250 783 007 010</a>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
