@@ -14,7 +14,96 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      quick_inquiries: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      quote_requests: {
+        Row: {
+          accommodation_preference: string
+          budget_range: string
+          children_ages: string | null
+          country_residence: string
+          created_at: string
+          email: string
+          flexible_dates: boolean | null
+          full_name: string
+          how_heard_about_us: string | null
+          id: string
+          nationality: string
+          number_adults: number
+          number_children: number | null
+          phone: string
+          preferred_travel_dates: string
+          special_requests: string | null
+          tour_interests: string[] | null
+          trip_duration: string
+          updated_at: string
+        }
+        Insert: {
+          accommodation_preference: string
+          budget_range: string
+          children_ages?: string | null
+          country_residence: string
+          created_at?: string
+          email: string
+          flexible_dates?: boolean | null
+          full_name: string
+          how_heard_about_us?: string | null
+          id?: string
+          nationality: string
+          number_adults?: number
+          number_children?: number | null
+          phone: string
+          preferred_travel_dates: string
+          special_requests?: string | null
+          tour_interests?: string[] | null
+          trip_duration: string
+          updated_at?: string
+        }
+        Update: {
+          accommodation_preference?: string
+          budget_range?: string
+          children_ages?: string | null
+          country_residence?: string
+          created_at?: string
+          email?: string
+          flexible_dates?: boolean | null
+          full_name?: string
+          how_heard_about_us?: string | null
+          id?: string
+          nationality?: string
+          number_adults?: number
+          number_children?: number | null
+          phone?: string
+          preferred_travel_dates?: string
+          special_requests?: string | null
+          tour_interests?: string[] | null
+          trip_duration?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
