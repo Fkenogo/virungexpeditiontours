@@ -1,7 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@4.0.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -36,7 +35,13 @@ const handler = async (req: Request): Promise<Response> => {
     const quoteData: QuoteNotificationRequest = await req.json();
 
     // Send confirmation email to customer
-    const customerEmail = await resend.emails.send({
+    const customerEmail = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
       from: "Virunga Expedition Tours <onboarding@resend.dev>",
       to: [quoteData.email],
       subject: "Thank You for Your Quote Request - Virunga Expedition Tours",
@@ -77,10 +82,17 @@ const handler = async (req: Request): Promise<Response> => {
           </p>
         </div>
       `,
-    });
+      }),
+    }).then(res => res.json());
 
     // Send notification email to team
-    const teamEmail = await resend.emails.send({
+    const teamEmail = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
       from: "Quote Notification <onboarding@resend.dev>",
       to: ["info@virungaexpeditiontours.com"],
       subject: `New Quote Request from ${quoteData.full_name}`,
@@ -124,7 +136,8 @@ const handler = async (req: Request): Promise<Response> => {
           <p style="margin-top: 30px; color: #e86d2a;"><strong>Action Required:</strong> Please respond within 24 hours</p>
         </div>
       `,
-    });
+      }),
+    }).then(res => res.json());
 
     console.log("Emails sent successfully:", { customerEmail, teamEmail });
 

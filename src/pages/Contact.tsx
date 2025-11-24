@@ -8,28 +8,117 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Phone, Mail, MessageCircle, MapPin, Clock, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const { toast } = useToast();
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [quickIsSubmitting, setQuickIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Quote request submitted");
-    setSubmitted(true);
-    toast({
-      title: "Thank you for your inquiry!",
-      description: "We'll respond within 24 hours with your custom quote.",
+    setIsSubmitting(true);
+
+    const formData = new FormData(e.currentTarget);
+    const tourInterests: string[] = [];
+    
+    formData.forEach((value, key) => {
+      if (key.startsWith("interest-") && value === "on") {
+        tourInterests.push(key.replace("interest-", ""));
+      }
     });
+
+    const quoteData = {
+      full_name: formData.get("fullName") as string,
+      email: formData.get("email") as string,
+      phone: formData.get("phone") as string,
+      country_residence: formData.get("country") as string,
+      nationality: formData.get("nationality") as string,
+      preferred_travel_dates: formData.get("travelDates") as string,
+      flexible_dates: formData.get("flexible") === "on",
+      number_adults: parseInt(formData.get("adults") as string) || 1,
+      number_children: parseInt(formData.get("children") as string) || 0,
+      children_ages: formData.get("childAges") as string,
+      tour_interests: tourInterests,
+      trip_duration: formData.get("duration") as string,
+      budget_range: formData.get("budget") as string,
+      accommodation_preference: formData.get("accommodation") as string,
+      special_requests: formData.get("specialRequests") as string,
+      how_heard_about_us: formData.get("heardFrom") as string,
+    };
+
+    try {
+      const { error: dbError } = await supabase
+        .from("quote_requests")
+        .insert([quoteData]);
+
+      if (dbError) throw dbError;
+
+      const { error: emailError } = await supabase.functions.invoke(
+        "send-quote-notification",
+        { body: quoteData }
+      );
+
+      if (emailError) console.error("Email notification error:", emailError);
+
+      setSubmitted(true);
+      toast({
+        title: "Thank you for your inquiry!",
+        description: "We'll respond within 24 hours with your custom quote.",
+      });
+    } catch (error) {
+      console.error("Error submitting quote:", error);
+      toast({
+        title: "Submission Error",
+        description: "Please try again or contact us directly via WhatsApp.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleQuickSubmit = (e: React.FormEvent) => {
+  const handleQuickSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Quick question submitted");
-    toast({
-      title: "Message sent!",
-      description: "We'll get back to you shortly.",
-    });
+    setQuickIsSubmitting(true);
+
+    const formData = new FormData(e.currentTarget);
+    const inquiryData = {
+      name: formData.get("qName") as string,
+      email: formData.get("qEmail") as string,
+      message: formData.get("qMessage") as string,
+    };
+
+    try {
+      const { error: dbError } = await supabase
+        .from("quick_inquiries")
+        .insert([inquiryData]);
+
+      if (dbError) throw dbError;
+
+      const { error: emailError } = await supabase.functions.invoke(
+        "send-inquiry-notification",
+        { body: inquiryData }
+      );
+
+      if (emailError) console.error("Email notification error:", emailError);
+
+      e.currentTarget.reset();
+      toast({
+        title: "Message sent!",
+        description: "We'll get back to you shortly.",
+      });
+    } catch (error) {
+      console.error("Error submitting inquiry:", error);
+      toast({
+        title: "Submission Error",
+        description: "Please try again or contact us directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setQuickIsSubmitting(false);
+    }
   };
 
   return (
@@ -185,10 +274,10 @@ const Contact = () => {
                       <div className="grid md:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="travelDates">Preferred Travel Dates *</Label>
-                          <Input id="travelDates" type="date" required />
+                          <Input id="travelDates" name="travelDates" type="date" required />
                         </div>
                         <div className="flex items-center space-x-2 pt-8">
-                          <Checkbox id="flexible" />
+                          <Checkbox id="flexible" name="flexible" />
                           <Label htmlFor="flexible">Flexible with dates?</Label>
                         </div>
                       </div>
@@ -196,15 +285,15 @@ const Contact = () => {
                       <div className="grid md:grid-cols-3 gap-4">
                         <div>
                           <Label htmlFor="adults">Adults (15+) *</Label>
-                          <Input id="adults" type="number" min="1" defaultValue="2" required />
+                          <Input id="adults" name="adults" type="number" min="1" defaultValue="2" required />
                         </div>
                         <div>
                           <Label htmlFor="children">Children (under 15)</Label>
-                          <Input id="children" type="number" min="0" defaultValue="0" />
+                          <Input id="children" name="children" type="number" min="0" defaultValue="0" />
                         </div>
                         <div>
                           <Label htmlFor="childAges">Ages of children</Label>
-                          <Input id="childAges" placeholder="e.g., 8, 12" />
+                          <Input id="childAges" name="childAges" placeholder="e.g., 8, 12" />
                         </div>
                       </div>
                     </div>
@@ -229,8 +318,8 @@ const Contact = () => {
                           "Bird Watching"
                         ].map((interest) => (
                           <div key={interest} className="flex items-center space-x-2">
-                            <Checkbox id={interest} />
-                            <Label htmlFor={interest} className="font-normal">{interest}</Label>
+                            <Checkbox id={`interest-${interest}`} name={`interest-${interest}`} />
+                            <Label htmlFor={`interest-${interest}`} className="font-normal">{interest}</Label>
                           </div>
                         ))}
                       </div>
@@ -238,62 +327,28 @@ const Contact = () => {
 
                     {/* Trip Duration */}
                     <div>
-                      <Label>Trip Duration</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select duration" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="3-4">3-4 days</SelectItem>
-                          <SelectItem value="5-6">5-6 days</SelectItem>
-                          <SelectItem value="7-9">7-9 days</SelectItem>
-                          <SelectItem value="10+">10+ days</SelectItem>
-                          <SelectItem value="flexible">Flexible</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Label htmlFor="duration">Trip Duration</Label>
+                      <Input id="duration" name="duration" required placeholder="e.g., 5-6 days" />
                     </div>
 
                     {/* Budget */}
                     <div>
-                      <Label>Budget Range per Person (USD)</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select budget range" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="under-1500">Under $1,500</SelectItem>
-                          <SelectItem value="1500-3000">$1,500 - $3,000</SelectItem>
-                          <SelectItem value="3000-5000">$3,000 - $5,000</SelectItem>
-                          <SelectItem value="5000-8000">$5,000 - $8,000</SelectItem>
-                          <SelectItem value="over-8000">Over $8,000</SelectItem>
-                          <SelectItem value="guidance">Need Guidance</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Label htmlFor="budget">Budget Range per Person (USD)</Label>
+                      <Input id="budget" name="budget" required placeholder="e.g., $3,000 - $5,000" />
                     </div>
 
                     {/* Accommodation */}
                     <div>
-                      <Label>Accommodation Preference</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select preference" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="budget">Budget</SelectItem>
-                          <SelectItem value="mid-range">Mid-Range</SelectItem>
-                          <SelectItem value="upscale">Upscale</SelectItem>
-                          <SelectItem value="luxury">Luxury</SelectItem>
-                          <SelectItem value="mix">Mix of levels</SelectItem>
-                          <SelectItem value="recommendations">Need Recommendations</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Label htmlFor="accommodation">Accommodation Preference</Label>
+                      <Input id="accommodation" name="accommodation" required placeholder="e.g., Mid-Range" />
                     </div>
 
                     {/* Special Requests */}
                     <div>
                       <Label htmlFor="specialRequests">Special Requests/Questions</Label>
                       <Textarea 
-                        id="specialRequests" 
+                        id="specialRequests"
+                        name="specialRequests"
                         rows={5}
                         placeholder="Tell us anything else we should know: dietary requirements, fitness levels, special occasions, specific interests, accessibility needs, etc."
                       />
@@ -301,24 +356,12 @@ const Contact = () => {
 
                     {/* How did you hear */}
                     <div>
-                      <Label>How did you hear about us?</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select option" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="google">Google search</SelectItem>
-                          <SelectItem value="tripadvisor">TripAdvisor</SelectItem>
-                          <SelectItem value="social">Social media</SelectItem>
-                          <SelectItem value="referral">Friend/family recommendation</SelectItem>
-                          <SelectItem value="blog">Travel blog/article</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Label htmlFor="heardFrom">How did you hear about us?</Label>
+                      <Input id="heardFrom" name="heardFrom" placeholder="e.g., Google search, TripAdvisor" />
                     </div>
 
-                    <Button type="submit" size="lg" className="w-full">
-                      Get My Custom Quote
+                    <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+                      {isSubmitting ? "Submitting..." : "Get My Custom Quote"}
                     </Button>
                   </form>
                 </CardContent>
@@ -356,17 +399,19 @@ const Contact = () => {
                 <form onSubmit={handleQuickSubmit} className="space-y-4">
                   <div>
                     <Label htmlFor="qName">Name *</Label>
-                    <Input id="qName" required />
+                    <Input id="qName" name="qName" required />
                   </div>
                   <div>
                     <Label htmlFor="qEmail">Email *</Label>
-                    <Input id="qEmail" type="email" required />
+                    <Input id="qEmail" name="qEmail" type="email" required />
                   </div>
                   <div>
                     <Label htmlFor="qMessage">Question *</Label>
-                    <Textarea id="qMessage" rows={4} required />
+                    <Textarea id="qMessage" name="qMessage" rows={4} required />
                   </div>
-                  <Button type="submit" className="w-full">Send Quick Question</Button>
+                  <Button type="submit" className="w-full" disabled={quickIsSubmitting}>
+                    {quickIsSubmitting ? "Sending..." : "Send Quick Question"}
+                  </Button>
                 </form>
               </CardContent>
             </Card>
