@@ -2,9 +2,12 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { MapPin, Clock, Heart, Star } from "lucide-react";
+import { MapPin, Clock, Heart, Star, Video, Image as ImageIcon } from "lucide-react";
 import dianFosseyTomb from "@/assets/dian-fossey-tomb.jpg";
+import virungaImg from "@/assets/virunga-mountains.jpg";
 import { BookingCalendar } from "@/components/BookingCalendar";
+import { VideoEmbed } from "@/components/VideoEmbed";
+import { PhotoGallery } from "@/components/PhotoGallery";
 
 const DianFosseyHike = () => {
   return (
@@ -250,6 +253,79 @@ const DianFosseyHike = () => {
               <p className="text-white/90">
                 Trek through pristine volcanic forests with panoramic Virunga volcano views.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Photo Gallery */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <ImageIcon className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">Photo Gallery</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Images from the historic Dian Fossey research site and surrounding volcanic landscapes.
+            </p>
+            <PhotoGallery
+              images={[
+                {
+                  src: dianFosseyTomb,
+                  alt: "Dian Fossey's tomb",
+                  caption: "Paying respects at Dian Fossey's final resting place"
+                },
+                {
+                  src: virungaImg,
+                  alt: "Virunga Mountains",
+                  caption: "The stunning Virunga volcanic mountain range"
+                },
+                {
+                  src: dianFosseyTomb,
+                  alt: "Research center ruins",
+                  caption: "Historic Karisoke Research Center"
+                },
+                {
+                  src: virungaImg,
+                  alt: "Mountain trek",
+                  caption: "Trekking through pristine volcanic forest"
+                },
+              ]}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Video Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <Video className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">The Dian Fossey Story</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Learn about Dian Fossey's legacy and the historic research site.
+            </p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Hike Preview</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  title="Dian Fossey Hike Preview"
+                />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                  title="Dian Fossey Hike Testimonial"
+                />
+                <p className="text-sm text-muted-foreground mt-3 italic">
+                  "Deeply moving and inspiring experience." - Rachel K.
+                </p>
+              </div>
             </div>
           </div>
         </div>

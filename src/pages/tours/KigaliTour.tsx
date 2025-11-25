@@ -2,9 +2,11 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { MapPin, Clock, Star, Building } from "lucide-react";
+import { MapPin, Clock, Star, Building, Video, Image as ImageIcon } from "lucide-react";
 import kigaliCity from "@/assets/kigali-city.jpg";
 import { BookingCalendar } from "@/components/BookingCalendar";
+import { VideoEmbed } from "@/components/VideoEmbed";
+import { PhotoGallery } from "@/components/PhotoGallery";
 
 const KigaliTour = () => {
   return (
@@ -301,6 +303,79 @@ const KigaliTour = () => {
               <p className="text-white/90">
                 Markets, art centers, local restaurants - experience authentic Rwandan urban life.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Photo Gallery */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <ImageIcon className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">Photo Gallery</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Explore the vibrant city of Kigali through stunning photographs.
+            </p>
+            <PhotoGallery
+              images={[
+                {
+                  src: kigaliCity,
+                  alt: "Kigali cityscape",
+                  caption: "The clean and modern capital of Rwanda"
+                },
+                {
+                  src: kigaliCity,
+                  alt: "Kigali landmarks",
+                  caption: "Iconic Kigali landmarks and architecture"
+                },
+                {
+                  src: kigaliCity,
+                  alt: "Kigali markets",
+                  caption: "Vibrant local markets and culture"
+                },
+                {
+                  src: kigaliCity,
+                  alt: "Kigali views",
+                  caption: "Panoramic views of the city on 1000 hills"
+                },
+              ]}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Video Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <Video className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">Discover Kigali</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Watch our city tour highlights and hear from travelers who explored Kigali.
+            </p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-xl font-semibold mb-3">City Tour Preview</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  title="Kigali City Tour Preview"
+                />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                  title="Kigali Tour Testimonial"
+                />
+                <p className="text-sm text-muted-foreground mt-3 italic">
+                  "Kigali exceeded all expectations!" - Michael & Sarah T.
+                </p>
+              </div>
             </div>
           </div>
         </div>

@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { MapPin, Clock, Camera, Users, Star } from "lucide-react";
+import { MapPin, Clock, Camera, Users, Star, Video, Image as ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import goldenMonkeysImg from "@/assets/golden-monkeys-feeding.jpeg";
+import goldenMonkeysImg2 from "@/assets/golden-monkeys.jpg";
 import { BookingCalendar } from "@/components/BookingCalendar";
+import { VideoEmbed } from "@/components/VideoEmbed";
+import { PhotoGallery } from "@/components/PhotoGallery";
 
 const GoldenMonkey = () => {
   return (
@@ -304,6 +307,79 @@ const GoldenMonkey = () => {
               <p className="text-white/90">
                 Perfect to combine with other activities on the same day.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Photo Gallery */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <ImageIcon className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">Photo Gallery</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Browse stunning images from golden monkey tracking experiences in Volcanoes National Park.
+            </p>
+            <PhotoGallery
+              images={[
+                {
+                  src: goldenMonkeysImg,
+                  alt: "Golden monkeys feeding in bamboo forest",
+                  caption: "Golden monkeys enjoying bamboo shoots"
+                },
+                {
+                  src: goldenMonkeysImg2,
+                  alt: "Golden monkey group",
+                  caption: "A troop of golden monkeys in their natural habitat"
+                },
+                {
+                  src: goldenMonkeysImg,
+                  alt: "Close-up of golden monkey",
+                  caption: "The distinctive golden fur that gives these primates their name"
+                },
+                {
+                  src: goldenMonkeysImg2,
+                  alt: "Golden monkeys playing",
+                  caption: "Playful juveniles showing their acrobatic skills"
+                },
+              ]}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Video Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <Video className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">Experience the Adventure</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Watch our golden monkey tracking experiences and hear from travelers.
+            </p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Tour Preview</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  title="Golden Monkey Tracking Preview"
+                />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                  title="Golden Monkey Tracking Testimonial"
+                />
+                <p className="text-sm text-muted-foreground mt-3 italic">
+                  "Such a fun and photogenic experience!" - Lisa K.
+                </p>
+              </div>
             </div>
           </div>
         </div>

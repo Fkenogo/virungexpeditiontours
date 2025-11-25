@@ -2,9 +2,12 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { MapPin, Clock, Star, Binoculars } from "lucide-react";
+import { MapPin, Clock, Star, Binoculars, Video, Image as ImageIcon } from "lucide-react";
 import akageraSafari from "@/assets/zebras-akagera.jpeg";
+import akageraImg2 from "@/assets/akagera-safari.jpg";
 import { BookingCalendar } from "@/components/BookingCalendar";
+import { VideoEmbed } from "@/components/VideoEmbed";
+import { PhotoGallery } from "@/components/PhotoGallery";
 
 const AkageraSafari = () => {
   return (
@@ -327,6 +330,79 @@ const AkageraSafari = () => {
               <p className="text-white/90">
                 From savannah to lakes to mountains - varied ecosystems in one compact park.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Photo Gallery */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <ImageIcon className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">Safari Gallery</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Explore the breathtaking wildlife and landscapes of Akagera National Park.
+            </p>
+            <PhotoGallery
+              images={[
+                {
+                  src: akageraSafari,
+                  alt: "Zebras in Akagera National Park",
+                  caption: "Zebras grazing on the savannah plains"
+                },
+                {
+                  src: akageraImg2,
+                  alt: "Akagera wildlife",
+                  caption: "The diverse wildlife of Akagera"
+                },
+                {
+                  src: akageraSafari,
+                  alt: "Safari game drive",
+                  caption: "Game drive through the park"
+                },
+                {
+                  src: akageraImg2,
+                  alt: "Akagera landscape",
+                  caption: "Beautiful savannah and lake landscapes"
+                },
+              ]}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Video Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <Video className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">Safari Experience</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Watch highlights from Big Five safaris in Akagera National Park.
+            </p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Safari Preview</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  title="Akagera Safari Preview"
+                />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                  title="Akagera Safari Testimonial"
+                />
+                <p className="text-sm text-muted-foreground mt-3 italic">
+                  "Four of the Big Five in two days - incredible!" - James & Emma L.
+                </p>
+              </div>
             </div>
           </div>
         </div>

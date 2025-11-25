@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { MapPin, Clock, Leaf, Heart, Star } from "lucide-react";
+import { MapPin, Clock, Leaf, Heart, Star, Video, Image as ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import chimpanzeesImg from "@/assets/chimpanzee-family.jpg";
+import chimpanzeesImg2 from "@/assets/chimpanzees.jpg";
 import { BookingCalendar } from "@/components/BookingCalendar";
+import { VideoEmbed } from "@/components/VideoEmbed";
+import { PhotoGallery } from "@/components/PhotoGallery";
 
 const Chimpanzee = () => {
   return (
@@ -321,6 +324,79 @@ const Chimpanzee = () => {
               <p className="text-white/90">
                 Combine with canopy walk, colobus tracking, and birdwatching.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Photo Gallery */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <ImageIcon className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">Photo Gallery</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Discover the beauty of Nyungwe Forest and its incredible chimpanzee population.
+            </p>
+            <PhotoGallery
+              images={[
+                {
+                  src: chimpanzeesImg,
+                  alt: "Chimpanzee family in Nyungwe Forest",
+                  caption: "A chimpanzee family group in their natural habitat"
+                },
+                {
+                  src: chimpanzeesImg2,
+                  alt: "Chimpanzees in trees",
+                  caption: "Chimpanzees showing their incredible agility"
+                },
+                {
+                  src: chimpanzeesImg,
+                  alt: "Close-up of chimpanzee",
+                  caption: "The intelligence in their eyes is remarkable"
+                },
+                {
+                  src: chimpanzeesImg2,
+                  alt: "Chimpanzee behavior",
+                  caption: "Observing complex social interactions"
+                },
+              ]}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Video Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <Video className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">Experience the Trek</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Watch highlights from chimpanzee trekking in Nyungwe Forest.
+            </p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Tour Preview</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  title="Chimpanzee Trekking Preview"
+                />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                  title="Chimpanzee Trekking Testimonial"
+                />
+                <p className="text-sm text-muted-foreground mt-3 italic">
+                  "The energy and intelligence of chimps is incredible!" - Emma W.
+                </p>
+              </div>
             </div>
           </div>
         </div>
