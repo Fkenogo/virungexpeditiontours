@@ -145,8 +145,8 @@ const Contact = () => {
                   <h3 className="text-xl font-semibold mb-3">WhatsApp (Fastest)</h3>
                   <p className="text-foreground/80 mb-4">Click to chat instantly</p>
                   <div className="space-y-2 text-sm">
-                    <p className="font-medium">+250 783 959 404 (Lorraine)</p>
-                    <p className="font-medium">+250 783 007 010 (Egide)</p>
+                    <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer" className="font-medium hover:text-secondary transition-colors block">+250 783 959 404 (Lorraine)</a>
+                    <a href="https://wa.me/250783007010" target="_blank" rel="noopener noreferrer" className="font-medium hover:text-secondary transition-colors block">+250 783 007 010 (Egide)</a>
                   </div>
                 </CardContent>
               </Card>
@@ -157,8 +157,8 @@ const Contact = () => {
                   <h3 className="text-xl font-semibold mb-3">Email</h3>
                   <p className="text-foreground/80 mb-4">For detailed inquiries</p>
                   <div className="space-y-2 text-sm">
-                    <p className="font-medium">info@virungaexpeditiontours.com</p>
-                    <p className="font-medium">egide@virungaexpeditiontours.com</p>
+                    <a href="mailto:info@virungaexpeditiontours.com" className="font-medium hover:text-secondary transition-colors block">info@virungaexpeditiontours.com</a>
+                    <a href="mailto:egide@virungaexpeditiontours.com" className="font-medium hover:text-secondary transition-colors block">egide@virungaexpeditiontours.com</a>
                   </div>
                 </CardContent>
               </Card>
@@ -169,8 +169,8 @@ const Contact = () => {
                   <h3 className="text-xl font-semibold mb-3">Phone</h3>
                   <p className="text-foreground/80 mb-4">Speak with our experts</p>
                   <div className="space-y-2 text-sm">
-                    <p className="font-medium">+250 783 959 404</p>
-                    <p className="font-medium">+250 783 007 010</p>
+                    <a href="tel:+250783959404" className="font-medium hover:text-secondary transition-colors block">+250 783 959 404</a>
+                    <a href="tel:+250783007010" className="font-medium hover:text-secondary transition-colors block">+250 783 007 010</a>
                   </div>
                 </CardContent>
               </Card>
@@ -220,31 +220,36 @@ const Contact = () => {
                       <div className="grid md:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="fullName">Full Name *</Label>
-                          <Input id="fullName" required placeholder="John Doe" />
+                          <Input id="fullName" name="fullName" required placeholder="John Doe" />
                         </div>
                         <div>
                           <Label htmlFor="email">Email Address *</Label>
-                          <Input id="email" type="email" required placeholder="john@example.com" />
+                          <Input id="email" name="email" type="email" required placeholder="john@example.com" />
                         </div>
                       </div>
 
                       <div className="grid md:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="phone">Phone Number (with country code) *</Label>
-                          <Input id="phone" type="tel" required placeholder="+1 234 567 8900" />
+                          <Input id="phone" name="phone" type="tel" required placeholder="+1 234 567 8900" />
                         </div>
                         <div>
                           <Label htmlFor="country">Country of Residence *</Label>
-                          <Select required>
+                          <Select name="country" required>
                             <SelectTrigger>
                               <SelectValue placeholder="Select country" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="us">United States</SelectItem>
-                              <SelectItem value="uk">United Kingdom</SelectItem>
-                              <SelectItem value="ca">Canada</SelectItem>
-                              <SelectItem value="au">Australia</SelectItem>
-                              <SelectItem value="other">Other</SelectItem>
+                              <SelectItem value="United States">United States</SelectItem>
+                              <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                              <SelectItem value="Canada">Canada</SelectItem>
+                              <SelectItem value="Australia">Australia</SelectItem>
+                              <SelectItem value="Germany">Germany</SelectItem>
+                              <SelectItem value="France">France</SelectItem>
+                              <SelectItem value="Netherlands">Netherlands</SelectItem>
+                              <SelectItem value="Belgium">Belgium</SelectItem>
+                              <SelectItem value="South Africa">South Africa</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -252,16 +257,21 @@ const Contact = () => {
 
                       <div>
                         <Label htmlFor="nationality">Nationality * (Important for permit pricing)</Label>
-                        <Select required>
+                        <Select name="nationality" required>
                           <SelectTrigger>
                             <SelectValue placeholder="Select nationality" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="us">United States</SelectItem>
-                            <SelectItem value="uk">United Kingdom</SelectItem>
-                            <SelectItem value="ca">Canada</SelectItem>
-                            <SelectItem value="au">Australia</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
+                            <SelectItem value="United States">United States</SelectItem>
+                            <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                            <SelectItem value="Canada">Canada</SelectItem>
+                            <SelectItem value="Australia">Australia</SelectItem>
+                            <SelectItem value="Germany">Germany</SelectItem>
+                            <SelectItem value="France">France</SelectItem>
+                            <SelectItem value="Netherlands">Netherlands</SelectItem>
+                            <SelectItem value="Belgium">Belgium</SelectItem>
+                            <SelectItem value="South Africa">South Africa</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -340,7 +350,18 @@ const Contact = () => {
                     {/* Accommodation */}
                     <div>
                       <Label htmlFor="accommodation">Accommodation Preference</Label>
-                      <Input id="accommodation" name="accommodation" required placeholder="e.g., Mid-Range" />
+                      <Select name="accommodation" required>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select accommodation preference" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Budget">Budget</SelectItem>
+                          <SelectItem value="Mid-Range">Mid-Range</SelectItem>
+                          <SelectItem value="Luxury">Luxury</SelectItem>
+                          <SelectItem value="Ultra-Luxury">Ultra-Luxury</SelectItem>
+                          <SelectItem value="Mixed">Mixed (Combination)</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     {/* Special Requests */}
@@ -357,7 +378,21 @@ const Contact = () => {
                     {/* How did you hear */}
                     <div>
                       <Label htmlFor="heardFrom">How did you hear about us?</Label>
-                      <Input id="heardFrom" name="heardFrom" placeholder="e.g., Google search, TripAdvisor" />
+                      <Select name="heardFrom">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an option" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Google Search">Google Search</SelectItem>
+                          <SelectItem value="TripAdvisor">TripAdvisor</SelectItem>
+                          <SelectItem value="Social Media">Social Media (Facebook, Instagram, etc.)</SelectItem>
+                          <SelectItem value="Friend Referral">Friend or Family Referral</SelectItem>
+                          <SelectItem value="Travel Agent">Travel Agent</SelectItem>
+                          <SelectItem value="Previous Client">Previous Client</SelectItem>
+                          <SelectItem value="Online Ad">Online Advertisement</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
