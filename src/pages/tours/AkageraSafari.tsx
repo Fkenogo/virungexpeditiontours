@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -80,7 +81,9 @@ const AkageraSafari = () => {
                     <span>Packed lunch</span>
                   </li>
                 </ul>
-                <Button className="w-full">Request Quote</Button>
+                <Button asChild className="w-full">
+                  <Link to="/contact">Request Quote</Link>
+                </Button>
               </CardContent>
             </Card>
 
@@ -114,7 +117,9 @@ const AkageraSafari = () => {
                     <span>Transport from Kigali</span>
                   </li>
                 </ul>
-                <Button className="w-full bg-secondary hover:bg-secondary/90">Request Quote</Button>
+                <Button asChild className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground">
+                  <Link to="/contact">Request Quote</Link>
+                </Button>
               </CardContent>
             </Card>
 
@@ -143,7 +148,9 @@ const AkageraSafari = () => {
                     <span>Premium accommodation</span>
                   </li>
                 </ul>
-                <Button className="w-full">Request Quote</Button>
+                <Button asChild className="w-full">
+                  <Link to="/contact">Request Quote</Link>
+                </Button>
               </CardContent>
             </Card>
           </div>

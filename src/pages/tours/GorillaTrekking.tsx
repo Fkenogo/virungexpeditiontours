@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -23,11 +24,11 @@ const GorillaTrekking = () => {
           <h1 className="text-5xl md:text-6xl font-bold mb-4">Mountain Gorilla Trekking</h1>
           <p className="text-2xl mb-8">Experience the World's Most Profound Wildlife Encounter</p>
           <div className="flex flex-wrap gap-4">
-            <Button size="lg" className="bg-secondary hover:bg-secondary/90">
-              Request Quote
+            <Button asChild size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground">
+              <a href="/contact">Request Quote</a>
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-              WhatsApp Us
+            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">WhatsApp Us</a>
             </Button>
           </div>
         </div>
@@ -83,7 +84,9 @@ const GorillaTrekking = () => {
                     <span>Certificate</span>
                   </li>
                 </ul>
-                <Button className="w-full">Request Quote</Button>
+                <Button asChild className="w-full">
+                  <Link to="/contact">Request Quote</Link>
+                </Button>
               </CardContent>
             </Card>
 
@@ -117,7 +120,9 @@ const GorillaTrekking = () => {
                     <span>Hotel pickup/drop-off</span>
                   </li>
                 </ul>
-                <Button className="w-full bg-secondary hover:bg-secondary/90">Request Quote</Button>
+                <Button asChild className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground">
+                  <Link to="/contact">Request Quote</Link>
+                </Button>
               </CardContent>
             </Card>
 
@@ -146,7 +151,9 @@ const GorillaTrekking = () => {
                     <span>Personalized service</span>
                   </li>
                 </ul>
-                <Button className="w-full">Request Quote</Button>
+                <Button asChild className="w-full">
+                  <Link to="/contact">Request Quote</Link>
+                </Button>
               </CardContent>
             </Card>
           </div>
