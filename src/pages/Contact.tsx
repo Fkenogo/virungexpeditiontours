@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,9 +16,23 @@ const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [quickIsSubmitting, setQuickIsSubmitting] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [quickPrivacyAccepted, setQuickPrivacyAccepted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validate policy acceptance
+    if (!privacyAccepted || !termsAccepted) {
+      toast({
+        title: "Policy Acceptance Required",
+        description: "Please accept the Privacy Policy and Terms & Conditions to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
@@ -81,6 +96,17 @@ const Contact = () => {
 
   const handleQuickSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validate policy acceptance
+    if (!quickPrivacyAccepted) {
+      toast({
+        title: "Privacy Policy Acceptance Required",
+        description: "Please accept the Privacy Policy to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setQuickIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
@@ -395,7 +421,72 @@ const Contact = () => {
                       </Select>
                     </div>
 
-                    <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+                    {/* Policy Acceptance */}
+                    <div className="space-y-4 border-t pt-6 mt-6">
+                      <h3 className="text-lg font-semibold text-secondary">Policy Acceptance</h3>
+                      
+                      <div className="space-y-3">
+                        <div className="flex items-start space-x-3">
+                          <Checkbox 
+                            id="privacyPolicy" 
+                            checked={privacyAccepted}
+                            onCheckedChange={(checked) => setPrivacyAccepted(checked as boolean)}
+                            className="mt-1"
+                          />
+                          <Label htmlFor="privacyPolicy" className="font-normal text-sm leading-relaxed cursor-pointer">
+                            I have read and agree to the{" "}
+                            <Link to="/privacy-policy" className="text-primary hover:underline font-semibold" target="_blank">
+                              Privacy Policy
+                            </Link>
+                            {" "}and understand how my personal data will be processed. *
+                          </Label>
+                        </div>
+
+                        <div className="flex items-start space-x-3">
+                          <Checkbox 
+                            id="termsConditions" 
+                            checked={termsAccepted}
+                            onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                            className="mt-1"
+                          />
+                          <Label htmlFor="termsConditions" className="font-normal text-sm leading-relaxed cursor-pointer">
+                            I accept the{" "}
+                            <Link to="/terms-and-conditions" className="text-primary hover:underline font-semibold" target="_blank">
+                              Terms & Conditions
+                            </Link>
+                            {" "}including the cancellation policy and gorilla permit terms. *
+                          </Label>
+                        </div>
+
+                        <div className="flex items-start space-x-3">
+                          <Checkbox id="bookingTerms" className="mt-1" />
+                          <Label htmlFor="bookingTerms" className="font-normal text-sm leading-relaxed cursor-pointer">
+                            I have reviewed the{" "}
+                            <Link to="/booking-terms" className="text-primary hover:underline font-semibold" target="_blank">
+                              Booking Terms
+                            </Link>
+                            {" "}and understand the payment schedule and requirements. (Optional but recommended)
+                          </Label>
+                        </div>
+                      </div>
+
+                      <div className="bg-muted/50 p-4 rounded-lg text-sm">
+                        <p className="font-semibold mb-2">Important Notes:</p>
+                        <ul className="space-y-1 text-xs">
+                          <li>• Gorilla permits are non-refundable once booked ($1,500 per person)</li>
+                          <li>• Comprehensive travel insurance is mandatory</li>
+                          <li>• Cancellation fees apply based on notice period</li>
+                          <li>• Final payment due 60 days before departure</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <Button 
+                      type="submit" 
+                      size="lg" 
+                      className="w-full" 
+                      disabled={isSubmitting || !privacyAccepted || !termsAccepted}
+                    >
                       {isSubmitting ? "Submitting..." : "Get My Custom Quote"}
                     </Button>
                   </form>
@@ -444,7 +535,28 @@ const Contact = () => {
                     <Label htmlFor="qMessage">Question *</Label>
                     <Textarea id="qMessage" name="qMessage" rows={4} required />
                   </div>
-                  <Button type="submit" className="w-full" disabled={quickIsSubmitting}>
+                  
+                  <div className="flex items-start space-x-3 pt-4 border-t">
+                    <Checkbox 
+                      id="quickPrivacy" 
+                      checked={quickPrivacyAccepted}
+                      onCheckedChange={(checked) => setQuickPrivacyAccepted(checked as boolean)}
+                      className="mt-1"
+                    />
+                    <Label htmlFor="quickPrivacy" className="font-normal text-sm leading-relaxed cursor-pointer">
+                      I agree to the{" "}
+                      <Link to="/privacy-policy" className="text-primary hover:underline font-semibold" target="_blank">
+                        Privacy Policy
+                      </Link>
+                      {" "}*
+                    </Label>
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={quickIsSubmitting || !quickPrivacyAccepted}
+                  >
                     {quickIsSubmitting ? "Sending..." : "Send Quick Question"}
                   </Button>
                 </form>
