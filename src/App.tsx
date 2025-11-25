@@ -26,6 +26,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import WhatsAppFloat from "./components/WhatsAppFloat";
 import CookieConsent from "./components/CookieConsent";
+import TravelChatbot from "./components/TravelChatbot";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +64,7 @@ const App = () => (
           <Footer />
           <WhatsAppFloat />
           <CookieConsent />
+          <TravelChatbot />
         </div>
       </BrowserRouter>
     </TooltipProvider>
