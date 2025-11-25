@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Clock, Camera, Heart, Star } from "lucide-react";
+import { MapPin, Clock, Camera, Heart, Star, Video, Image as ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import canopyWalkwayImg from "@/assets/canopy-walk-nyungwe.jpg";
+import canopyWalkImg2 from "@/assets/canopy-walkway.jpg";
 import { BookingCalendar } from "@/components/BookingCalendar";
+import { VideoEmbed } from "@/components/VideoEmbed";
+import { PhotoGallery } from "@/components/PhotoGallery";
 
 const CanopyWalkway = () => {
   return (
@@ -242,6 +245,79 @@ const CanopyWalkway = () => {
               <p className="text-white/90">
                 Perfect to combine with other Nyungwe adventures in one day.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Photo Gallery */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <ImageIcon className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">Photo Gallery</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Experience the breathtaking views from the canopy walkway.
+            </p>
+            <PhotoGallery
+              images={[
+                {
+                  src: canopyWalkwayImg,
+                  alt: "Canopy walkway in Nyungwe Forest",
+                  caption: "Walking 60 meters above the rainforest floor"
+                },
+                {
+                  src: canopyWalkImg2,
+                  alt: "Canopy walk views",
+                  caption: "Spectacular panoramic views of the forest"
+                },
+                {
+                  src: canopyWalkwayImg,
+                  alt: "Canopy walkway experience",
+                  caption: "An unforgettable aerial adventure"
+                },
+                {
+                  src: canopyWalkImg2,
+                  alt: "Forest canopy",
+                  caption: "Bird's-eye view of ancient rainforest"
+                },
+              ]}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Video Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <Video className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">Experience the Walk</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Watch the canopy walkway experience and hear from our travelers.
+            </p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Tour Preview</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  title="Canopy Walkway Preview"
+                />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                  title="Canopy Walk Testimonial"
+                />
+                <p className="text-sm text-muted-foreground mt-3 italic">
+                  "Absolutely breathtaking experience!" - Amanda R.
+                </p>
+              </div>
             </div>
           </div>
         </div>

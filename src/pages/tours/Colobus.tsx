@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Clock, Camera, Leaf, Star } from "lucide-react";
+import { MapPin, Clock, Camera, Leaf, Star, Video, Image as ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import chimpanzeesImg from "@/assets/chimpanzees.jpg";
+import { VideoEmbed } from "@/components/VideoEmbed";
+import { PhotoGallery } from "@/components/PhotoGallery";
 
 const Colobus = () => {
   return (
@@ -234,6 +236,79 @@ const Colobus = () => {
               <p className="text-white/90">
                 Lower permit cost than gorillas or chimps. Excellent value.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Photo Gallery */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <ImageIcon className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">Photo Gallery</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Stunning images of colobus monkeys in their natural rainforest habitat.
+            </p>
+            <PhotoGallery
+              images={[
+                {
+                  src: chimpanzeesImg,
+                  alt: "Colobus monkeys in Nyungwe Forest",
+                  caption: "Colobus monkeys with their distinctive long tails"
+                },
+                {
+                  src: chimpanzeesImg,
+                  alt: "Colobus monkey group",
+                  caption: "A troop of colobus monkeys"
+                },
+                {
+                  src: chimpanzeesImg,
+                  alt: "Colobus monkey feeding",
+                  caption: "Colobus monkey enjoying leaves"
+                },
+                {
+                  src: chimpanzeesImg,
+                  alt: "Colobus in trees",
+                  caption: "Acrobatic movements through the canopy"
+                },
+              ]}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Video Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <Video className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">Experience the Trek</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Watch colobus monkeys in action and hear from our travelers.
+            </p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Tour Preview</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  title="Colobus Monkey Tracking Preview"
+                />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                  title="Colobus Tracking Testimonial"
+                />
+                <p className="text-sm text-muted-foreground mt-3 italic">
+                  "Perfect family activity - the kids loved it!" - Thompson Family
+                </p>
+              </div>
             </div>
           </div>
         </div>
