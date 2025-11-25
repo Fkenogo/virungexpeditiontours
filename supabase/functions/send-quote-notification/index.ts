@@ -1,6 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 2000; // 2 seconds
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -26,6 +28,84 @@ interface QuoteNotificationRequest {
   how_heard_about_us?: string;
 }
 
+interface EmailResult {
+  success: boolean;
+  statusCode?: number;
+  error?: string;
+  messageId?: string;
+}
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function sendEmailWithRetry(
+  emailData: any,
+  retries = MAX_RETRIES
+): Promise<EmailResult> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      console.log(`Email attempt ${attempt}/${retries}`);
+      
+      const response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(emailData),
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        console.log(`Email sent successfully on attempt ${attempt}`);
+        return {
+          success: true,
+          statusCode: response.status,
+          messageId: result.id,
+        };
+      }
+
+      // Handle specific errors
+      if (response.status === 403) {
+        console.error("Resend validation error:", result);
+        return {
+          success: false,
+          statusCode: 403,
+          error: "Email service requires domain verification. Please contact support.",
+        };
+      }
+
+      // If not the last retry, wait before trying again
+      if (attempt < retries) {
+        console.log(`Retrying in ${RETRY_DELAY}ms...`);
+        await sleep(RETRY_DELAY);
+      } else {
+        return {
+          success: false,
+          statusCode: response.status,
+          error: result.message || "Failed to send email",
+        };
+      }
+    } catch (error: any) {
+      console.error(`Attempt ${attempt} failed:`, error);
+      
+      if (attempt < retries) {
+        await sleep(RETRY_DELAY);
+      } else {
+        return {
+          success: false,
+          error: error.message || "Network error",
+        };
+      }
+    }
+  }
+
+  return {
+    success: false,
+    error: "Max retries exceeded",
+  };
+}
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -34,14 +114,10 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const quoteData: QuoteNotificationRequest = await req.json();
 
+    console.log("Processing quote request from:", quoteData.email);
+
     // Send confirmation email to customer
-    const customerEmail = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    const customerEmailResult = await sendEmailWithRetry({
       from: "Virunga Expedition Tours <onboarding@resend.dev>",
       to: [quoteData.email],
       subject: "Thank You for Your Quote Request - Virunga Expedition Tours",
@@ -82,17 +158,10 @@ const handler = async (req: Request): Promise<Response> => {
           </p>
         </div>
       `,
-      }),
-    }).then(res => res.json());
+    });
 
     // Send notification email to team
-    const teamEmail = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    const teamEmailResult = await sendEmailWithRetry({
       from: "Quote Notification <onboarding@resend.dev>",
       to: ["info@virungaexpeditiontours.com"],
       subject: `New Quote Request from ${quoteData.full_name}`,
@@ -136,13 +205,25 @@ const handler = async (req: Request): Promise<Response> => {
           <p style="margin-top: 30px; color: #e86d2a;"><strong>Action Required:</strong> Please respond within 24 hours</p>
         </div>
       `,
-      }),
-    }).then(res => res.json());
+    });
 
-    console.log("Emails sent successfully:", { customerEmail, teamEmail });
+    console.log("Email delivery status:", {
+      customer: customerEmailResult,
+      team: teamEmailResult,
+    });
 
+    // Return detailed status
     return new Response(
-      JSON.stringify({ success: true, customerEmail, teamEmail }),
+      JSON.stringify({
+        success: customerEmailResult.success || teamEmailResult.success,
+        delivery: {
+          customerEmail: customerEmailResult,
+          teamEmail: teamEmailResult,
+        },
+        message: customerEmailResult.success
+          ? "Your quote request has been sent successfully!"
+          : "Request saved but email delivery may be delayed. We'll respond via WhatsApp or email shortly.",
+      }),
       {
         status: 200,
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -150,10 +231,17 @@ const handler = async (req: Request): Promise<Response> => {
     );
   } catch (error: any) {
     console.error("Error in send-quote-notification:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
-    });
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message,
+        message: "Please contact us directly via WhatsApp: +250 783 959 404",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      }
+    );
   }
 };
 

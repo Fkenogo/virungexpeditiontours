@@ -70,7 +70,7 @@ const Contact = () => {
 
       if (dbError) throw dbError;
 
-      const { error: emailError } = await supabase.functions.invoke(
+      const { data: emailData, error: emailError } = await supabase.functions.invoke(
         "send-quote-notification",
         { body: quoteData }
       );
@@ -78,10 +78,19 @@ const Contact = () => {
       if (emailError) console.error("Email notification error:", emailError);
 
       setSubmitted(true);
-      toast({
-        title: "Thank you for your inquiry!",
-        description: "We'll respond within 24 hours with your custom quote.",
-      });
+      
+      // Show detailed status based on email delivery
+      if (emailData?.delivery?.customerEmail?.success) {
+        toast({
+          title: "Thank you for your inquiry!",
+          description: "Confirmation email sent. We'll respond within 24 hours with your custom quote.",
+        });
+      } else {
+        toast({
+          title: "Quote request received!",
+          description: "We have your request and will send your custom quote within 24 hours.",
+        });
+      }
     } catch (error) {
       console.error("Error submitting quote:", error);
       toast({
@@ -143,17 +152,26 @@ const Contact = () => {
 
       if (emailError) {
         console.error("Email notification error:", emailError);
-        // Don't throw - email failure shouldn't stop the submission
+        // Email failure shouldn't stop the submission since data is in database
       } else {
         console.log("Email notification successful:", emailData);
       }
 
       e.currentTarget.reset();
       setQuickPrivacyAccepted(false);
-      toast({
-        title: "Message sent!",
-        description: "We'll get back to you shortly.",
-      });
+      
+      // Show detailed status based on email delivery
+      if (emailData?.delivery?.customerEmail?.success) {
+        toast({
+          title: "Message sent!",
+          description: "Confirmation email sent. We'll get back to you shortly.",
+        });
+      } else {
+        toast({
+          title: "Message received!",
+          description: "We have your message and will respond via WhatsApp or email soon.",
+        });
+      }
     } catch (error: any) {
       console.error("Error submitting inquiry:", error);
       toast({
@@ -585,8 +603,113 @@ const Contact = () => {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold mb-8 text-center text-primary">Frequently Asked Questions</h2>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Gorilla Permits */}
+              <Card className="p-6">
+                <h3 className="text-xl font-semibold mb-3 text-secondary">Gorilla Permits</h3>
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <p className="font-medium">How much does a gorilla permit cost?</p>
+                    <p className="text-muted-foreground">$1,500 per person for Rwanda. Permits must be booked months in advance.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">Are gorilla permits refundable?</p>
+                    <p className="text-muted-foreground">No, gorilla permits are non-refundable once booked with Rwanda Development Board.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">What's the minimum age?</p>
+                    <p className="text-muted-foreground">15 years old for gorilla trekking, 12 years for chimpanzees.</p>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Booking Process */}
+              <Card className="p-6">
+                <h3 className="text-xl font-semibold mb-3 text-secondary">Booking Process</h3>
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <p className="font-medium">How do I book a tour?</p>
+                    <p className="text-muted-foreground">Fill out our quote form, and we'll send a customized itinerary within 24 hours.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">How far in advance should I book?</p>
+                    <p className="text-muted-foreground">3-6 months minimum for gorilla trekking. Peak season books up even earlier.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">Can I customize my itinerary?</p>
+                    <p className="text-muted-foreground">Absolutely! All our tours are fully customizable to your preferences and budget.</p>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Payment Methods */}
+              <Card className="p-6">
+                <h3 className="text-xl font-semibold mb-3 text-secondary">Payment & Pricing</h3>
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <p className="font-medium">What payment methods do you accept?</p>
+                    <p className="text-muted-foreground">Bank transfer, credit cards (Visa, Mastercard), and mobile money.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">When is payment due?</p>
+                    <p className="text-muted-foreground">30% deposit to confirm booking, balance due 60 days before departure.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">What's included in the price?</p>
+                    <p className="text-muted-foreground">All permits, accommodation, meals as specified, transport, and professional guide.</p>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Travel Requirements */}
+              <Card className="p-6">
+                <h3 className="text-xl font-semibold mb-3 text-secondary">Travel Requirements</h3>
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <p className="font-medium">Do I need a visa for Rwanda?</p>
+                    <p className="text-muted-foreground">Yes, but most nationalities can get visa on arrival or apply online ($50 USD).</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">Is travel insurance required?</p>
+                    <p className="text-muted-foreground">Yes, comprehensive travel insurance is mandatory for all our tours.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">What vaccinations do I need?</p>
+                    <p className="text-muted-foreground">Yellow fever certificate required. Consult your doctor for other recommendations.</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            <div className="mt-8 text-center">
+              <p className="text-muted-foreground mb-4">
+                Can't find what you're looking for?
+              </p>
+              <div className="flex gap-4 justify-center flex-wrap">
+                <Button asChild variant="default">
+                  <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">
+                    WhatsApp Us
+                  </a>
+                </Button>
+                <Button asChild variant="outline">
+                  <a href="mailto:info@virungaexpeditiontours.com">
+                    Email Us
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Map Section */}
-      <section className="py-12 bg-background">
+      <section className="py-12 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-bold mb-6 text-center text-primary">Find Us in Kigali</h2>
