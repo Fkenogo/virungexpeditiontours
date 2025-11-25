@@ -33,13 +33,13 @@ const Index = () => {
           </p>
           
           <div className="flex flex-wrap gap-4 justify-center animate-fade-in" style={{ animationDelay: "0.4s" }}>
-            <Button asChild size="lg" className="bg-secondary hover:bg-secondary-light text-secondary-foreground">
+            <Button asChild size="lg" variant="secondary">
               <Link to="/tours">Explore Rwanda Tours</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="bg-white/10 hover:bg-white/20 text-white border-white">
+            <Button asChild size="lg" variant="outlineLight">
               <Link to="/contact">Request Custom Quote</Link>
             </Button>
-            <Button asChild size="lg" className="bg-[#25D366] hover:bg-[#20BD5A] text-white">
+            <Button asChild size="lg" variant="whatsapp">
               <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">
                 WhatsApp Us
               </a>
@@ -390,7 +390,7 @@ const Index = () => {
             <div className="bg-white/10 p-6 rounded-lg backdrop-blur">
               <h3 className="font-bold mb-2">WhatsApp Us Now</h3>
               <p className="text-sm opacity-90 mb-4">Get instant answers to your questions</p>
-              <Button asChild className="bg-[#25D366] hover:bg-[#20BD5A] text-white w-full">
+              <Button asChild variant="whatsapp" className="w-full">
                 <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">Chat Now</a>
               </Button>
             </div>
@@ -398,7 +398,7 @@ const Index = () => {
             <div className="bg-white/10 p-6 rounded-lg backdrop-blur">
               <h3 className="font-bold mb-2">Call Us</h3>
               <p className="text-sm opacity-90 mb-4">Speak with our travel experts</p>
-              <Button asChild variant="outline" className="bg-white/10 hover:bg-white/20 text-white border-white w-full">
+              <Button asChild variant="outlineLight" className="w-full">
                 <a href="tel:+250783007010">+250 783 007 010</a>
               </Button>
             </div>

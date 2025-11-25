@@ -294,10 +294,10 @@ const Services = () => {
             Let's discuss your dream safari. We'll create a customized itinerary with transparent pricing.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <Button asChild size="lg" className="bg-white text-secondary hover:bg-white/90">
+            <Button asChild size="lg" variant="default" className="bg-white text-secondary hover:bg-white/90">
               <Link to="/contact">Request Custom Quote</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button asChild size="lg" variant="outlineLight">
               <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">
                 WhatsApp: +250 783 959 404
               </a>

@@ -24,10 +24,10 @@ const KigaliTour = () => {
           <h1 className="text-5xl md:text-6xl font-bold mb-4">Kigali City Tour</h1>
           <p className="text-2xl mb-8">Discover Africa's Cleanest, Most Organized Capital</p>
           <div className="flex flex-wrap gap-4">
-            <Button size="lg" className="bg-secondary hover:bg-secondary/90">
+            <Button size="lg" variant="secondary">
               Request Quote
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button size="lg" variant="outlineLight">
               WhatsApp Us
             </Button>
           </div>
@@ -341,10 +341,10 @@ const KigaliTour = () => {
             Experience one of Africa's most progressive, clean, and safe capital cities. Perfect for arrival or departure day.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <Button size="lg" className="bg-white text-secondary hover:bg-white/90">
+            <Button size="lg" variant="default" className="bg-white text-secondary hover:bg-white/90">
               Request Custom Quote
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button size="lg" variant="outlineLight">
               WhatsApp: +250 783 959 404
             </Button>
           </div>

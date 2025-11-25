@@ -244,10 +244,10 @@ const Tours = () => {
             <Button size="lg" variant="default" className="bg-white text-secondary hover:bg-white/90">
               Request Custom Quote
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button size="lg" variant="outlineLight">
               WhatsApp: +250 783 959 404
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button size="lg" variant="outlineLight">
               Call: +250 783 007 010
             </Button>
           </div>

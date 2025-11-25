@@ -116,30 +116,49 @@ const Contact = () => {
       message: formData.get("qMessage") as string,
     };
 
+    console.log("Submitting inquiry data:", inquiryData);
+
     try {
-      const { error: dbError } = await supabase
+      // Validate data before submission
+      if (!inquiryData.name || !inquiryData.email || !inquiryData.message) {
+        throw new Error("All fields are required");
+      }
+
+      const { data: dbData, error: dbError } = await supabase
         .from("quick_inquiries")
-        .insert([inquiryData]);
+        .insert([inquiryData])
+        .select();
 
-      if (dbError) throw dbError;
+      if (dbError) {
+        console.error("Database error:", dbError);
+        throw dbError;
+      }
 
-      const { error: emailError } = await supabase.functions.invoke(
+      console.log("Database insert successful:", dbData);
+
+      const { data: emailData, error: emailError } = await supabase.functions.invoke(
         "send-inquiry-notification",
         { body: inquiryData }
       );
 
-      if (emailError) console.error("Email notification error:", emailError);
+      if (emailError) {
+        console.error("Email notification error:", emailError);
+        // Don't throw - email failure shouldn't stop the submission
+      } else {
+        console.log("Email notification successful:", emailData);
+      }
 
       e.currentTarget.reset();
+      setQuickPrivacyAccepted(false);
       toast({
         title: "Message sent!",
         description: "We'll get back to you shortly.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting inquiry:", error);
       toast({
         title: "Submission Error",
-        description: "Please try again or contact us directly.",
+        description: error.message || "Please try again or contact us directly via WhatsApp.",
         variant: "destructive",
       });
     } finally {
