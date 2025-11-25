@@ -78,11 +78,11 @@ const Footer = () => {
         <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-sm">
           <p>© 2025 Virunga Expedition Tours. All Rights Reserved.</p>
           <div className="flex justify-center gap-4 mt-2">
-            <Link to="/contact" className="hover:text-secondary transition-colors">Privacy Policy</Link>
+            <Link to="/privacy-policy" className="hover:text-secondary transition-colors">Privacy Policy</Link>
             <span>|</span>
-            <Link to="/contact" className="hover:text-secondary transition-colors">Terms & Conditions</Link>
+            <Link to="/terms-and-conditions" className="hover:text-secondary transition-colors">Terms & Conditions</Link>
             <span>|</span>
-            <Link to="/contact" className="hover:text-secondary transition-colors">Booking Terms</Link>
+            <Link to="/booking-terms" className="hover:text-secondary transition-colors">Booking Terms</Link>
           </div>
         </div>
       </div>
