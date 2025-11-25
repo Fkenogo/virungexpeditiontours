@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Clock, Camera, Heart, Star } from "lucide-react";
 import { Link } from "react-router-dom";
-import canopyWalkwayImg from "@/assets/canopy-walkway.jpg";
+import canopyWalkwayImg from "@/assets/canopy-walk-nyungwe.jpg";
 
 const CanopyWalkway = () => {
   return (

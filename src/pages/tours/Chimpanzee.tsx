@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, Leaf, Heart, Star } from "lucide-react";
 import { Link } from "react-router-dom";
-import chimpanzeesImg from "@/assets/chimpanzees.jpg";
+import chimpanzeesImg from "@/assets/chimpanzee-family.jpg";
 
 const Chimpanzee = () => {
   return (
