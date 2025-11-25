@@ -4,6 +4,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { MapPin, Clock, Leaf, Heart, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import chimpanzeesImg from "@/assets/chimpanzee-family.jpg";
+import { BookingCalendar } from "@/components/BookingCalendar";
 
 const Chimpanzee = () => {
   return (
@@ -274,6 +275,13 @@ const Chimpanzee = () => {
               </AccordionItem>
             </Accordion>
           </div>
+        </div>
+      </section>
+
+      {/* Booking Calendar */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <BookingCalendar tourName="Chimpanzee Trekking" />
         </div>
       </section>
 

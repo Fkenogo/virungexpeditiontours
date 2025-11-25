@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, Heart, Star } from "lucide-react";
 import dianFosseyTomb from "@/assets/dian-fossey-tomb.jpg";
+import { BookingCalendar } from "@/components/BookingCalendar";
 
 const DianFosseyHike = () => {
   return (
@@ -211,6 +212,13 @@ const DianFosseyHike = () => {
               </AccordionItem>
             </Accordion>
           </div>
+        </div>
+      </section>
+
+      {/* Booking Calendar */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <BookingCalendar tourName="Dian Fossey Tomb Hike" />
         </div>
       </section>
 

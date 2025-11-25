@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, Star, Building } from "lucide-react";
 import kigaliCity from "@/assets/kigali-city.jpg";
+import { BookingCalendar } from "@/components/BookingCalendar";
 
 const KigaliTour = () => {
   return (
@@ -262,6 +263,13 @@ const KigaliTour = () => {
               </AccordionItem>
             </Accordion>
           </div>
+        </div>
+      </section>
+
+      {/* Booking Calendar */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <BookingCalendar tourName="Kigali City Tour" />
         </div>
       </section>
 

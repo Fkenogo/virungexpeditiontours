@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Clock, Camera, Heart, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import canopyWalkwayImg from "@/assets/canopy-walk-nyungwe.jpg";
+import { BookingCalendar } from "@/components/BookingCalendar";
 
 const CanopyWalkway = () => {
   return (
@@ -195,6 +196,13 @@ const CanopyWalkway = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Booking Calendar */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <BookingCalendar tourName="Canopy Walkway Experience" />
         </div>
       </section>
 
