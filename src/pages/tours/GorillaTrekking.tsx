@@ -24,10 +24,10 @@ const GorillaTrekking = () => {
           <h1 className="text-5xl md:text-6xl font-bold mb-4">Mountain Gorilla Trekking</h1>
           <p className="text-2xl mb-8">Experience the World's Most Profound Wildlife Encounter</p>
           <div className="flex flex-wrap gap-4">
-            <Button asChild size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground">
+            <Button asChild size="lg" variant="secondary">
               <a href="/contact">Request Quote</a>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button asChild size="lg" variant="outlineLight">
               <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">WhatsApp Us</a>
             </Button>
           </div>
@@ -375,7 +375,7 @@ const GorillaTrekking = () => {
             <Button size="lg" variant="default" className="bg-white text-secondary hover:bg-white/90">
               Request Custom Quote
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button size="lg" variant="outlineLight">
               WhatsApp: +250 783 959 404
             </Button>
           </div>

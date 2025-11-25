@@ -24,10 +24,10 @@ const GoldenMonkey = () => {
           <h1 className="text-5xl md:text-6xl font-bold mb-4">Golden Monkey Tracking</h1>
           <p className="text-2xl mb-8">Playful Primates of the Bamboo Forest</p>
           <div className="flex flex-wrap gap-4">
-            <Button asChild size="lg" className="bg-secondary hover:bg-secondary/90">
+            <Button asChild size="lg" variant="secondary">
               <Link to="/contact">Request Quote</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button asChild size="lg" variant="outlineLight">
               <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">
                 WhatsApp Us
               </a>
@@ -357,10 +357,10 @@ const GoldenMonkey = () => {
             Book your golden monkey encounter today and witness these playful primates in their bamboo forest home.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <Button asChild size="lg" className="bg-white text-secondary hover:bg-white/90">
+            <Button asChild size="lg" variant="default" className="bg-white text-secondary hover:bg-white/90">
               <Link to="/contact">Request Quote</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button asChild size="lg" variant="outlineLight">
               <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">
                 WhatsApp: +250 783 959 404
               </a>
