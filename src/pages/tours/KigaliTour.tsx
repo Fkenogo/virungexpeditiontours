@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, Star, Building } from "lucide-react";
-import heroGorilla from "@/assets/hero-gorilla.jpg";
+import kigaliCity from "@/assets/kigali-city.jpg";
 
 const KigaliTour = () => {
   return (
@@ -12,7 +12,7 @@ const KigaliTour = () => {
       <section className="relative h-[500px] flex items-center justify-center">
         <div 
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${heroGorilla})` }}
+          style={{ backgroundImage: `url(${kigaliCity})` }}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40"></div>
         </div>
