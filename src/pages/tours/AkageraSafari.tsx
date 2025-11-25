@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, Star, Binoculars } from "lucide-react";
 import akageraSafari from "@/assets/zebras-akagera.jpeg";
+import { BookingCalendar } from "@/components/BookingCalendar";
 
 const AkageraSafari = () => {
   return (
@@ -288,6 +289,13 @@ const AkageraSafari = () => {
               </AccordionItem>
             </Accordion>
           </div>
+        </div>
+      </section>
+
+      {/* Booking Calendar */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <BookingCalendar tourName="Akagera Safari" />
         </div>
       </section>
 

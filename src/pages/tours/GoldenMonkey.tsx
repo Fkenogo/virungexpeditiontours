@@ -4,6 +4,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { MapPin, Clock, Camera, Users, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import goldenMonkeysImg from "@/assets/golden-monkeys-feeding.jpeg";
+import { BookingCalendar } from "@/components/BookingCalendar";
 
 const GoldenMonkey = () => {
   return (
@@ -257,6 +258,13 @@ const GoldenMonkey = () => {
               </AccordionItem>
             </Accordion>
           </div>
+        </div>
+      </section>
+
+      {/* Booking Calendar */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <BookingCalendar tourName="Golden Monkey Tracking" />
         </div>
       </section>
 
