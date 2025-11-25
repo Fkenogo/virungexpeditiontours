@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, Heart, Star } from "lucide-react";
-import virungaMountains from "@/assets/virunga-mountains.jpg";
+import dianFosseyTomb from "@/assets/dian-fossey-tomb.jpg";
 
 const DianFosseyHike = () => {
   return (
@@ -12,7 +12,7 @@ const DianFosseyHike = () => {
       <section className="relative h-[500px] flex items-center justify-center">
         <div 
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${virungaMountains})` }}
+          style={{ backgroundImage: `url(${dianFosseyTomb})` }}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40"></div>
         </div>
