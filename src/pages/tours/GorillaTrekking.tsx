@@ -2,9 +2,10 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { MapPin, Clock, TrendingUp, Heart, Users, Shield, Leaf, Star } from "lucide-react";
+import { MapPin, Clock, TrendingUp, Heart, Users, Shield, Leaf, Star, Video } from "lucide-react";
 import heroGorilla from "@/assets/gorilla-trekking-hero.jpeg";
 import { BookingCalendar } from "@/components/BookingCalendar";
+import { VideoEmbed } from "@/components/VideoEmbed";
 
 const GorillaTrekking = () => {
   return (
@@ -321,6 +322,40 @@ const GorillaTrekking = () => {
               <p className="text-white/90">
                 Trek through ancient forests in the stunning Virunga volcanic mountains.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Video Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <Video className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">Experience the Trek</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Watch highlights from our gorilla trekking experiences and hear from travelers who've made this incredible journey.
+            </p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Tour Preview</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  title="Mountain Gorilla Trekking Preview"
+                />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
+                <VideoEmbed 
+                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                  title="Gorilla Trekking Experience Testimonial"
+                />
+                <p className="text-sm text-muted-foreground mt-3 italic">
+                  "The most incredible wildlife experience of my life. Worth every moment!" - Sarah M.
+                </p>
+              </div>
             </div>
           </div>
         </div>
