@@ -18,10 +18,14 @@ import KigaliTour from "./pages/tours/KigaliTour";
 import Destinations from "./pages/Destinations";
 import Itineraries from "./pages/Itineraries";
 import Services from "./pages/Services";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsConditions from "./pages/TermsConditions";
+import BookingTerms from "./pages/BookingTerms";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import WhatsAppFloat from "./components/WhatsAppFloat";
+import CookieConsent from "./components/CookieConsent";
 
 const queryClient = new QueryClient();
 
@@ -50,11 +54,15 @@ const App = () => (
               <Route path="/destinations" element={<Destinations />} />
               <Route path="/itineraries" element={<Itineraries />} />
               <Route path="/services" element={<Services />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-and-conditions" element={<TermsConditions />} />
+              <Route path="/booking-terms" element={<BookingTerms />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           <Footer />
           <WhatsAppFloat />
+          <CookieConsent />
         </div>
       </BrowserRouter>
     </TooltipProvider>
