@@ -104,6 +104,87 @@ export type Database = {
         }
         Relationships: []
       }
+      tour_availability: {
+        Row: {
+          available_spots: number
+          base_price: number
+          created_at: string
+          date: string
+          id: string
+          is_available: boolean
+          season_type: string
+          tour_name: string
+          updated_at: string
+        }
+        Insert: {
+          available_spots?: number
+          base_price: number
+          created_at?: string
+          date: string
+          id?: string
+          is_available?: boolean
+          season_type: string
+          tour_name: string
+          updated_at?: string
+        }
+        Update: {
+          available_spots?: number
+          base_price?: number
+          created_at?: string
+          date?: string
+          id?: string
+          is_available?: boolean
+          season_type?: string
+          tour_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tour_bookings: {
+        Row: {
+          booking_date: string
+          created_at: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id: string
+          number_of_people: number
+          special_requests: string | null
+          status: string
+          total_price: number
+          tour_name: string
+          updated_at: string
+        }
+        Insert: {
+          booking_date: string
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id?: string
+          number_of_people?: number
+          special_requests?: string | null
+          status?: string
+          total_price: number
+          tour_name: string
+          updated_at?: string
+        }
+        Update: {
+          booking_date?: string
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          id?: string
+          number_of_people?: number
+          special_requests?: string | null
+          status?: string
+          total_price?: number
+          tour_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
