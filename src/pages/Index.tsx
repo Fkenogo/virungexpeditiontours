@@ -3,12 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Star, Users, Shield, Clock, Heart } from "lucide-react";
-import heroGorilla from "@/assets/hero-gorilla.jpg";
-import goldenMonkeys from "@/assets/golden-monkeys.jpg";
-import akageraSafari from "@/assets/akagera-safari.jpg";
-import chimpanzees from "@/assets/chimpanzees.jpg";
+import heroGorilla from "@/assets/hero-gorilla-family.jpg";
+import goldenMonkeys from "@/assets/golden-monkeys-feeding.jpeg";
+import akageraSafari from "@/assets/zebras-akagera.jpeg";
+import chimpanzees from "@/assets/chimpanzee-family.jpg";
 import virungaMountains from "@/assets/virunga-mountains.jpg";
-import canopyWalkway from "@/assets/canopy-walkway.jpg";
+import canopyWalkway from "@/assets/canopy-walk-nyungwe.jpg";
 
 const Index = () => {
   return (
@@ -104,7 +104,7 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <Card className="card-hover overflow-hidden">
               <div className="relative h-64">
-                <img src={heroGorilla} alt="Mountain Gorilla Trekking" className="w-full h-full object-cover" />
+                <img src={heroGorilla} alt="Mountain Gorilla Family in Volcanoes National Park" className="w-full h-full object-cover" />
                 <Badge className="absolute top-4 right-4 bg-secondary">Most Popular</Badge>
               </div>
               <CardHeader>

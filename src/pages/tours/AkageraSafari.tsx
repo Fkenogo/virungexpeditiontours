@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, Star, Binoculars } from "lucide-react";
-import akageraSafari from "@/assets/akagera-safari.jpg";
+import akageraSafari from "@/assets/zebras-akagera.jpeg";
 
 const AkageraSafari = () => {
   return (

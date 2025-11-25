@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, Camera, Users, Star } from "lucide-react";
 import { Link } from "react-router-dom";
-import goldenMonkeysImg from "@/assets/golden-monkeys.jpg";
+import goldenMonkeysImg from "@/assets/golden-monkeys-feeding.jpeg";
 
 const GoldenMonkey = () => {
   return (

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, TrendingUp, Heart, Users, Shield, Leaf, Star } from "lucide-react";
-import heroGorilla from "@/assets/hero-gorilla.jpg";
+import heroGorilla from "@/assets/gorilla-trekking-hero.jpeg";
 
 const GorillaTrekking = () => {
   return (
