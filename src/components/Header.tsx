@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, ChevronDown, Phone, Mail } from "lucide-react";
+import { Menu, X, ChevronDown, Phone, Mail, LogIn, User, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -10,11 +10,13 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { useAuth } from "@/hooks/useAuth";
 import logo from "@/assets/logo.png";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, isAdmin } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -153,9 +155,34 @@ const Header = () => {
             </NavigationMenu>
 
             {/* CTA Button */}
-            <Button asChild className="hidden lg:inline-flex bg-secondary hover:bg-secondary-light text-secondary-foreground">
-              <Link to="/contact">Request Quote</Link>
-            </Button>
+            <div className="hidden lg:flex items-center gap-3">
+              {isAdmin && (
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/admin">
+                    <Shield className="h-4 w-4 mr-2" />
+                    Admin
+                  </Link>
+                </Button>
+              )}
+              {user ? (
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/auth">
+                    <User className="h-4 w-4 mr-2" />
+                    Account
+                  </Link>
+                </Button>
+              ) : (
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/auth">
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Sign In
+                  </Link>
+                </Button>
+              )}
+              <Button asChild className="bg-secondary hover:bg-secondary-light text-secondary-foreground">
+                <Link to="/contact">Request Quote</Link>
+              </Button>
+            </div>
 
             {/* Mobile Menu Button */}
             <button
@@ -214,6 +241,35 @@ const Header = () => {
               >
                 Contact
               </Link>
+              {isAdmin && (
+                <Link 
+                  to="/admin" 
+                  className="block py-2 hover:text-primary transition-colors font-medium"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Shield className="h-4 w-4 inline mr-2" />
+                  Admin Panel
+                </Link>
+              )}
+              {user ? (
+                <Link 
+                  to="/auth" 
+                  className="block py-2 hover:text-primary transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <User className="h-4 w-4 inline mr-2" />
+                  Account
+                </Link>
+              ) : (
+                <Link 
+                  to="/auth" 
+                  className="block py-2 hover:text-primary transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <LogIn className="h-4 w-4 inline mr-2" />
+                  Sign In
+                </Link>
+              )}
               <Button asChild className="w-full bg-secondary hover:bg-secondary-light text-secondary-foreground">
                 <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>Request Quote</Link>
               </Button>
