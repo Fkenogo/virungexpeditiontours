@@ -104,7 +104,7 @@ export const BookingCalendar = ({ tourName, className }: BookingCalendarProps) =
     const totalPrice = dateAvailability.base_price * bookingForm.numberOfPeople;
 
     try {
-      const { error } = await supabase
+      const { data: bookingData, error } = await supabase
         .from('tour_bookings')
         .insert({
           tour_name: tourName,
@@ -115,11 +115,39 @@ export const BookingCalendar = ({ tourName, className }: BookingCalendarProps) =
           number_of_people: bookingForm.numberOfPeople,
           total_price: totalPrice,
           special_requests: bookingForm.specialRequests,
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
-      toast.success('Booking request submitted! We will contact you shortly.');
+      // Send email notifications
+      try {
+        const { error: emailError } = await supabase.functions.invoke('send-booking-notification', {
+          body: {
+            bookingId: bookingData.id,
+            tourName: tourName,
+            bookingDate: format(selectedDate, 'yyyy-MM-dd'),
+            customerName: bookingForm.name,
+            customerEmail: bookingForm.email,
+            customerPhone: bookingForm.phone,
+            numberOfPeople: bookingForm.numberOfPeople,
+            totalPrice: totalPrice,
+            specialRequests: bookingForm.specialRequests || undefined,
+          },
+        });
+
+        if (emailError) {
+          console.error('Email notification error:', emailError);
+          // Don't fail the booking if email fails
+          toast.warning('Booking submitted, but email notifications may be delayed.');
+        }
+      } catch (emailError) {
+        console.error('Failed to send email notifications:', emailError);
+        // Don't fail the booking if email fails
+      }
+
+      toast.success('Booking request submitted! Check your email for confirmation.');
       setShowBookingDialog(false);
       setBookingForm({
         name: "",
