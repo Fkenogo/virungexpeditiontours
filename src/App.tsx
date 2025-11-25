@@ -30,6 +30,9 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import AdminBookings from "./pages/admin/Bookings";
 import AdminAvailability from "./pages/admin/Availability";
 import AdminUsers from "./pages/admin/Users";
+import AdminBlogPosts from "./pages/admin/BlogPosts";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -105,6 +108,16 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin/blog"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminLayout>
+                    <AdminBlogPosts />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
 
             {/* Public Routes */}
             <Route
@@ -132,6 +145,8 @@ const App = () => (
                       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                       <Route path="/terms-and-conditions" element={<TermsConditions />} />
                       <Route path="/booking-terms" element={<BookingTerms />} />
+                      <Route path="/blog" element={<Blog />} />
+                      <Route path="/blog/:slug" element={<BlogPost />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </main>

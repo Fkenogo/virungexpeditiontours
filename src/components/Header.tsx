@@ -147,6 +147,12 @@ const Header = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
+                  <Link to="/blog" className="font-medium hover:text-primary transition-colors">
+                    Blog
+                  </Link>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
                   <Link to="/contact" className="font-medium hover:text-primary transition-colors">
                     Contact
                   </Link>
@@ -233,6 +239,13 @@ const Header = () => {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 About Us
+              </Link>
+              <Link 
+                to="/blog" 
+                className="block py-2 hover:text-primary transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Blog
               </Link>
               <Link 
                 to="/contact" 
