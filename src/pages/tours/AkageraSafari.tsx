@@ -4,7 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, Star, Binoculars, Video, Image as ImageIcon } from "lucide-react";
 import akageraSafari from "@/assets/zebras-akagera.jpeg";
-import akageraImg2 from "@/assets/akagera-safari.jpg";
+import akageraElephant from "@/assets/akagera-elephant.jpg";
+import akageraLions from "@/assets/akagera-lions.jpg";
+import akageraGiraffes from "@/assets/akagera-giraffes.jpg";
+import akageraWildlife from "@/assets/akagera-wildlife.jpeg";
 import { BookingCalendar } from "@/components/BookingCalendar";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import { PhotoGallery } from "@/components/PhotoGallery";
@@ -349,24 +352,24 @@ const AkageraSafari = () => {
             <PhotoGallery
               images={[
                 {
+                  src: akageraElephant,
+                  alt: "Elephant in Akagera National Park",
+                  caption: "African elephant browsing in the lush vegetation"
+                },
+                {
+                  src: akageraLions,
+                  alt: "Lion pride in Akagera",
+                  caption: "Pride of reintroduced lions resting on the savannah"
+                },
+                {
+                  src: akageraGiraffes,
+                  alt: "Giraffes at Akagera",
+                  caption: "Two giraffes against the stunning volcanic backdrop"
+                },
+                {
                   src: akageraSafari,
                   alt: "Zebras in Akagera National Park",
-                  caption: "Zebras grazing on the savannah plains"
-                },
-                {
-                  src: akageraImg2,
-                  alt: "Akagera wildlife",
-                  caption: "The diverse wildlife of Akagera"
-                },
-                {
-                  src: akageraSafari,
-                  alt: "Safari game drive",
-                  caption: "Game drive through the park"
-                },
-                {
-                  src: akageraImg2,
-                  alt: "Akagera landscape",
-                  caption: "Beautiful savannah and lake landscapes"
+                  caption: "Zebras and mixed wildlife on the savannah plains"
                 },
               ]}
             />

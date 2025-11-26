@@ -4,6 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, Heart, Star, Video, Image as ImageIcon } from "lucide-react";
 import dianFosseyTomb from "@/assets/dian-fossey-tomb.jpg";
+import dianFosseyTomb2 from "@/assets/dian-fossey-tomb2.jpg";
+import dianFosseyCenter from "@/assets/dian-fossey-center.png";
+import dianFosseyMonument from "@/assets/dian-fossey-monument.jpg";
 import virungaImg from "@/assets/virunga-mountains.jpg";
 import { BookingCalendar } from "@/components/BookingCalendar";
 import { VideoEmbed } from "@/components/VideoEmbed";
@@ -272,24 +275,24 @@ const DianFosseyHike = () => {
             <PhotoGallery
               images={[
                 {
-                  src: dianFosseyTomb,
-                  alt: "Dian Fossey's tomb",
-                  caption: "Paying respects at Dian Fossey's final resting place"
+                  src: dianFosseyTomb2,
+                  alt: "Dian Fossey's tomb memorial",
+                  caption: "The memorial site where Dian Fossey rests beside Digit"
+                },
+                {
+                  src: dianFosseyCenter,
+                  alt: "Karisoke Research Center",
+                  caption: "Modern Karisoke Research Center with volcanic mountains backdrop"
+                },
+                {
+                  src: dianFosseyMonument,
+                  alt: "Dian Fossey memorial plaque",
+                  caption: "Historic plaque honoring Dian Fossey's conservation legacy"
                 },
                 {
                   src: virungaImg,
-                  alt: "Virunga Mountains",
-                  caption: "The stunning Virunga volcanic mountain range"
-                },
-                {
-                  src: dianFosseyTomb,
-                  alt: "Research center ruins",
-                  caption: "Historic Karisoke Research Center"
-                },
-                {
-                  src: virungaImg,
-                  alt: "Mountain trek",
-                  caption: "Trekking through pristine volcanic forest"
+                  alt: "Virunga Mountains landscape",
+                  caption: "Trekking through the stunning Virunga volcanic range"
                 },
               ]}
             />
