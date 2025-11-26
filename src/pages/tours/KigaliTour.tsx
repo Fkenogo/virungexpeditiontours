@@ -4,6 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, Star, Building, Video, Image as ImageIcon } from "lucide-react";
 import kigaliCity from "@/assets/kigali-city.jpg";
+import kigaliCity2 from "@/assets/kigali-city-tour2.jpg";
+import kigaliMarket from "@/assets/kigali-city-tours.jpg";
+import kigaliTour3 from "@/assets/kigali-city-tour3.jpg";
+import kigaliTour4 from "@/assets/kigali-city-tour4.jpg";
 import { BookingCalendar } from "@/components/BookingCalendar";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import { PhotoGallery } from "@/components/PhotoGallery";
@@ -322,24 +326,24 @@ const KigaliTour = () => {
             <PhotoGallery
               images={[
                 {
-                  src: kigaliCity,
-                  alt: "Kigali cityscape",
-                  caption: "The clean and modern capital of Rwanda"
+                  src: kigaliCity2,
+                  alt: "Kigali cityscape aerial view",
+                  caption: "Modern Kigali - the clean and organized capital of Rwanda"
                 },
                 {
-                  src: kigaliCity,
-                  alt: "Kigali landmarks",
-                  caption: "Iconic Kigali landmarks and architecture"
+                  src: kigaliTour3,
+                  alt: "Kigali Convention Center at night",
+                  caption: "Iconic Kigali landmarks lit up at night"
                 },
                 {
-                  src: kigaliCity,
-                  alt: "Kigali markets",
-                  caption: "Vibrant local markets and culture"
+                  src: kigaliMarket,
+                  alt: "Kigali local market crafts",
+                  caption: "Traditional Rwandan crafts and vibrant market life"
                 },
                 {
-                  src: kigaliCity,
-                  alt: "Kigali views",
-                  caption: "Panoramic views of the city on 1000 hills"
+                  src: kigaliTour4,
+                  alt: "Kigali market scene with visitors",
+                  caption: "Experience authentic local culture at Kigali's bustling markets"
                 },
               ]}
             />
