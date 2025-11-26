@@ -31,8 +31,11 @@ import AdminBookings from "./pages/admin/Bookings";
 import AdminAvailability from "./pages/admin/Availability";
 import AdminUsers from "./pages/admin/Users";
 import AdminBlogPosts from "./pages/admin/BlogPosts";
+import TourVideos from "./pages/admin/TourVideos";
+import FAQManagement from "./pages/admin/FAQManagement";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import FAQ from "./pages/FAQ";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -109,11 +112,31 @@ const App = () => (
               }
             />
             <Route
-              path="/admin/blog"
+              path="/admin/blog-posts"
               element={
                 <ProtectedRoute requireAdmin>
                   <AdminLayout>
                     <AdminBlogPosts />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/tour-videos"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminLayout>
+                    <TourVideos />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/faq"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminLayout>
+                    <FAQManagement />
                   </AdminLayout>
                 </ProtectedRoute>
               }
@@ -147,6 +170,7 @@ const App = () => (
                       <Route path="/booking-terms" element={<BookingTerms />} />
                       <Route path="/blog" element={<Blog />} />
                       <Route path="/blog/:slug" element={<BlogPost />} />
+                      <Route path="/faq" element={<FAQ />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </main>

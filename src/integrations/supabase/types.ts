@@ -62,6 +62,39 @@ export type Database = {
         }
         Relationships: []
       }
+      faq_items: {
+        Row: {
+          answer: string
+          category: string
+          created_at: string
+          display_order: number
+          id: string
+          is_active: boolean
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          category: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          category?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          question?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -254,6 +287,45 @@ export type Database = {
           total_price?: number
           tour_name?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      tour_videos: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          title: string
+          tour_name: string
+          updated_at: string
+          video_type: string
+          video_url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          title: string
+          tour_name: string
+          updated_at?: string
+          video_type: string
+          video_url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          title?: string
+          tour_name?: string
+          updated_at?: string
+          video_type?: string
+          video_url?: string
         }
         Relationships: []
       }
