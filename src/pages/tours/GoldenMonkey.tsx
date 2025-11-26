@@ -5,6 +5,8 @@ import { MapPin, Clock, Camera, Users, Star, Video, Image as ImageIcon } from "l
 import { Link } from "react-router-dom";
 import goldenMonkeysImg from "@/assets/golden-monkeys-feeding.jpeg";
 import goldenMonkeysImg2 from "@/assets/golden-monkeys.jpg";
+import goldenMonkeyVolcanic from "@/assets/golden-monkey-volcanic-park.jpg";
+import goldenMonkeysVolcanoes from "@/assets/golden-monkeys-volcanoes.webp";
 import { BookingCalendar } from "@/components/BookingCalendar";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import { PhotoGallery } from "@/components/PhotoGallery";
@@ -328,22 +330,22 @@ const GoldenMonkey = () => {
                 {
                   src: goldenMonkeysImg,
                   alt: "Golden monkeys feeding in bamboo forest",
-                  caption: "Golden monkeys enjoying bamboo shoots"
+                  caption: "Golden monkeys enjoying bamboo shoots in their natural habitat"
                 },
                 {
                   src: goldenMonkeysImg2,
                   alt: "Golden monkey group",
-                  caption: "A troop of golden monkeys in their natural habitat"
+                  caption: "A troop of golden monkeys in Volcanoes National Park"
                 },
                 {
-                  src: goldenMonkeysImg,
-                  alt: "Close-up of golden monkey",
-                  caption: "The distinctive golden fur that gives these primates their name"
+                  src: goldenMonkeyVolcanic,
+                  alt: "Golden monkey in volcanic park",
+                  caption: "Close-up of a golden monkey with distinctive orange-gold fur"
                 },
                 {
-                  src: goldenMonkeysImg2,
-                  alt: "Golden monkeys playing",
-                  caption: "Playful juveniles showing their acrobatic skills"
+                  src: goldenMonkeysVolcanoes,
+                  alt: "Golden monkeys family group",
+                  caption: "Family group of golden monkeys showing social behavior"
                 },
               ]}
             />

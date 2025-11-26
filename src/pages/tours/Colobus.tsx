@@ -3,6 +3,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Clock, Camera, Leaf, Star, Video, Image as ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import chimpanzeesImg from "@/assets/chimpanzees.jpg";
+import colobusRwanda from "@/assets/colobus-monkeys-rwanda.jpg";
+import colobusNyungwe from "@/assets/colobus-monkeys-nyungwe.jpg";
+import colobusRwanda2 from "@/assets/colobus-monkeys-rwanda2.webp";
+import colobusTrek from "@/assets/colobus-monkeys-trek.jpeg";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import { PhotoGallery } from "@/components/PhotoGallery";
 
@@ -255,24 +259,24 @@ const Colobus = () => {
             <PhotoGallery
               images={[
                 {
-                  src: chimpanzeesImg,
+                  src: colobusRwanda,
                   alt: "Colobus monkeys in Nyungwe Forest",
-                  caption: "Colobus monkeys with their distinctive long tails"
+                  caption: "A family of colobus monkeys with their distinctive long tails"
                 },
                 {
-                  src: chimpanzeesImg,
-                  alt: "Colobus monkey group",
-                  caption: "A troop of colobus monkeys"
+                  src: colobusNyungwe,
+                  alt: "Colobus monkey troop in natural habitat",
+                  caption: "Large colobus troop in the lush Nyungwe rainforest"
                 },
                 {
-                  src: chimpanzeesImg,
-                  alt: "Colobus monkey feeding",
-                  caption: "Colobus monkey enjoying leaves"
+                  src: colobusRwanda2,
+                  alt: "Colobus monkeys resting on moss-covered branch",
+                  caption: "Peaceful colobus monkeys in their forest home"
                 },
                 {
-                  src: chimpanzeesImg,
-                  alt: "Colobus in trees",
-                  caption: "Acrobatic movements through the canopy"
+                  src: colobusTrek,
+                  alt: "Close-up of colobus monkeys",
+                  caption: "The striking black and white coloring of colobus monkeys"
                 },
               ]}
             />

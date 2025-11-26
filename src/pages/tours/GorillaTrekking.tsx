@@ -2,10 +2,16 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { MapPin, Clock, TrendingUp, Heart, Users, Shield, Leaf, Star, Video } from "lucide-react";
+import { MapPin, Clock, TrendingUp, Heart, Users, Shield, Leaf, Star, Video, Image as ImageIcon } from "lucide-react";
 import heroGorilla from "@/assets/gorilla-trekking-hero.jpeg";
+import gorillaFamily from "@/assets/hero-gorilla-family.jpg";
+import gorillaHero from "@/assets/hero-gorilla.jpg";
+import gorillaVirunga from "@/assets/gorilla-virunga.jpeg";
+import mountainGorillas from "@/assets/mountain-gorillas-group.jpg";
+import virungaMountains from "@/assets/virunga-mountains.jpg";
 import { BookingCalendar } from "@/components/BookingCalendar";
 import { VideoEmbed } from "@/components/VideoEmbed";
+import { PhotoGallery } from "@/components/PhotoGallery";
 
 const GorillaTrekking = () => {
   return (
@@ -323,6 +329,55 @@ const GorillaTrekking = () => {
                 Trek through ancient forests in the stunning Virunga volcanic mountains.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Photo Gallery */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <ImageIcon className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary">Photo Gallery</h2>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">
+              Witness the majesty of mountain gorillas in their natural habitat through stunning photography.
+            </p>
+            <PhotoGallery
+              images={[
+                {
+                  src: heroGorilla,
+                  alt: "Mountain gorilla in Volcanoes National Park",
+                  caption: "A majestic mountain gorilla in the misty Virunga Mountains"
+                },
+                {
+                  src: gorillaFamily,
+                  alt: "Gorilla family group",
+                  caption: "Family bonds - watching gorillas interact is deeply moving"
+                },
+                {
+                  src: gorillaHero,
+                  alt: "Silverback gorilla",
+                  caption: "Close encounter with a magnificent silverback"
+                },
+                {
+                  src: gorillaVirunga,
+                  alt: "Gorilla in Virunga habitat",
+                  caption: "In their element - gorillas in the lush volcanic forest"
+                },
+                {
+                  src: mountainGorillas,
+                  alt: "Mountain gorilla group",
+                  caption: "Observing a gorilla troop going about their daily activities"
+                },
+                {
+                  src: virungaMountains,
+                  alt: "Virunga Mountains landscape",
+                  caption: "The stunning Virunga volcanic mountains - home to mountain gorillas"
+                },
+              ]}
+            />
           </div>
         </div>
       </section>
