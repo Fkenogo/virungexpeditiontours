@@ -23,20 +23,10 @@ const Itineraries = () => {
     { id: "family", label: "Family-Friendly" },
   ];
 
-  // Handle hash-based navigation to specific itinerary
+  // Scroll to top on page load
   useEffect(() => {
-    const hash = location.hash.replace('#', '');
-    if (hash) {
-      // Small delay to ensure DOM is ready
-      setTimeout(() => {
-        const element = document.getElementById(hash);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          setExpandedId(hash);
-        }
-      }, 100);
-    }
-  }, [location.hash]);
+    window.scrollTo(0, 0);
+  }, []);
 
   const itineraries = [
     {

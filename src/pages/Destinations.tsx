@@ -16,20 +16,10 @@ const Destinations = () => {
   const [activeTab, setActiveTab] = useState("rwanda");
   const location = useLocation();
 
-  // Read URL hash on mount and when location changes
+  // Scroll to top on page load
   useEffect(() => {
-    const hash = location.hash.replace('#', '');
-    if (hash && ['rwanda', 'uganda', 'drc'].includes(hash)) {
-      setActiveTab(hash);
-      // Small delay to ensure DOM is ready
-      setTimeout(() => {
-        const element = document.getElementById(hash);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
-    }
-  }, [location.hash]);
+    window.scrollTo(0, 0);
+  }, []);
 
   const scrollToSection = (id: string) => {
     setActiveTab(id);
@@ -1436,7 +1426,7 @@ const Destinations = () => {
           <div className="mt-16 max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold mb-6 text-center">Recommended Itineraries</h3>
             <div className="grid md:grid-cols-2 gap-6">
-              <Link to="/itineraries#7-day-best-rwanda" className="block">
+              <Link to="/itineraries" className="block">
                 <Card className="border-primary/20 hover:border-primary/40 transition-colors h-full">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
@@ -1452,7 +1442,7 @@ const Destinations = () => {
                 </Card>
               </Link>
 
-              <Link to="/itineraries#uganda-gorilla-primate" className="block">
+              <Link to="/itineraries" className="block">
                 <Card className="border-primary/20 hover:border-primary/40 transition-colors h-full">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
@@ -1468,7 +1458,7 @@ const Destinations = () => {
                 </Card>
               </Link>
 
-              <Link to="/itineraries#congo-adventure" className="block">
+              <Link to="/itineraries" className="block">
                 <Card className="border-primary/20 hover:border-primary/40 transition-colors h-full">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
@@ -1484,7 +1474,7 @@ const Destinations = () => {
                 </Card>
               </Link>
 
-              <Link to="/itineraries#ultimate-virunga" className="block">
+              <Link to="/itineraries" className="block">
                 <Card className="border-primary/20 hover:border-primary/40 transition-colors h-full">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">

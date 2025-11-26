@@ -444,7 +444,7 @@ const Index = () => {
                   <li>• Akagera National Park</li>
                 </ul>
                 <Button asChild className="w-full">
-                  <Link to="/destinations#rwanda">Explore Rwanda →</Link>
+                  <Link to="/destinations">Explore Rwanda →</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -464,7 +464,7 @@ const Index = () => {
                   <li>• Queen Elizabeth Park</li>
                 </ul>
                 <Button asChild className="w-full">
-                  <Link to="/destinations#uganda">Discover Uganda →</Link>
+                  <Link to="/destinations">Discover Uganda →</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -484,7 +484,7 @@ const Index = () => {
                   <li>• Kahuzi-Biega</li>
                 </ul>
                 <Button asChild className="w-full">
-                  <Link to="/destinations#drc">Explore Eastern DRC →</Link>
+                  <Link to="/destinations">Explore Eastern DRC →</Link>
                 </Button>
               </CardContent>
             </Card>
