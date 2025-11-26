@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { VideoEmbed } from "@/components/VideoEmbed";
-import { Play, Calendar } from "lucide-react";
+import { Play, Calendar, Eye } from "lucide-react";
 
 interface TourVideo {
   id: string;
@@ -105,30 +105,42 @@ export default function VideoGallery() {
                 {filteredVideos.map((video) => (
                   <Card
                     key={video.id}
-                    className="overflow-hidden hover:shadow-lg transition-all"
+                    className="overflow-hidden hover:shadow-lg transition-all group"
                   >
                     <CardContent className="p-0">
-                      <div className="aspect-video">
+                      <div className="relative aspect-video">
                         <VideoEmbed
                           url={video.video_url}
                           title={video.title}
                         />
+                        {video.video_type && (
+                          <Badge
+                            variant={video.video_type === "testimonial" ? "default" : "secondary"}
+                            className="absolute top-3 right-3 z-10"
+                          >
+                            {video.video_type === "testimonial" ? "Testimonial" : "Tour Preview"}
+                          </Badge>
+                        )}
                       </div>
                       <div className="p-6 space-y-3">
-                        <Badge variant="secondary" className="mb-2">
-                          {video.tour_name}
-                        </Badge>
-                        <h3 className="text-xl font-semibold line-clamp-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <Badge variant="outline" className="text-xs">
+                            {video.tour_name}
+                          </Badge>
+                        </div>
+                        <h3 className="text-xl font-semibold line-clamp-2 group-hover:text-primary transition-colors">
                           {video.title}
                         </h3>
                         {video.description && (
-                          <p className="text-foreground/70 line-clamp-3">
+                          <p className="text-muted-foreground text-sm line-clamp-2">
                             {video.description}
                           </p>
                         )}
-                        <div className="flex items-center text-sm text-muted-foreground pt-2">
-                          <Calendar className="w-4 h-4 mr-2" />
-                          {new Date(video.created_at).toLocaleDateString()}
+                        <div className="flex items-center justify-between text-sm text-muted-foreground pt-2 border-t">
+                          <div className="flex items-center">
+                            <Calendar className="w-4 h-4 mr-1.5" />
+                            {new Date(video.created_at).toLocaleDateString()}
+                          </div>
                         </div>
                       </div>
                     </CardContent>

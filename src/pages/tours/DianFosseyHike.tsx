@@ -306,26 +306,13 @@ const DianFosseyHike = () => {
               <h2 className="text-3xl font-bold text-primary">The Dian Fossey Story</h2>
             </div>
             <p className="text-lg text-muted-foreground mb-8">
-              Learn about Dian Fossey's legacy and the historic research site.
+              Experience the journey to honor Dr. Dian Fossey's legacy.
             </p>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-xl font-semibold mb-3">Hike Preview</h3>
-                <VideoEmbed 
-                  url="https://youtube.com/shorts/JMnqoUod4UA?si=7MsdKiW0jG_BB6mR"
-                  title="Dian Fossey Hike Preview"
-                />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
-                <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                  title="Dian Fossey Hike Testimonial"
-                />
-                <p className="text-sm text-muted-foreground mt-3 italic">
-                  "Deeply moving and inspiring experience." - Rachel K.
-                </p>
-              </div>
+            <div className="max-w-2xl mx-auto">
+              <VideoEmbed 
+                url="https://youtube.com/shorts/JMnqoUod4UA?si=7MsdKiW0jG_BB6mR"
+                title="Dian Fossey Hike Preview"
+              />
             </div>
           </div>
         </div>

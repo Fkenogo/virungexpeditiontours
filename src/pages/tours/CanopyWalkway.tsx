@@ -298,26 +298,13 @@ const CanopyWalkway = () => {
               <h2 className="text-3xl font-bold text-primary">Experience the Walk</h2>
             </div>
             <p className="text-lg text-muted-foreground mb-8">
-              Watch the canopy walkway experience and hear from our travelers.
+              Watch the canopy walkway experience through our travelers' eyes.
             </p>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-xl font-semibold mb-3">Tour Preview</h3>
-                <VideoEmbed 
-                  url="https://youtube.com/shorts/aJ35GcK_cgY?si=hUkBSjCG0-7aU2-i"
-                  title="Canopy Walkway Preview"
-                />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
-                <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                  title="Canopy Walk Testimonial"
-                />
-                <p className="text-sm text-muted-foreground mt-3 italic">
-                  "Absolutely breathtaking experience!" - Amanda R.
-                </p>
-              </div>
+            <div className="max-w-2xl mx-auto">
+              <VideoEmbed 
+                url="https://youtube.com/shorts/aJ35GcK_cgY?si=hUkBSjCG0-7aU2-i"
+                title="Canopy Walkway Preview"
+              />
             </div>
           </div>
         </div>

@@ -11,8 +11,8 @@ export function VideoEmbed({ url, title, thumbnail }: VideoEmbedProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const getEmbedUrl = (url: string) => {
-    // YouTube
-    const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
+    // YouTube (regular, shorts, and youtu.be)
+    const youtubeMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([^&?]+)/);
     if (youtubeMatch) {
       return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
     }
@@ -26,12 +26,17 @@ export function VideoEmbed({ url, title, thumbnail }: VideoEmbedProps) {
     return url;
   };
 
+  const getVideoId = (url: string) => {
+    const youtubeMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([^&?]+)/);
+    return youtubeMatch ? youtubeMatch[1] : null;
+  };
+
   const getThumbnail = (url: string) => {
     if (thumbnail) return thumbnail;
 
-    const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
-    if (youtubeMatch) {
-      return `https://img.youtube.com/vi/${youtubeMatch[1]}/maxresdefault.jpg`;
+    const videoId = getVideoId(url);
+    if (videoId) {
+      return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
     }
 
     return '/placeholder.svg';
