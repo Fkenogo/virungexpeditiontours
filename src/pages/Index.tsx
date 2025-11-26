@@ -3,12 +3,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Star, Users, Shield, Clock, Heart } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import heroGorilla from "@/assets/hero-gorilla-family.jpg";
 import goldenMonkeys from "@/assets/golden-monkeys-feeding.jpeg";
 import akageraSafari from "@/assets/zebras-akagera.jpeg";
 import chimpanzees from "@/assets/chimpanzee-family.jpg";
 import virungaMountains from "@/assets/virunga-mountains.jpg";
 import canopyWalkway from "@/assets/canopy-walk-nyungwe.jpg";
+import gorillaGroup from "@/assets/mountain-gorillas-group.jpg";
+import goldenMonkeysVolcanoes from "@/assets/golden-monkeys-volcanoes.webp";
+import akageraElephant from "@/assets/akagera-elephant.jpg";
+import colobusMonkeys from "@/assets/colobus-monkeys-nyungwe.jpg";
+import dianFosseyTomb from "@/assets/dian-fossey-tomb.jpg";
+import kigaliCity from "@/assets/kigali-city.jpg";
 
 const Index = () => {
   return (
@@ -65,6 +72,174 @@ const Index = () => {
               <span>Expert Local Guides</span>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Photo Gallery Carousel */}
+      <section className="section-padding bg-gradient-to-b from-background to-muted">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Experience Rwanda's Wildlife & Landscapes</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Stunning moments captured from our tours across Rwanda's national parks
+            </p>
+          </div>
+          
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full max-w-6xl mx-auto"
+          >
+            <CarouselContent>
+              <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+                <Link to="/tours/gorilla-trekking" className="block group">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
+                    <img
+                      src={gorillaGroup}
+                      alt="Mountain gorillas in Volcanoes National Park"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <h3 className="font-bold text-lg mb-1">Gorilla Trekking</h3>
+                      <p className="text-sm text-white/90">Volcanoes National Park</p>
+                    </div>
+                  </div>
+                </Link>
+              </CarouselItem>
+
+              <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+                <Link to="/tours/golden-monkey" className="block group">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
+                    <img
+                      src={goldenMonkeysVolcanoes}
+                      alt="Golden monkeys in bamboo forest"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <h3 className="font-bold text-lg mb-1">Golden Monkey Tracking</h3>
+                      <p className="text-sm text-white/90">Volcanoes National Park</p>
+                    </div>
+                  </div>
+                </Link>
+              </CarouselItem>
+
+              <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+                <Link to="/tours/akagera-safari" className="block group">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
+                    <img
+                      src={akageraElephant}
+                      alt="Elephant in Akagera National Park"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <h3 className="font-bold text-lg mb-1">Akagera Safari</h3>
+                      <p className="text-sm text-white/90">Big Five Wildlife</p>
+                    </div>
+                  </div>
+                </Link>
+              </CarouselItem>
+
+              <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+                <Link to="/tours/chimpanzee" className="block group">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
+                    <img
+                      src={chimpanzees}
+                      alt="Chimpanzees in Nyungwe Forest"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <h3 className="font-bold text-lg mb-1">Chimpanzee Tracking</h3>
+                      <p className="text-sm text-white/90">Nyungwe Forest</p>
+                    </div>
+                  </div>
+                </Link>
+              </CarouselItem>
+
+              <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+                <Link to="/tours/colobus" className="block group">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
+                    <img
+                      src={colobusMonkeys}
+                      alt="Colobus monkeys in Nyungwe"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <h3 className="font-bold text-lg mb-1">Colobus Monkey Tracking</h3>
+                      <p className="text-sm text-white/90">Nyungwe Forest</p>
+                    </div>
+                  </div>
+                </Link>
+              </CarouselItem>
+
+              <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+                <Link to="/tours/dian-fossey-hike" className="block group">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
+                    <img
+                      src={dianFosseyTomb}
+                      alt="Dian Fossey tomb site"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <h3 className="font-bold text-lg mb-1">Dian Fossey Hike</h3>
+                      <p className="text-sm text-white/90">Volcanoes National Park</p>
+                    </div>
+                  </div>
+                </Link>
+              </CarouselItem>
+
+              <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+                <Link to="/tours/kigali-city-tour" className="block group">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
+                    <img
+                      src={kigaliCity}
+                      alt="Kigali city tour"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <h3 className="font-bold text-lg mb-1">Kigali City Tour</h3>
+                      <p className="text-sm text-white/90">Rwanda's Capital</p>
+                    </div>
+                  </div>
+                </Link>
+              </CarouselItem>
+
+              <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+                <Link to="/tours/canopy-walkway" className="block group">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
+                    <img
+                      src={canopyWalkway}
+                      alt="Canopy walkway in Nyungwe"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <h3 className="font-bold text-lg mb-1">Canopy Walkway</h3>
+                      <p className="text-sm text-white/90">Nyungwe Forest</p>
+                    </div>
+                  </div>
+                </Link>
+              </CarouselItem>
+            </CarouselContent>
+            <CarouselPrevious className="left-4" />
+            <CarouselNext className="right-4" />
+          </Carousel>
         </div>
       </section>
 
