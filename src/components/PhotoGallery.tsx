@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Download, Maximize2, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { ProgressiveImage } from '@/components/ProgressiveImage';
 
 interface PhotoGalleryProps {
   images: {
@@ -20,6 +21,7 @@ export function PhotoGallery({ images }: PhotoGalleryProps) {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isPlaying, setIsPlaying] = useState(false);
   const [slideshowInterval, setSlideshowInterval] = useState(3000);
+  const [lastTouchDistance, setLastTouchDistance] = useState(0);
   const imageRef = useRef<HTMLImageElement>(null);
   const slideshowTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -159,6 +161,56 @@ export function PhotoGallery({ images }: PhotoGalleryProps) {
     setIsDragging(false);
   };
 
+  // Touch gesture handlers for pinch-to-zoom
+  const getTouchDistance = (touches: React.TouchList) => {
+    if (touches.length < 2) return 0;
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const distance = getTouchDistance(e.touches);
+      setLastTouchDistance(distance);
+    } else if (e.touches.length === 1 && zoom > 1) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.touches[0].clientX - position.x,
+        y: e.touches[0].clientY - position.y,
+      });
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const distance = getTouchDistance(e.touches);
+      if (lastTouchDistance > 0) {
+        const delta = distance - lastTouchDistance;
+        const zoomChange = delta * 0.01;
+        setZoom((prev) => Math.min(Math.max(prev + zoomChange, 1), 3));
+      }
+      setLastTouchDistance(distance);
+    } else if (e.touches.length === 1 && isDragging && zoom > 1) {
+      e.preventDefault();
+      setPosition({
+        x: e.touches[0].clientX - dragStart.x,
+        y: e.touches[0].clientY - dragStart.y,
+      });
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (e.touches.length < 2) {
+      setLastTouchDistance(0);
+    }
+    if (e.touches.length === 0) {
+      setIsDragging(false);
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowLeft') goToPrevious();
     if (e.key === 'ArrowRight') goToNext();
@@ -187,7 +239,7 @@ export function PhotoGallery({ images }: PhotoGalleryProps) {
             className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group"
             onClick={() => openLightbox(index)}
           >
-            <img
+            <ProgressiveImage
               src={image.src}
               alt={image.alt}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
@@ -370,7 +422,13 @@ export function PhotoGallery({ images }: PhotoGalleryProps) {
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
-            style={{ cursor: zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            style={{ 
+              cursor: zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
+              touchAction: zoom > 1 ? 'none' : 'auto'
+            }}
           >
             <img
               ref={imageRef}

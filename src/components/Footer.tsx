@@ -29,6 +29,7 @@ const Footer = () => {
               <li><Link to="/itineraries" className="text-sm hover:text-secondary transition-colors">Itineraries</Link></li>
               <li><Link to="/blog" className="text-sm hover:text-secondary transition-colors">Travel Blog</Link></li>
               <li><Link to="/videos" className="text-sm hover:text-secondary transition-colors">Videos</Link></li>
+              <li><Link to="/panorama" className="text-sm hover:text-secondary transition-colors">360° Panoramas</Link></li>
               <li><Link to="/faq" className="text-sm hover:text-secondary transition-colors">FAQ</Link></li>
               <li><Link to="/services" className="text-sm hover:text-secondary transition-colors">Services</Link></li>
               <li><Link to="/contact" className="text-sm hover:text-secondary transition-colors">Contact Us</Link></li>
