@@ -33,9 +33,11 @@ import AdminUsers from "./pages/admin/Users";
 import AdminBlogPosts from "./pages/admin/BlogPosts";
 import TourVideos from "./pages/admin/TourVideos";
 import FAQManagement from "./pages/admin/FAQManagement";
+import Testimonials from "./pages/admin/Testimonials";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import FAQ from "./pages/FAQ";
+import VideoGallery from "./pages/VideoGallery";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -141,6 +143,16 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin/testimonials"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminLayout>
+                    <Testimonials />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
 
             {/* Public Routes */}
             <Route
@@ -170,8 +182,9 @@ const App = () => (
                       <Route path="/booking-terms" element={<BookingTerms />} />
                       <Route path="/blog" element={<Blog />} />
                       <Route path="/blog/:slug" element={<BlogPost />} />
-                      <Route path="/faq" element={<FAQ />} />
-                      <Route path="*" element={<NotFound />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/videos" element={<VideoGallery />} />
+          <Route path="*" element={<NotFound />} />
                     </Routes>
                   </main>
                   <Footer />
