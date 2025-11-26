@@ -389,14 +389,14 @@ const AkageraSafari = () => {
               <div>
                 <h3 className="text-xl font-semibold mb-3">Safari Preview</h3>
                 <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  url="https://youtube.com/shorts/k8fm94ZqxRc?si=DY1mHyUn-T5nAnDl"
                   title="Akagera Safari Preview"
                 />
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
                 <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                  url="https://youtube.com/shorts/UboiT4MmC0g?si=uRG9fqS0ubLwdvHV"
                   title="Akagera Safari Testimonial"
                 />
                 <p className="text-sm text-muted-foreground mt-3 italic">

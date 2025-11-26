@@ -295,14 +295,14 @@ const Colobus = () => {
               <div>
                 <h3 className="text-xl font-semibold mb-3">Tour Preview</h3>
                 <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  url="https://youtube.com/shorts/Tmmut5oA88Y?si=m5FqIBv5SDySsPsR"
                   title="Colobus Monkey Tracking Preview"
                 />
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
                 <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                  url="https://youtube.com/shorts/6nQBljgZuzc?si=MfJJdtZe9Fj5_xHp"
                   title="Colobus Tracking Testimonial"
                 />
                 <p className="text-sm text-muted-foreground mt-3 italic">

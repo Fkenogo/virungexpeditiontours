@@ -383,14 +383,14 @@ const Chimpanzee = () => {
               <div>
                 <h3 className="text-xl font-semibold mb-3">Tour Preview</h3>
                 <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  url="https://youtube.com/shorts/P38LleI9hs8?si=qFvfg0p18ugwdFHB"
                   title="Chimpanzee Trekking Preview"
                 />
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
                 <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                  url="https://youtube.com/shorts/I2enCoUnVcI?si=dCNA8-XStWseKq3X"
                   title="Chimpanzee Trekking Testimonial"
                 />
                 <p className="text-sm text-muted-foreground mt-3 italic">

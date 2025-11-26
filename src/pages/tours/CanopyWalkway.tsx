@@ -304,7 +304,7 @@ const CanopyWalkway = () => {
               <div>
                 <h3 className="text-xl font-semibold mb-3">Tour Preview</h3>
                 <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  url="https://youtube.com/shorts/aJ35GcK_cgY?si=hUkBSjCG0-7aU2-i"
                   title="Canopy Walkway Preview"
                 />
               </div>

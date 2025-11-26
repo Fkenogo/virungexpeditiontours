@@ -312,7 +312,7 @@ const DianFosseyHike = () => {
               <div>
                 <h3 className="text-xl font-semibold mb-3">Hike Preview</h3>
                 <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  url="https://youtube.com/shorts/JMnqoUod4UA?si=7MsdKiW0jG_BB6mR"
                   title="Dian Fossey Hike Preview"
                 />
               </div>

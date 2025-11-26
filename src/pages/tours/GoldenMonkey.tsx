@@ -366,7 +366,7 @@ const GoldenMonkey = () => {
               <div>
                 <h3 className="text-xl font-semibold mb-3">Tour Preview</h3>
                 <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  url="https://youtube.com/shorts/pDhqYRD3_co?si=IdonldUlxTBO8JfL"
                   title="Golden Monkey Tracking Preview"
                 />
               </div>
