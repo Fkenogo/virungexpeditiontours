@@ -547,15 +547,10 @@ const Index = () => {
             </Card>
           </div>
 
-          <div className="text-center mt-8 space-y-4">
+          <div className="text-center mt-8">
             <Button asChild variant="outline" size="lg">
               <Link to="/about">Read More Reviews</Link>
             </Button>
-            <div>
-              <Button asChild size="lg" variant="secondary">
-                <Link to="/panorama">Explore 360° Panoramas →</Link>
-              </Button>
-            </div>
           </div>
         </div>
       </section>

@@ -137,6 +137,12 @@ const Header = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
+                  <Link to="/seasonal-guide" className="font-medium hover:text-primary transition-colors">
+                    Travel Guide
+                  </Link>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
                   <Link to="/itineraries" className="font-medium hover:text-primary transition-colors">
                     Itineraries
                   </Link>
@@ -239,6 +245,13 @@ const Header = () => {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Destinations
+              </Link>
+              <Link 
+                to="/seasonal-guide" 
+                className="block py-2 hover:text-primary transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Travel Guide
               </Link>
               <Link 
                 to="/itineraries" 
