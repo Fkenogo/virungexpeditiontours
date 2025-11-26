@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +13,10 @@ import {
 import virungaMountains from "@/assets/virunga-mountains.jpg";
 
 const Destinations = () => {
+  const [activeTab, setActiveTab] = useState("rwanda");
+
   const scrollToSection = (id: string) => {
+    setActiveTab(id);
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -70,7 +74,7 @@ const Destinations = () => {
       {/* Main Content */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <Tabs defaultValue="rwanda" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-3 max-w-2xl mx-auto mb-8">
               <TabsTrigger value="rwanda" id="rwanda">Rwanda</TabsTrigger>
               <TabsTrigger value="uganda" id="uganda">Uganda</TabsTrigger>
