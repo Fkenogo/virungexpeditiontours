@@ -137,38 +137,8 @@ const Header = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
-                  <Link to="/seasonal-guide" className="font-medium hover:text-primary transition-colors">
-                    Travel Guide
-                  </Link>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
                   <Link to="/itineraries" className="font-medium hover:text-primary transition-colors">
                     Itineraries
-                  </Link>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <Link to="/about" className="font-medium hover:text-primary transition-colors">
-                    About Us
-                  </Link>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <Link to="/blog" className="font-medium hover:text-primary transition-colors">
-                    Blog
-                  </Link>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <Link to="/videos" className="font-medium hover:text-primary transition-colors">
-                    Videos
-                  </Link>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <Link to="/faq" className="font-medium hover:text-primary transition-colors">
-                    FAQ
                   </Link>
                 </NavigationMenuItem>
 
@@ -247,46 +217,11 @@ const Header = () => {
                 Destinations
               </Link>
               <Link 
-                to="/seasonal-guide" 
-                className="block py-2 hover:text-primary transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Travel Guide
-              </Link>
-              <Link 
                 to="/itineraries" 
                 className="block py-2 hover:text-primary transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Itineraries
-              </Link>
-              <Link 
-                to="/about" 
-                className="block py-2 hover:text-primary transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                About Us
-              </Link>
-              <Link 
-                to="/blog" 
-                className="block py-2 hover:text-primary transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Blog
-              </Link>
-              <Link 
-                to="/videos" 
-                className="block py-2 hover:text-primary transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Videos
-              </Link>
-              <Link 
-                to="/faq" 
-                className="block py-2 hover:text-primary transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                FAQ
               </Link>
               <Link 
                 to="/contact" 

@@ -27,6 +27,7 @@ const Footer = () => {
               <li><Link to="/tours" className="text-sm hover:text-secondary transition-colors">Rwanda Tours</Link></li>
               <li><Link to="/destinations" className="text-sm hover:text-secondary transition-colors">Destinations</Link></li>
               <li><Link to="/itineraries" className="text-sm hover:text-secondary transition-colors">Itineraries</Link></li>
+              <li><Link to="/seasonal-guide" className="text-sm hover:text-secondary transition-colors">Travel Guide</Link></li>
               <li><Link to="/blog" className="text-sm hover:text-secondary transition-colors">Travel Blog</Link></li>
               <li><Link to="/videos" className="text-sm hover:text-secondary transition-colors">Videos</Link></li>
               <li><Link to="/faq" className="text-sm hover:text-secondary transition-colors">FAQ</Link></li>
