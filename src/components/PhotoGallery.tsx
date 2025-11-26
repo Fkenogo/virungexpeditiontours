@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Download, Maximize2 } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Download, Maximize2, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -18,7 +18,28 @@ export function PhotoGallery({ images }: PhotoGalleryProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [slideshowInterval, setSlideshowInterval] = useState(3000);
   const imageRef = useRef<HTMLImageElement>(null);
+  const slideshowTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Preload adjacent images
+  const preloadImage = useCallback((index: number) => {
+    if (index >= 0 && index < images.length) {
+      const img = new Image();
+      img.src = images[index].src;
+    }
+  }, [images]);
+
+  useEffect(() => {
+    if (lightboxOpen && images.length > 0) {
+      // Preload next and previous images
+      const nextIndex = (currentIndex + 1) % images.length;
+      const prevIndex = (currentIndex - 1 + images.length) % images.length;
+      preloadImage(nextIndex);
+      preloadImage(prevIndex);
+    }
+  }, [currentIndex, lightboxOpen, images.length, preloadImage]);
 
   const openLightbox = (index: number) => {
     setCurrentIndex(index);
@@ -31,19 +52,52 @@ export function PhotoGallery({ images }: PhotoGalleryProps) {
     setLightboxOpen(false);
     setZoom(1);
     setPosition({ x: 0, y: 0 });
+    stopSlideshow();
   };
 
-  const goToPrevious = () => {
+  const goToPrevious = useCallback(() => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
     setZoom(1);
     setPosition({ x: 0, y: 0 });
-  };
+  }, [images.length]);
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
     setZoom(1);
     setPosition({ x: 0, y: 0 });
+  }, [images.length]);
+
+  const toggleSlideshow = () => {
+    setIsPlaying(!isPlaying);
   };
+
+  const stopSlideshow = () => {
+    setIsPlaying(false);
+    if (slideshowTimerRef.current) {
+      clearInterval(slideshowTimerRef.current);
+      slideshowTimerRef.current = null;
+    }
+  };
+
+  // Slideshow auto-advance
+  useEffect(() => {
+    if (isPlaying && lightboxOpen) {
+      slideshowTimerRef.current = setInterval(() => {
+        goToNext();
+      }, slideshowInterval);
+    } else {
+      if (slideshowTimerRef.current) {
+        clearInterval(slideshowTimerRef.current);
+        slideshowTimerRef.current = null;
+      }
+    }
+
+    return () => {
+      if (slideshowTimerRef.current) {
+        clearInterval(slideshowTimerRef.current);
+      }
+    };
+  }, [isPlaying, lightboxOpen, slideshowInterval, goToNext]);
 
   const handleZoomIn = () => {
     setZoom((prev) => Math.min(prev + 0.5, 3));
@@ -163,6 +217,18 @@ export function PhotoGallery({ images }: PhotoGalleryProps) {
               className="text-white hover:bg-white/20"
               onClick={(e) => {
                 e.stopPropagation();
+                toggleSlideshow();
+              }}
+              title={isPlaying ? "Pause slideshow" : "Play slideshow"}
+            >
+              {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-white hover:bg-white/20"
+              onClick={(e) => {
+                e.stopPropagation();
                 handleDownload();
               }}
               title="Download image"
@@ -182,6 +248,48 @@ export function PhotoGallery({ images }: PhotoGalleryProps) {
               <X className="h-6 w-6" />
             </Button>
           </div>
+
+          {/* Slideshow Speed Control */}
+          {isPlaying && (
+            <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-sm rounded-lg p-3 z-10">
+              <label className="text-white text-sm mb-2 block">Speed</label>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`text-white hover:bg-white/20 ${slideshowInterval === 2000 ? 'bg-white/20' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSlideshowInterval(2000);
+                  }}
+                >
+                  Fast
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`text-white hover:bg-white/20 ${slideshowInterval === 3000 ? 'bg-white/20' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSlideshowInterval(3000);
+                  }}
+                >
+                  Normal
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`text-white hover:bg-white/20 ${slideshowInterval === 5000 ? 'bg-white/20' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSlideshowInterval(5000);
+                  }}
+                >
+                  Slow
+                </Button>
+              </div>
+            </div>
+          )}
 
           {/* Zoom Controls */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-black/60 backdrop-blur-sm rounded-full p-2 z-10">
@@ -268,7 +376,9 @@ export function PhotoGallery({ images }: PhotoGalleryProps) {
               ref={imageRef}
               src={images[currentIndex].src}
               alt={images[currentIndex].alt}
-              className="max-w-full max-h-[80vh] object-contain mx-auto transition-transform select-none"
+              className={`max-w-full max-h-[80vh] object-contain mx-auto select-none ${
+                isPlaying ? 'animate-fade-in' : 'transition-transform'
+              }`}
               style={{
                 transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
                 transformOrigin: 'center center',

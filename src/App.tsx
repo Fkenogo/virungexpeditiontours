@@ -19,6 +19,7 @@ import CanopyWalkway from "./pages/tours/CanopyWalkway";
 import DianFosseyHike from "./pages/tours/DianFosseyHike";
 import AkageraSafari from "./pages/tours/AkageraSafari";
 import KigaliTour from "./pages/tours/KigaliTour";
+import SeasonalComparison from "./pages/tours/SeasonalComparison";
 import Destinations from "./pages/Destinations";
 import Itineraries from "./pages/Itineraries";
 import Services from "./pages/Services";
@@ -174,6 +175,7 @@ const App = () => (
                       <Route path="/tours/dian-fossey-hike" element={<DianFosseyHike />} />
                       <Route path="/tours/akagera-safari" element={<AkageraSafari />} />
                       <Route path="/tours/kigali-city-tour" element={<KigaliTour />} />
+                      <Route path="/tours/seasonal-comparison" element={<SeasonalComparison />} />
                       <Route path="/destinations" element={<Destinations />} />
                       <Route path="/itineraries" element={<Itineraries />} />
                       <Route path="/services" element={<Services />} />

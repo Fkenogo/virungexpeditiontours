@@ -333,10 +333,15 @@ const Index = () => {
             </Card>
           </div>
 
-          <div className="text-center mt-8">
+          <div className="text-center mt-8 space-y-4">
             <Button asChild size="lg" variant="outline">
               <Link to="/tours">View All Rwanda Tours</Link>
             </Button>
+            <div>
+              <Button asChild size="lg" variant="secondary">
+                <Link to="/tours/seasonal-comparison">Compare Seasonal Experiences →</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
