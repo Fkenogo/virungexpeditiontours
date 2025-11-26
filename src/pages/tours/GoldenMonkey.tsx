@@ -4,9 +4,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { MapPin, Clock, Camera, Users, Star, Video, Image as ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import goldenMonkeysImg from "@/assets/golden-monkeys-feeding.jpeg";
-import goldenMonkeysImg2 from "@/assets/golden-monkeys.jpg";
-import goldenMonkeyVolcanic from "@/assets/golden-monkey-volcanic-park.jpg";
-import goldenMonkeysVolcanoes from "@/assets/golden-monkeys-volcanoes.webp";
+import goldenMonkeysCloseup from "@/assets/golden-monkeys-closeup.jpg";
+import goldenMonkeysRwanda from "@/assets/golden-monkeys-rwanda.jpg";
+import goldenMonkeysFamily from "@/assets/golden-monkeys-family.webp";
 import { BookingCalendar } from "@/components/BookingCalendar";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import { PhotoGallery } from "@/components/PhotoGallery";
@@ -333,19 +333,19 @@ const GoldenMonkey = () => {
                   caption: "Golden monkeys enjoying bamboo shoots in their natural habitat"
                 },
                 {
-                  src: goldenMonkeysImg2,
-                  alt: "Golden monkey group",
-                  caption: "A troop of golden monkeys in Volcanoes National Park"
+                  src: goldenMonkeysCloseup,
+                  alt: "Golden monkey close-up portrait",
+                  caption: "Striking close-up showing distinctive facial features and amber eyes"
                 },
                 {
-                  src: goldenMonkeyVolcanic,
-                  alt: "Golden monkey in volcanic park",
-                  caption: "Close-up of a golden monkey with distinctive orange-gold fur"
+                  src: goldenMonkeysRwanda,
+                  alt: "Golden monkey in Rwanda",
+                  caption: "Golden monkey showcasing its beautiful orange-gold coat"
                 },
                 {
-                  src: goldenMonkeysVolcanoes,
-                  alt: "Golden monkeys family group",
-                  caption: "Family group of golden monkeys showing social behavior"
+                  src: goldenMonkeysFamily,
+                  alt: "Golden monkey family group",
+                  caption: "Family group displaying playful social behavior"
                 },
               ]}
             />
