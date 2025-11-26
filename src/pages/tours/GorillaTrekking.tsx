@@ -342,14 +342,14 @@ const GorillaTrekking = () => {
               <div>
                 <h3 className="text-xl font-semibold mb-3">Tour Preview</h3>
                 <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  url="https://youtube.com/shorts/XUHo_gWSg9M?si=IUKsheS-rlN30EKZ"
                   title="Mountain Gorilla Trekking Preview"
                 />
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
                 <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                  url="https://youtube.com/shorts/V9l9dsbnbLM?si=i57ttOQuQ6-H7qD_"
                   title="Gorilla Trekking Experience Testimonial"
                 />
                 <p className="text-sm text-muted-foreground mt-3 italic">

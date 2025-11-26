@@ -362,14 +362,14 @@ const KigaliTour = () => {
               <div>
                 <h3 className="text-xl font-semibold mb-3">City Tour Preview</h3>
                 <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=6n8FTIWlyXY"
+                  url="https://youtube.com/shorts/oqO3__FUCfE?si=BVmsHoqyIFN9fe0V"
                   title="Kigali City Tour Preview"
                 />
               </div>
               <div>
                 <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
                 <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                  url="https://youtu.be/JSYmePYB53k?si=IQN30vy9gSW0T36F"
                   title="Kigali Tour Testimonial"
                 />
                 <p className="text-sm text-muted-foreground mt-3 italic">
