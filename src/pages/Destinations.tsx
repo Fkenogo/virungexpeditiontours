@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,6 +14,22 @@ import virungaMountains from "@/assets/virunga-mountains.jpg";
 
 const Destinations = () => {
   const [activeTab, setActiveTab] = useState("rwanda");
+  const location = useLocation();
+
+  // Read URL hash on mount and when location changes
+  useEffect(() => {
+    const hash = location.hash.replace('#', '');
+    if (hash && ['rwanda', 'uganda', 'drc'].includes(hash)) {
+      setActiveTab(hash);
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        const element = document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [location.hash]);
 
   const scrollToSection = (id: string) => {
     setActiveTab(id);
@@ -1420,7 +1436,7 @@ const Destinations = () => {
           <div className="mt-16 max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold mb-6 text-center">Recommended Itineraries</h3>
             <div className="grid md:grid-cols-2 gap-6">
-              <Link to="/itineraries" className="block">
+              <Link to="/itineraries#7-day-best-rwanda" className="block">
                 <Card className="border-primary/20 hover:border-primary/40 transition-colors h-full">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
@@ -1436,7 +1452,7 @@ const Destinations = () => {
                 </Card>
               </Link>
 
-              <Link to="/itineraries" className="block">
+              <Link to="/itineraries#uganda-gorilla-primate" className="block">
                 <Card className="border-primary/20 hover:border-primary/40 transition-colors h-full">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
@@ -1452,7 +1468,7 @@ const Destinations = () => {
                 </Card>
               </Link>
 
-              <Link to="/itineraries" className="block">
+              <Link to="/itineraries#congo-adventure" className="block">
                 <Card className="border-primary/20 hover:border-primary/40 transition-colors h-full">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
@@ -1468,7 +1484,7 @@ const Destinations = () => {
                 </Card>
               </Link>
 
-              <Link to="/itineraries" className="block">
+              <Link to="/itineraries#ultimate-virunga" className="block">
                 <Card className="border-primary/20 hover:border-primary/40 transition-colors h-full">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
