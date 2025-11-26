@@ -1,4 +1,4 @@
-import { Calendar, Home, LogOut, Package, Users, FileText, Video, HelpCircle } from 'lucide-react';
+import { Calendar, Home, LogOut, Package, Users, FileText, Video, HelpCircle, MessageSquare } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -24,6 +24,7 @@ const adminItems = [
   { title: 'Blog Posts', url: '/admin/blog-posts', icon: FileText },
   { title: 'Tour Videos', url: '/admin/tour-videos', icon: Video },
   { title: 'FAQ Management', url: '/admin/faq', icon: HelpCircle },
+  { title: 'Testimonials', url: '/admin/testimonials', icon: MessageSquare },
 ];
 
 export function AdminSidebar() {
