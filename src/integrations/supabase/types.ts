@@ -209,6 +209,51 @@ export type Database = {
         }
         Relationships: []
       }
+      testimonials: {
+        Row: {
+          created_at: string
+          customer_location: string
+          customer_name: string
+          display_order: number
+          id: string
+          is_active: boolean
+          is_featured: boolean
+          rating: number
+          testimonial_text: string
+          tour_name: string
+          updated_at: string
+          visit_date: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_location: string
+          customer_name: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          rating: number
+          testimonial_text: string
+          tour_name: string
+          updated_at?: string
+          visit_date?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_location?: string
+          customer_name?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          rating?: number
+          testimonial_text?: string
+          tour_name?: string
+          updated_at?: string
+          visit_date?: string | null
+        }
+        Relationships: []
+      }
       tour_availability: {
         Row: {
           available_spots: number
