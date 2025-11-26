@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Star, Users, Shield, Clock, Heart } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import heroGorilla from "@/assets/hero-gorilla-family.jpg";
-import goldenMonkeys from "@/assets/golden-monkeys-feeding.jpeg";
+import goldenMonkeys from "@/assets/golden-monkeys-volcanoes-family.webp";
 import akageraSafari from "@/assets/zebras-akagera.jpeg";
 import chimpanzees from "@/assets/chimpanzee-family.jpg";
 import virungaMountains from "@/assets/virunga-mountains.jpg";

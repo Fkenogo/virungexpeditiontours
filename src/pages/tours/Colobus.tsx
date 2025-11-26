@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Clock, Camera, Leaf, Star, Video, Image as ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-import chimpanzeesImg from "@/assets/chimpanzees.jpg";
+import colobusHeroImg from "@/assets/colobus-monkeys-nyungwe-super-troop.jpg";
 import colobusRwanda from "@/assets/colobus-monkeys-rwanda.jpg";
 import colobusNyungwe from "@/assets/colobus-monkeys-nyungwe.jpg";
 import colobusRwanda2 from "@/assets/colobus-monkeys-rwanda2.webp";
@@ -17,7 +17,7 @@ const Colobus = () => {
       <section className="relative h-[500px] flex items-center justify-center">
         <div 
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${chimpanzeesImg})` }}
+          style={{ backgroundImage: `url(${colobusHeroImg})` }}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40"></div>
         </div>

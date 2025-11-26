@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, Camera, Users, Star, Video, Image as ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-import goldenMonkeysImg from "@/assets/golden-monkeys-feeding.jpeg";
+import goldenMonkeysImg from "@/assets/golden-monkeys-volcanoes-family.webp";
 import goldenMonkeysCloseup from "@/assets/golden-monkeys-closeup.jpg";
 import goldenMonkeysRwanda from "@/assets/golden-monkeys-rwanda.jpg";
 import goldenMonkeysFamily from "@/assets/golden-monkeys-family.webp";
