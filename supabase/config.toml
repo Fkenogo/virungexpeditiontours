@@ -2,3 +2,6 @@ project_id = "kbwhnpcbthoeazlfclux"
 
 [functions.send-booking-notification]
 verify_jwt = false
+
+[functions.send-admin-notification]
+verify_jwt = false

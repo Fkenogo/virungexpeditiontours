@@ -14,6 +14,7 @@ import {
 import { toast } from 'sonner';
 import { Loader2, Shield, User, Activity, Clock, Users } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
+import { useAuditLog } from '@/hooks/useAuditLog';
 
 type UserWithRole = {
   id: string;
@@ -27,6 +28,7 @@ type UserWithRole = {
 export default function AdminUsers() {
   const [users, setUsers] = useState<UserWithRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const { logAction } = useAuditLog();
 
   useEffect(() => {
     fetchUsers();
@@ -85,6 +87,8 @@ export default function AdminUsers() {
           .eq('role', 'admin');
 
         if (error) throw error;
+        
+        await logAction('revoke_admin', 'user_roles', userId, { role: 'admin' });
         toast.success('Admin role removed');
       } else {
         // Add admin role
@@ -93,6 +97,8 @@ export default function AdminUsers() {
           .insert({ user_id: userId, role: 'admin' });
 
         if (error) throw error;
+        
+        await logAction('grant_admin', 'user_roles', userId, { role: 'admin' });
         toast.success('Admin role granted');
       }
 

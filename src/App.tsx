@@ -34,6 +34,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import AdminBookings from "./pages/admin/Bookings";
 import AdminAvailability from "./pages/admin/Availability";
 import AdminUsers from "./pages/admin/Users";
+import AdminAuditLogs from "./pages/admin/AuditLogs";
 import AdminBlogPosts from "./pages/admin/BlogPosts";
 import TourVideos from "./pages/admin/TourVideos";
 import FAQManagement from "./pages/admin/FAQManagement";
@@ -113,6 +114,16 @@ const App = () => (
                 <ProtectedRoute requireAdmin>
                   <AdminLayout>
                     <AdminUsers />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/audit-logs"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminLayout>
+                    <AdminAuditLogs />
                   </AdminLayout>
                 </ProtectedRoute>
               }

@@ -105,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -119,6 +119,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) {
         toast.error(error.message);
         return { error };
+      }
+
+      // Notify admins of new user registration
+      if (data.user) {
+        try {
+          await supabase.functions.invoke('send-admin-notification', {
+            body: {
+              type: 'new_user',
+              userId: data.user.id,
+              userName: fullName,
+              userEmail: email,
+            },
+          });
+        } catch (notifError) {
+          console.error('Failed to send admin notification:', notifError);
+          // Don't fail signup if notification fails
+        }
       }
 
       toast.success('Account created successfully! Please check your email to confirm.');
