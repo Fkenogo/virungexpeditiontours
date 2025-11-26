@@ -8,8 +8,10 @@ import heroGorilla from "@/assets/hero-gorilla-family.jpg";
 import goldenMonkeys from "@/assets/golden-monkeys-volcanoes-family.webp";
 import akageraSafari from "@/assets/zebras-akagera.jpeg";
 import chimpanzees from "@/assets/chimpanzee-family.jpg";
-import virungaMountains from "@/assets/virunga-mountains.jpg";
 import canopyWalkway from "@/assets/canopy-walk-nyungwe.jpg";
+import rwandaVirunga from "@/assets/rwanda-virunga-mountains.jpg";
+import bwindiTrails from "@/assets/bwindi-gorilla-trails.jpg";
+import virungaVolcanoes from "@/assets/virunga-volcanoes-national-park.jpeg";
 import gorillaGroup from "@/assets/mountain-gorillas-group.jpg";
 import goldenMonkeysVolcanoes from "@/assets/golden-monkeys-volcanoes.webp";
 import akageraElephant from "@/assets/akagera-elephant.jpg";
@@ -429,10 +431,11 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="card-hover">
               <div className="relative h-48">
-                <img src={virungaMountains} alt="Rwanda" className="w-full h-full object-cover" />
+                <img src={rwandaVirunga} alt="Rwanda - The Ultimate Gorilla Kingdom" className="w-full h-full object-cover" />
               </div>
               <CardHeader>
-                <CardTitle>Rwanda – Our Primary Destination</CardTitle>
+                <CardTitle>Rwanda: The Ultimate Gorilla Kingdom</CardTitle>
+                <CardDescription className="text-sm">Africa's most accessible wild encounters</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm mb-4">
@@ -448,10 +451,11 @@ const Index = () => {
 
             <Card className="card-hover">
               <div className="relative h-48">
-                <img src={chimpanzees} alt="Uganda" className="w-full h-full object-cover" />
+                <img src={bwindiTrails} alt="Western Uganda - The Impenetrable Wild" className="w-full h-full object-cover" />
               </div>
               <CardHeader>
-                <CardTitle>Western Uganda – Extended Adventures</CardTitle>
+                <CardTitle>Western Uganda: The Impenetrable Wild</CardTitle>
+                <CardDescription className="text-sm">Extended expeditions through Africa's most biodiverse forests</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm mb-4">
@@ -467,10 +471,11 @@ const Index = () => {
 
             <Card className="card-hover">
               <div className="relative h-48">
-                <img src={canopyWalkway} alt="Eastern DRC" className="w-full h-full object-cover" />
+                <img src={virungaVolcanoes} alt="Eastern DRC - Africa's Most Epic Adventure" className="w-full h-full object-cover" />
               </div>
               <CardHeader>
-                <CardTitle>Eastern DRC – For the Adventurous</CardTitle>
+                <CardTitle>Eastern DRC: Africa's Most Epic Adventure in the Virunga</CardTitle>
+                <CardDescription className="text-sm">The continent's oldest park</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm mb-4">
