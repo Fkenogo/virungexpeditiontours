@@ -360,26 +360,13 @@ const GoldenMonkey = () => {
               <h2 className="text-3xl font-bold text-primary">Experience the Adventure</h2>
             </div>
             <p className="text-lg text-muted-foreground mb-8">
-              Watch our golden monkey tracking experiences and hear from travelers.
+              Watch our golden monkey tracking experiences.
             </p>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-xl font-semibold mb-3">Tour Preview</h3>
-                <VideoEmbed 
-                  url="https://youtube.com/shorts/pDhqYRD3_co?si=IdonldUlxTBO8JfL"
-                  title="Golden Monkey Tracking Preview"
-                />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-3">Traveler Testimonial</h3>
-                <VideoEmbed 
-                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                  title="Golden Monkey Tracking Testimonial"
-                />
-                <p className="text-sm text-muted-foreground mt-3 italic">
-                  "Such a fun and photogenic experience!" - Lisa K.
-                </p>
-              </div>
+            <div className="max-w-2xl mx-auto">
+              <VideoEmbed 
+                url="https://youtube.com/shorts/pDhqYRD3_co?si=IdonldUlxTBO8JfL"
+                title="Golden Monkey Tracking Preview"
+              />
             </div>
           </div>
         </div>
