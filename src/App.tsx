@@ -20,7 +20,8 @@ import DianFosseyHike from "./pages/tours/DianFosseyHike";
 import AkageraSafari from "./pages/tours/AkageraSafari";
 import KigaliTour from "./pages/tours/KigaliTour";
 import SeasonalComparison from "./pages/tours/SeasonalComparison";
-import PanoramaGallery from "./pages/PanoramaGallery";
+import LHoests from "./pages/tours/LHoests";
+import OwlFaced from "./pages/tours/OwlFaced";
 import Destinations from "./pages/Destinations";
 import Itineraries from "./pages/Itineraries";
 import Services from "./pages/Services";
@@ -177,7 +178,8 @@ const App = () => (
                       <Route path="/tours/akagera-safari" element={<AkageraSafari />} />
                       <Route path="/tours/kigali-city-tour" element={<KigaliTour />} />
                       <Route path="/tours/seasonal-comparison" element={<SeasonalComparison />} />
-                      <Route path="/panorama" element={<PanoramaGallery />} />
+                      <Route path="/tours/lhoests-monkey" element={<LHoests />} />
+                      <Route path="/tours/owl-faced-monkey" element={<OwlFaced />} />
                       <Route path="/destinations" element={<Destinations />} />
                       <Route path="/itineraries" element={<Itineraries />} />
                       <Route path="/services" element={<Services />} />

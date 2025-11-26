@@ -31,6 +31,8 @@ const Header = () => {
     { name: "Golden Monkey Tracking", path: "/tours/golden-monkey" },
     { name: "Chimpanzee Trekking", path: "/tours/chimpanzee" },
     { name: "Colobus Monkey Tracking", path: "/tours/colobus-monkey" },
+    { name: "L'Hoest's Monkey Tracking", path: "/tours/lhoests-monkey" },
+    { name: "Owl-Faced Monkey Tracking", path: "/tours/owl-faced-monkey" },
     { name: "Canopy Walkway", path: "/tours/canopy-walkway" },
     { name: "Dian Fossey Tomb Hike", path: "/tours/dian-fossey-hike" },
     { name: "Akagera Safari", path: "/tours/akagera-safari" },
