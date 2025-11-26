@@ -5,9 +5,12 @@ import { MapPin, Clock, TrendingUp } from "lucide-react";
 import heroGorilla from "@/assets/hero-gorilla.jpg";
 import goldenMonkeys from "@/assets/golden-monkeys.jpg";
 import chimpanzees from "@/assets/chimpanzees.jpg";
+import colobusMonkeys from "@/assets/colobus-monkeys-nyungwe-super-troop.jpg";
+import chimpanzeeFamily from "@/assets/chimpanzee-family.jpg";
 import akageraSafari from "@/assets/akagera-safari.jpg";
 import canopyWalkway from "@/assets/canopy-walkway.jpg";
 import virungaMountains from "@/assets/virunga-mountains.jpg";
+import kigaliCity from "@/assets/kigali-city-tours.jpg";
 
 const Tours = () => {
   const tours = [
@@ -51,7 +54,7 @@ const Tours = () => {
       location: "Nyungwe Forest National Park",
       duration: "Half Day",
       difficulty: "Easy",
-      image: chimpanzees,
+      image: colobusMonkeys,
       description: "Observe troops of 300+ black and white colobus monkeys in stunning rainforest settings. Perfect for families and those wanting easier primate experiences.",
       link: "/tours/colobus-monkey"
     },
@@ -62,7 +65,7 @@ const Tours = () => {
       location: "Nyungwe Forest National Park",
       duration: "Half Day",
       difficulty: "Moderate",
-      image: chimpanzees,
+      image: chimpanzeeFamily,
       description: "Encounter one of Africa's least-known primates with distinctive white beards and chest bibs. A rare and rewarding experience for primate enthusiasts.",
       link: "/tours/lhoests-monkey"
     },
@@ -117,7 +120,7 @@ const Tours = () => {
       location: "Kigali",
       duration: "Half to Full Day",
       difficulty: "Easy",
-      image: virungaMountains,
+      image: kigaliCity,
       description: "Explore Kigali's genocide memorial, vibrant markets, art centers, and modern development. Essential context for understanding Rwanda's inspiring story.",
       link: "/tours/kigali-city-tour"
     }

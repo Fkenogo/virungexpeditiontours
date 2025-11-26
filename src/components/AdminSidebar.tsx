@@ -1,4 +1,4 @@
-import { Calendar, Home, LogOut, Package, Users, FileText, Video, HelpCircle, MessageSquare } from 'lucide-react';
+import { Calendar, Home, LogOut, Package, Users, FileText, Video, HelpCircle, MessageSquare, FileSearch } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,6 +21,7 @@ const adminItems = [
   { title: 'Tour Availability', url: '/admin/availability', icon: Calendar },
   { title: 'Bookings', url: '/admin/bookings', icon: Package },
   { title: 'Users', url: '/admin/users', icon: Users },
+  { title: 'Audit Logs', url: '/admin/audit-logs', icon: FileSearch },
   { title: 'Blog Posts', url: '/admin/blog-posts', icon: FileText },
   { title: 'Tour Videos', url: '/admin/tour-videos', icon: Video },
   { title: 'FAQ Management', url: '/admin/faq', icon: HelpCircle },
