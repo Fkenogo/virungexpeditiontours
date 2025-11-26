@@ -56,6 +56,28 @@ const Tours = () => {
       link: "/tours/colobus-monkey"
     },
     {
+      id: "lhoests-monkey",
+      title: "L'Hoest's Monkey Tracking",
+      subtitle: "The Shy Mountain Monkey",
+      location: "Nyungwe Forest National Park",
+      duration: "Half Day",
+      difficulty: "Moderate",
+      image: chimpanzees,
+      description: "Encounter one of Africa's least-known primates with distinctive white beards and chest bibs. A rare and rewarding experience for primate enthusiasts.",
+      link: "/tours/lhoests-monkey"
+    },
+    {
+      id: "owl-faced-monkey",
+      title: "Owl-Faced Monkey Tracking",
+      subtitle: "The Forest's Most Distinctive Primate",
+      location: "Nyungwe Forest National Park",
+      duration: "Half to Full Day",
+      difficulty: "Moderate to Challenging",
+      image: chimpanzees,
+      description: "Track the mysterious Hamlyn's monkey with striking owl-like facial markings. An exceptionally rare sighting for serious wildlife watchers.",
+      link: "/tours/owl-faced-monkey"
+    },
+    {
       id: "canopy-walkway",
       title: "Canopy Walkway",
       subtitle: "Treetop Adventure",
