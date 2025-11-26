@@ -675,10 +675,13 @@ const Destinations = () => {
                       <AccordionTrigger>Overview & Why Visit</AccordionTrigger>
                       <AccordionContent className="space-y-4 text-foreground/80">
                         <p>
-                          331 sq km of dense, mountainous UNESCO World Heritage rainforest harboring approximately half of the world's remaining mountain gorillas (~459 individuals). Dating back over 25,000 years, Bwindi survived the Ice Age and is now the most important gorilla conservation area on Earth.
+                          Situated in southwestern Uganda along the rim of the Rift Valley, Bwindi Impenetrable National Park lives up to its name - 331 square kilometers of dense, mountainous rainforest cloaked in mist and mystery. This UNESCO World Heritage Site harbors approximately half of the world's remaining mountain gorilla population (around 459 individuals), making it the most important gorilla conservation area on Earth.
                         </p>
                         <p>
-                          With 19 habituated gorilla families (more than any other park), Bwindi offers exceptional trekking diversity across four distinct sectors.
+                          The name "Bwindi" derives from the local Runyakitara word "Mubwindi" meaning "place of darkness" - an apt description for this ancient forest where sunlight struggles to penetrate the dense canopy. Dating back over 25,000 years, Bwindi survived the Ice Age and now serves as one of Africa's most biodiverse forests.
+                        </p>
+                        <p>
+                          With 19 habituated gorilla families (more than any other park), Bwindi offers exceptional trekking diversity across four distinct sectors, each offering unique gorilla experiences.
                         </p>
                       </AccordionContent>
                     </AccordionItem>
@@ -816,50 +819,98 @@ const Destinations = () => {
                       <AccordionTrigger>The Nyakagezi Gorilla Family</AccordionTrigger>
                       <AccordionContent className="space-y-3 text-foreground/80">
                         <p>
-                          Mgahinga offers tracking of one habituated family - the remarkable Nyakagezi group:
+                          Mgahinga offers tracking of one habituated gorilla family - the Nyakagezi group, known for its remarkable history and character:
                         </p>
-                        <ul className="space-y-1 text-sm">
-                          <li>• <strong>9 members</strong> including 4 silverbacks (rare to have so many)</li>
-                          <li>• Famous for cross-border movements between Uganda/Rwanda/DRC</li>
-                          <li>• Generally <strong>shorter treks</strong> (2-4 hours typically)</li>
-                          <li>• More open bamboo forest provides better visibility</li>
-                          <li>• Higher success rate due to constant monitoring</li>
-                          <li>• <strong>$800 permit</strong> (same as Bwindi, cheaper than Rwanda)</li>
-                        </ul>
+                        <div className="p-3 rounded-lg bg-muted/30">
+                          <h5 className="font-semibold mb-2">Family Composition</h5>
+                          <ul className="space-y-1 text-sm">
+                            <li>• <strong>9 members</strong> including 4 silverbacks (rare to have so many)</li>
+                            <li>• 2 adult females</li>
+                            <li>• 1 juvenile</li>
+                            <li>• 2 infants</li>
+                          </ul>
+                        </div>
+                        <div className="p-3 rounded-lg bg-muted/30">
+                          <h5 className="font-semibold mb-2">Unique History</h5>
+                          <p className="text-sm mb-2">
+                            The Nyakagezi family is notorious for its cross-border movements, having historically ranged between Uganda, Rwanda, and DRC. In recent years, rangers have successfully encouraged the family to remain primarily in Uganda, though they occasionally venture into neighboring countries. Uganda Wildlife Authority trackers monitor the family daily, ensuring location is known before trekkers set out.
+                          </p>
+                        </div>
+                        <div className="p-3 rounded-lg bg-muted/30">
+                          <h5 className="font-semibold mb-2">Trek Characteristics</h5>
+                          <ul className="space-y-1 text-sm">
+                            <li>• Generally <strong>shorter and less strenuous</strong> than Bwindi (2-4 hours typically)</li>
+                            <li>• More open bamboo forest provides better visibility</li>
+                            <li>• Higher success rate due to constant monitoring</li>
+                            <li>• Maximum 8 people per day</li>
+                            <li>• Often considered more intimate due to smaller trekker groups overall</li>
+                            <li>• <strong>Permits: $800</strong> per person (same as Bwindi, cheaper than Rwanda)</li>
+                          </ul>
+                        </div>
                       </AccordionContent>
                     </AccordionItem>
 
                     <AccordionItem value="golden">
-                      <AccordionTrigger>Golden Monkey Tracking</AccordionTrigger>
+                      <AccordionTrigger>Golden Monkey Tracking - Mgahinga's Special Treasure</AccordionTrigger>
                       <AccordionContent className="space-y-3 text-foreground/80">
                         <p>
-                          Golden monkeys - endangered primates endemic to Albertine Rift - are one of Mgahinga's greatest draws:
+                          Golden monkeys - endangered primates endemic to the Albertine Rift - are one of Mgahinga's greatest draws. These beautiful primates are characterized by:
                         </p>
                         <ul className="space-y-1 text-sm">
-                          <li>• Distinctive golden-orange body, black limbs and face</li>
-                          <li>• Large troops of 60-80 individuals</li>
-                          <li>• High energy - constantly moving, leaping, playing</li>
-                          <li>• Bamboo specialists (2,500-3,500m elevation)</li>
-                          <li>• <strong>Standard Tracking:</strong> $100 permit, 3-4 hours, 1 hour observation</li>
-                          <li>• <strong>Habituation Experience:</strong> $100, up to 4 hours with monkeys, max 4 people</li>
+                          <li>• <strong>Distinctive Appearance:</strong> Golden-orange body, black limbs, tails, and face markings</li>
+                          <li>• <strong>Large Troops:</strong> 60-80 individuals in habituated groups</li>
+                          <li>• <strong>High Energy:</strong> Constantly moving, leaping, playing</li>
+                          <li>• <strong>Bamboo Specialists:</strong> Feed primarily on bamboo shoots, leaves, and shoots</li>
                         </ul>
+                        <div className="p-3 rounded-lg bg-muted/30 mt-3">
+                          <h5 className="font-semibold mb-2">The Golden Monkey Experience</h5>
+                          <ul className="space-y-1 text-sm">
+                            <li>• <strong>Start Time:</strong> 7:00 AM at Ntebeko headquarters</li>
+                            <li>• <strong>Duration:</strong> Usually 3-4 hours</li>
+                            <li>• <strong>Altitude:</strong> 2,500-3,500m in bamboo zone</li>
+                            <li>• <strong>Observation Time:</strong> 1 hour once located</li>
+                            <li>• <strong>Difficulty:</strong> Moderate - easier than gorillas but requires agility to keep up with active monkeys</li>
+                          </ul>
+                        </div>
+                        <div className="p-3 rounded-lg bg-muted/30 mt-3">
+                          <h5 className="font-semibold mb-2">Tracking Options</h5>
+                          <p className="text-sm mb-2">
+                            <strong>Standard Tracking Permit:</strong> $100 per person (includes park entry)
+                          </p>
+                          <p className="text-sm">
+                            <strong>Golden Monkey Habituation:</strong> For those wanting more time, Mgahinga offers habituation experiences with up to 4 hours with monkeys, maximum 4 people, $100 per person. Work with researchers, learn habituation techniques.
+                          </p>
+                        </div>
                       </AccordionContent>
                     </AccordionItem>
 
                     <AccordionItem value="batwa">
                       <AccordionTrigger>Batwa Trail Cultural Experience</AccordionTrigger>
-                      <AccordionContent className="space-y-2 text-sm text-foreground/80">
+                      <AccordionContent className="space-y-3 text-sm text-foreground/80">
                         <p>
-                          The Batwa (pygmy) people are indigenous inhabitants of Virunga Mountains. 4-6 hour trail to Garama Cave includes:
+                          The Batwa (pygmy) people are the indigenous inhabitants of the Virunga Mountains, having lived as hunter-gatherers for millennia before parks were established. The Batwa Trail offers profound cultural insights:
                         </p>
-                        <ul className="space-y-1">
-                          <li>• Traditional hunting techniques (bow and arrow)</li>
-                          <li>• Fire-making without matches</li>
-                          <li>• Wild honey gathering and forest medicine</li>
-                          <li>• Sacred sites and spiritual practices</li>
-                          <li>• Traditional music, dance, storytelling</li>
-                          <li>• Visit to ancient Batwa dwelling (Garama Cave)</li>
-                        </ul>
+                        <div className="p-3 rounded-lg bg-muted/30">
+                          <h5 className="font-semibold mb-2">The Experience</h5>
+                          <ul className="space-y-1">
+                            <li>• <strong>Duration:</strong> 4-6 hours</li>
+                            <li>• <strong>Route:</strong> Through forest to Garama Cave</li>
+                            <li>• <strong>Activities:</strong>
+                              <ul className="ml-4 mt-1 space-y-1">
+                                <li>- Learn traditional hunting techniques (bow and arrow use)</li>
+                                <li>- Fire-making without matches</li>
+                                <li>- Wild honey gathering</li>
+                                <li>- Traditional medicine and forest pharmacy</li>
+                                <li>- Sacred sites and spiritual practices</li>
+                              </ul>
+                            </li>
+                            <li>• <strong>Cultural Performances:</strong> Traditional music, dance, and storytelling</li>
+                            <li>• <strong>Cave Visit:</strong> Garama Cave, ancient Batwa dwelling</li>
+                          </ul>
+                        </div>
+                        <p className="italic">
+                          This experience provides crucial income to the Batwa community while preserving their cultural heritage. Many guides are Batwa elders with intimate forest knowledge.
+                        </p>
                       </AccordionContent>
                     </AccordionItem>
 
@@ -868,13 +919,49 @@ const Destinations = () => {
                       <AccordionContent className="space-y-4">
                         <div className="grid md:grid-cols-2 gap-4">
                           <div className="p-4 rounded-lg bg-muted/30">
-                            <h5 className="font-semibold mb-2">Access</h5>
-                            <p className="text-sm text-foreground/80">From Kigali: 3-4 hours via Cyanika border. From Bwindi: 2-3 hours. Kisoro airstrip 30 minutes away.</p>
+                            <h5 className="font-semibold mb-2">Getting to Mgahinga</h5>
+                            <p className="text-sm text-foreground/80 mb-2">
+                              <strong>From Kigali:</strong> 3-4 hours via Cyanika border - most convenient for international visitors
+                            </p>
+                            <p className="text-sm text-foreground/80 mb-2">
+                              <strong>From Kampala:</strong> 8-9 hours - long but scenic drive
+                            </p>
+                            <p className="text-sm text-foreground/80 mb-2">
+                              <strong>From Bwindi:</strong> 2-3 hours (combining both parks is popular)
+                            </p>
+                            <p className="text-sm text-foreground/80">
+                              <strong>By Air:</strong> Kisoro airstrip (30 minutes from park) receives flights from Entebbe via Aerolink Uganda
+                            </p>
                           </div>
                           <div className="p-4 rounded-lg bg-muted/30">
-                            <h5 className="font-semibold mb-2">Birding</h5>
-                            <p className="text-sm text-foreground/80">180 species including 15 Albertine Rift endemics. Best in Sabinyo Gorge and lower bamboo zones.</p>
+                            <h5 className="font-semibold mb-2">Birding in Mgahinga</h5>
+                            <p className="text-sm text-foreground/80 mb-2">
+                              Though small, Mgahinga protects 180 bird species including 15 Albertine Rift endemics:
+                            </p>
+                            <ul className="text-sm space-y-1">
+                              <li>• Regal Sunbird</li>
+                              <li>• Rwenzori Turaco</li>
+                              <li>• Handsome Francolin</li>
+                              <li>• Dusky Crimsonwing</li>
+                              <li>• Scarlet-tufted Malachite Sunbird</li>
+                            </ul>
+                            <p className="text-sm mt-2">Best birding locations: Sabinyo Gorge between Mt. Gahinga and Mt. Sabyinyo, lower bamboo zones, forest trails.</p>
                           </div>
+                        </div>
+                        <div className="p-4 rounded-lg bg-muted/30">
+                          <h5 className="font-semibold mb-2">Best Time to Visit</h5>
+                          <p className="text-sm text-foreground/80">
+                            <strong>Dry Seasons (June-August, December-February):</strong> Optimal hiking conditions, clearer volcano views, less muddy trails<br/>
+                            <strong>Rainy Seasons (March-May, September-November):</strong> Lush vegetation, excellent for photography, fewer tourists, lower accommodation rates, gorillas and monkeys don't move far (easier tracking)
+                          </p>
+                        </div>
+                        <div className="p-4 rounded-lg bg-muted/30">
+                          <h5 className="font-semibold mb-2">Accommodation</h5>
+                          <p className="text-sm text-foreground/80">
+                            <strong>Luxury:</strong> Mount Gahinga Lodge (eco-luxury with volcano views)<br/>
+                            <strong>Mid-Range:</strong> Lake Mulehe Safari Lodge, Travelers Rest Hotel (historic - Dian Fossey stayed here)<br/>
+                            <strong>Budget:</strong> Amajambere Iwacu Community Camp (community-owned), various guesthouses in Kisoro town
+                          </p>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -1021,50 +1108,80 @@ const Destinations = () => {
                 <CardContent>
                   <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="overview">
-                      <AccordionTrigger>Overview & Conservation Story</AccordionTrigger>
+                      <AccordionTrigger>Overview & Conservation Story - A Pioneer Park</AccordionTrigger>
                       <AccordionContent className="space-y-4 text-foreground/80">
                         <p>
-                          Established in 1925 as Africa's first national park, Virunga spans 7,800 sq km across eastern DRC, encompassing extraordinary habitat diversity: dense montane forests, bamboo thickets, savanna grasslands, lava plains, swamps, erosion valleys, active volcanoes, and glaciated Rwenzori peaks.
+                          Established in 1925 by Belgian King Albert I as Albert National Park, Virunga holds the distinction of being Africa's first national park. Today, this UNESCO World Heritage Site spans 7,800 square kilometers (3,000 square miles) across eastern DRC, encompassing an extraordinary range of habitats: dense montane forests, bamboo thickets, savanna grasslands, lava plains, swamps, erosion valleys, active volcanoes, and the glaciated peaks of the Rwenzori Mountains.
                         </p>
-                        <p>
-                          <strong>World's Only Three Great Ape Sanctuary:</strong> Virunga is the only park on Earth protecting three taxa of great apes:
-                        </p>
-                        <ul className="space-y-1 text-sm">
-                          <li>• <strong>Mountain Gorillas:</strong> ~300-350 individuals (1/4 of world population)</li>
-                          <li>• <strong>Eastern Lowland (Grauer's) Gorillas:</strong> In lower-altitude sectors</li>
-                          <li>• <strong>Chimpanzees:</strong> Multiple communities throughout park</li>
-                        </ul>
-                        <p className="text-sm">
-                          Despite decades of conflict and challenges, Virunga perseveres through dedicated rangers (200+ have died protecting it), ICCN, and Virunga Foundation.
-                        </p>
+                        <div className="p-4 rounded-lg bg-green-50 dark:bg-green-950">
+                          <h5 className="font-semibold mb-2 text-green-900 dark:text-green-100">World's Only Three Great Ape Sanctuary</h5>
+                          <p className="text-sm text-green-800 dark:text-green-200 mb-2">
+                            Virunga is the only park on Earth protecting three taxa of great apes:
+                          </p>
+                          <ul className="space-y-1 text-sm text-green-800 dark:text-green-200">
+                            <li>• <strong>Mountain Gorillas:</strong> Approximately 300-350 individuals (1/4 of world population)</li>
+                            <li>• <strong>Eastern Lowland Grauer's Gorillas:</strong> In lower-altitude sectors</li>
+                            <li>• <strong>Chimpanzees:</strong> Multiple communities throughout the park</li>
+                          </ul>
+                          <p className="text-sm text-green-800 dark:text-green-200 mt-2 font-semibold">
+                            This unique distinction makes Virunga invaluable for primate conservation and research.
+                          </p>
+                        </div>
+                        <div className="p-4 rounded-lg bg-muted/30">
+                          <h5 className="font-semibold mb-2">Conservation Challenges & Triumphs</h5>
+                          <p className="text-sm mb-2">
+                            Despite decades of conflict, poaching, and regional instability, Virunga has persevered through the dedicated efforts of park rangers (over 200 have died protecting it), the Congolese Institute for Nature Conservation (ICCN), and the Virunga Foundation. The park's resilience represents one of conservation's greatest stories.
+                          </p>
+                          <p className="text-sm font-semibold text-primary">
+                            Yet the park perseveres through: Dedicated Rangers (700+ risk their lives daily), Community Programs (hydroelectric projects providing power to 500,000+ people, fish farms, soap factories creating jobs), Tourism Revenue (supporting conservation when open for visits), Global Support (international organizations and donors funding protection), and the Documentary Impact ("Virunga" film raised global awareness).
+                          </p>
+                        </div>
                       </AccordionContent>
                     </AccordionItem>
 
                     <AccordionItem value="gorillas">
-                      <AccordionTrigger>Mountain Gorilla Trekking</AccordionTrigger>
+                      <AccordionTrigger>Mountain Gorilla Trekking - The Virunga Way</AccordionTrigger>
                       <AccordionContent className="space-y-4">
+                        <p className="text-sm text-foreground/80">
+                          Virunga offers mountain gorilla trekking in its southern sector, with habituated families accessible from Bukima Tented Camp and surrounding areas. The Virunga gorilla experience differs from Uganda and Rwanda in several key ways:
+                        </p>
                         <div className="p-4 rounded-lg bg-green-50 dark:bg-green-950">
-                          <h5 className="font-semibold mb-2 text-green-900 dark:text-green-100">The Virunga Advantage</h5>
+                          <h5 className="font-semibold mb-2 text-green-900 dark:text-green-100">The Virunga Advantage - Key Differences</h5>
                           <ul className="space-y-1 text-sm text-green-800 dark:text-green-200">
-                            <li>• <strong>Cost:</strong> $400 per person - significantly less than Uganda ($800) or Rwanda ($1,500)</li>
-                            <li>• <strong>Terrain:</strong> Similar to Rwanda's Volcanoes Park - volcanic slopes with bamboo/montane forest</li>
-                            <li>• <strong>Armed Escorts:</strong> Heavy ranger presence for safety</li>
+                            <li>• <strong>Cost:</strong> $400 per person - significantly less expensive than Uganda ($800) or Rwanda ($1,500)</li>
+                            <li>• <strong>Terrain:</strong> Similar to Rwanda's Volcanoes Park - volcanic slopes with bamboo and montane forest</li>
+                            <li>• <strong>Armed Escorts:</strong> Heavy ranger presence due to security concerns</li>
                             <li>• <strong>Fewer Tourists:</strong> Much quieter experience than neighboring parks</li>
-                            <li>• <strong>Conservation Impact:</strong> Tourism revenue directly supports rangers and anti-poaching</li>
+                            <li>• <strong>Conservation Impact:</strong> Tourism revenue directly supports rangers and anti-poaching efforts</li>
                           </ul>
                         </div>
-                        <p className="text-sm text-foreground/80">
-                          Multiple habituated families accessible from Bukima Tented Camp and surrounding areas. Early morning briefing, trekking in groups of 8, one hour with gorillas once located. Rangers know each individual gorilla by name and character.
-                        </p>
-                        <p className="text-sm font-semibold text-amber-600 dark:text-amber-400">
-                          Important: Gorilla trekking periodically closed due to security. Always check current status before booking.
-                        </p>
+                        <div className="p-3 rounded-lg bg-muted/30">
+                          <h5 className="font-semibold mb-2">Habituated Families</h5>
+                          <p className="text-sm text-foreground/80">
+                            Multiple gorilla families available for tracking, carefully monitored by dedicated ranger teams who know each individual gorilla by name and character.
+                          </p>
+                        </div>
+                        <div className="p-3 rounded-lg bg-muted/30">
+                          <h5 className="font-semibold mb-2">The Experience</h5>
+                          <p className="text-sm text-foreground/80">
+                            Similar to other parks - early morning briefing, trekking in small groups (maximum 8 people), one hour with gorillas once located. However, Virunga's challenging recent history and the rangers' extraordinary dedication add a deeper emotional dimension to the experience.
+                          </p>
+                        </div>
+                        <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-950 border-l-4 border-amber-500">
+                          <p className="text-sm font-semibold text-amber-900 dark:text-amber-100">
+                            Important: Virunga's gorilla trekking is periodically closed due to security situations. Always check current status before planning travel.
+                          </p>
+                        </div>
                       </AccordionContent>
                     </AccordionItem>
 
                     <AccordionItem value="nyiragongo">
                       <AccordionTrigger>Mount Nyiragongo - The World's Largest Lava Lake</AccordionTrigger>
                       <AccordionContent className="space-y-4">
+                        <p className="text-sm text-foreground/80 font-semibold">
+                          If mountain gorilla trekking is Africa's most sought-after wildlife experience, summiting Mount Nyiragongo ranks among its most spectacular natural phenomena. This is not your average mountain hike - it's a journey to the edge of one of the world's most active and dramatic volcanoes.
+                        </p>
+                        
                         <div className="p-4 rounded-lg bg-orange-50 dark:bg-orange-950">
                           <h5 className="font-semibold mb-2 text-orange-900 dark:text-orange-100 flex items-center gap-2">
                             <Mountain className="w-5 h-5" />
@@ -1073,65 +1190,76 @@ const Destinations = () => {
                           <ul className="space-y-1 text-sm text-orange-800 dark:text-orange-200">
                             <li>• <strong>Height:</strong> 3,470m (11,384 feet)</li>
                             <li>• <strong>Type:</strong> Active stratovolcano</li>
-                            <li>• <strong>Last Major Eruption:</strong> 2002 (devastated Goma)</li>
-                            <li>• <strong>Lava Lake Size:</strong> ~700m diameter (world's largest)</li>
-                            <li>• <strong>Crater Depth:</strong> ~600m deep</li>
+                            <li>• <strong>Last Major Eruption:</strong> 2002, devastating Goma and causing massive displacement</li>
+                            <li>• <strong>Ongoing Activity:</strong> Continuous lava lake at summit - world's largest</li>
+                            <li>• <strong>Lava Lake Size:</strong> Approximately 700m diameter</li>
+                            <li>• <strong>Crater Depth:</strong> Around 600m deep</li>
                           </ul>
                         </div>
 
                         <div className="space-y-3 text-sm text-foreground/80">
-                          <div>
-                            <h5 className="font-semibold mb-1">Day 1: The Climb</h5>
+                          <div className="p-3 rounded-lg bg-muted/30">
+                            <h5 className="font-semibold mb-2">Day 1: The Climb</h5>
                             <ul className="space-y-1">
-                              <li>• <strong>Start:</strong> Kibati Ranger Post (1,989m) at 8:00 AM</li>
-                              <li>• <strong>Duration:</strong> 5-7 hours to summit (1,500m elevation gain)</li>
-                              <li>• <strong>Distance:</strong> 6 kilometers</li>
-                              <li>• <strong>Terrain:</strong> Old lava fields → forest → barren volcanic slopes</li>
-                              <li>• <strong>Difficulty:</strong> Moderate to challenging (steep, high altitude)</li>
-                              <li>• <strong>Porters:</strong> Strongly recommended ($25-30)</li>
+                              <li>• <strong>Start:</strong> Kibati Ranger Post at 1,989m (8:00 AM departure)</li>
+                              <li>• <strong>Duration:</strong> 5-7 hours to summit depending on fitness</li>
+                              <li>• <strong>Distance:</strong> 6 kilometers but gaining 1,500m in altitude</li>
+                              <li>• <strong>Terrain:</strong> Starts through old lava fields, then into forest, finally across barren volcanic slopes</li>
+                              <li>• <strong>Difficulty:</strong> Moderate to challenging - steep sections, high altitude, potentially hot and humid</li>
+                              <li>• <strong>Porters:</strong> Strongly recommended ($25-30) to carry gear and provide assistance</li>
                             </ul>
                           </div>
 
-                          <div>
-                            <h5 className="font-semibold mb-1">Camping on the Crater Rim</h5>
-                            <p>
-                              12 basic cabins cling to crater's edge with two single beds, stunning crater views, windows facing lava lake for all-night viewing. Bring sleeping bag (temperatures near freezing).
+                          <div className="p-3 rounded-lg bg-muted/30">
+                            <h5 className="font-semibold mb-2">Camping on the Crater Rim</h5>
+                            <p className="mb-2">
+                              At the summit, 12 basic cabins cling to the crater's edge. Each has:
+                            </p>
+                            <ul className="space-y-1">
+                              <li>• Two single beds (bring sleeping bag)</li>
+                              <li>• Stunning views across the crater</li>
+                              <li>• Windows facing the lava lake for all-night viewing</li>
+                              <li>• Shared facilities</li>
+                            </ul>
+                          </div>
+
+                          <div className="p-4 rounded-lg bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950 dark:to-red-950 border-2 border-orange-300 dark:border-orange-700">
+                            <h5 className="font-semibold mb-2 flex items-center gap-2 text-orange-900 dark:text-orange-100">
+                              <Star className="w-5 h-5 text-orange-600" />
+                              The Night - Why You Came
+                            </h5>
+                            <p className="text-orange-900 dark:text-orange-100">
+                              This is why you came - standing at the crater's edge, watching Earth's molten heart churn and bubble just meters below. The lava lake glows brilliant orange-red, occasionally erupting in dramatic fountains. The roar of geological forces is constant, visceral, and utterly mesmerizing. Many visitors stay awake all night, hypnotized by nature's most primal spectacle.
                             </p>
                           </div>
 
                           <div className="p-3 rounded-lg bg-muted/30">
-                            <h5 className="font-semibold mb-1 flex items-center gap-2">
-                              <Star className="w-4 h-4 text-secondary" />
-                              The Night Experience
-                            </h5>
-                            <p>
-                              Stand at crater's edge watching Earth's molten heart churn and bubble meters below. The lava lake glows brilliant orange-red, occasionally erupting in dramatic fountains. The roar of geological forces is constant, visceral, utterly mesmerizing. Many stay awake all night, hypnotized by nature's most primal spectacle.
-                            </p>
-                          </div>
-
-                          <div>
-                            <h5 className="font-semibold mb-1">Day 2: Descent</h5>
-                            <p>3-4 hours back to Kibati (leaves ~6:00 AM, arrive by 10:00 AM)</p>
+                            <h5 className="font-semibold mb-2">Day 2: Descent</h5>
+                            <ul className="space-y-1">
+                              <li>• <strong>Descent:</strong> 3-4 hours back to Kibati (leaves around 6:00 AM)</li>
+                              <li>• <strong>Arrival:</strong> Usually by 10:00 AM</li>
+                            </ul>
                           </div>
 
                           <div className="p-4 rounded-lg bg-muted/30">
                             <h5 className="font-semibold mb-2">Essential Equipment</h5>
                             <ul className="space-y-1 text-sm">
-                              <li>• Sleeping bag (rated to -5°C)</li>
-                              <li>• Warm layers (windproof jacket, fleece, down jacket)</li>
+                              <li>• Sleeping bag (temperatures near freezing at night)</li>
+                              <li>• Warm layers (windproof jacket essential)</li>
                               <li>• Waterproof gear (weather changes rapidly)</li>
-                              <li>• Sturdy hiking boots, gloves, hat</li>
+                              <li>• Sturdy hiking boots</li>
+                              <li>• Gloves and hat</li>
                               <li>• Headlamp with extra batteries</li>
-                              <li>• Food and 2-3 liters water</li>
+                              <li>• Food and plenty of water (2-3 liters)</li>
                               <li>• Camera with extra batteries (cold drains them)</li>
                             </ul>
                           </div>
                         </div>
 
-                        <div className="p-4 rounded-lg bg-muted/30">
-                          <p className="text-sm font-semibold">Cost: $300-400 per person (includes permit, guide, rangers)</p>
-                          <p className="text-sm text-amber-600 dark:text-amber-400 mt-2">
-                            Safety Note: Only trek when officially open and cleared by authorities. Volcanic activity monitored but can change rapidly.
+                        <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+                          <p className="text-sm font-semibold mb-1">Cost: Approximately $300-400 per person (includes permit, guide, rangers)</p>
+                          <p className="text-sm text-amber-600 dark:text-amber-400 mt-2 font-semibold">
+                            Safety Note: Only trek Nyiragongo when officially open and cleared by authorities. Volcanic activity is monitored but can change rapidly.
                           </p>
                         </div>
                       </AccordionContent>
