@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { Calendar, Tag, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import ReactMarkdown from 'react-markdown';
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
@@ -87,12 +88,8 @@ export default function BlogPost() {
 
         <h1 className="text-5xl font-bold mb-6">{post.title}</h1>
 
-        <div className="prose prose-lg max-w-none">
-          {post.content.split('\n').map((paragraph, index) => (
-            <p key={index} className="mb-4">
-              {paragraph}
-            </p>
-          ))}
+        <div className="prose prose-lg max-w-none dark:prose-invert">
+          <ReactMarkdown>{post.content}</ReactMarkdown>
         </div>
 
         <div className="mt-12 pt-8 border-t">
