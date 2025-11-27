@@ -108,17 +108,47 @@ export default function BlogPost() {
 
         <div className="max-w-7xl mx-auto mt-12">
           <div className="grid lg:grid-cols-[1fr,300px] gap-12">
-            <div className="prose prose-lg max-w-none dark:prose-invert">
+            <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-foreground prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3 prose-p:text-foreground/90 prose-p:leading-relaxed prose-p:mb-4 prose-strong:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-ul:my-4 prose-ul:space-y-2 prose-ol:my-4 prose-ol:space-y-2 prose-li:text-foreground/90 prose-blockquote:border-l-4 prose-blockquote:border-primary/50 prose-blockquote:bg-muted/30 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:italic prose-blockquote:text-muted-foreground prose-hr:my-8 prose-hr:border-border prose-table:my-6 prose-th:bg-muted prose-th:px-4 prose-th:py-2 prose-th:text-left prose-th:font-semibold prose-td:px-4 prose-td:py-2 prose-td:border-border prose-img:rounded-lg prose-img:shadow-md">
               <ReactMarkdown
                 components={{
                   h2: ({ children, ...props }) => {
                     const id = `heading-${children?.toString().toLowerCase().replace(/\s+/g, '-')}`;
-                    return <h2 id={id} {...props}>{children}</h2>;
+                    return <h2 id={id} className="scroll-mt-20" {...props}>{children}</h2>;
                   },
                   h3: ({ children, ...props }) => {
                     const id = `heading-${children?.toString().toLowerCase().replace(/\s+/g, '-')}`;
-                    return <h3 id={id} {...props}>{children}</h3>;
+                    return <h3 id={id} className="scroll-mt-20" {...props}>{children}</h3>;
                   },
+                  p: ({ children, ...props }) => (
+                    <p className="mb-4" {...props}>{children}</p>
+                  ),
+                  ul: ({ children, ...props }) => (
+                    <ul className="list-disc pl-6 space-y-2 mb-4" {...props}>{children}</ul>
+                  ),
+                  ol: ({ children, ...props }) => (
+                    <ol className="list-decimal pl-6 space-y-2 mb-4" {...props}>{children}</ol>
+                  ),
+                  li: ({ children, ...props }) => (
+                    <li className="leading-relaxed" {...props}>{children}</li>
+                  ),
+                  blockquote: ({ children, ...props }) => (
+                    <blockquote className="border-l-4 border-primary/50 bg-muted/30 py-3 px-4 my-6 rounded-r-md" {...props}>{children}</blockquote>
+                  ),
+                  table: ({ children, ...props }) => (
+                    <div className="overflow-x-auto my-6">
+                      <table className="min-w-full border border-border rounded-lg overflow-hidden" {...props}>{children}</table>
+                    </div>
+                  ),
+                  th: ({ children, ...props }) => (
+                    <th className="bg-muted px-4 py-3 text-left font-semibold border-b border-border" {...props}>{children}</th>
+                  ),
+                  td: ({ children, ...props }) => (
+                    <td className="px-4 py-3 border-b border-border" {...props}>{children}</td>
+                  ),
+                  hr: () => <hr className="my-8 border-border" />,
+                  a: ({ children, href, ...props }) => (
+                    <a href={href} className="text-primary hover:underline font-medium" {...props}>{children}</a>
+                  ),
                 }}
               >
                 {post.content}
