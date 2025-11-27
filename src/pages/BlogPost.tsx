@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { Calendar, Tag, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
+import RelatedArticles from '@/components/RelatedArticles';
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
@@ -91,6 +92,8 @@ export default function BlogPost() {
         <div className="prose prose-lg max-w-none dark:prose-invert">
           <ReactMarkdown>{post.content}</ReactMarkdown>
         </div>
+
+        <RelatedArticles currentPostId={post.id} currentCategory={post.category} />
 
         <div className="mt-12 pt-8 border-t">
           <Link to="/blog">
