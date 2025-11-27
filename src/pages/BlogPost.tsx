@@ -7,6 +7,9 @@ import { Calendar, Tag, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
 import RelatedArticles from '@/components/RelatedArticles';
+import BlogBreadcrumb from '@/components/Breadcrumb';
+import TableOfContents from '@/components/TableOfContents';
+import SocialShare from '@/components/SocialShare';
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
@@ -56,6 +59,8 @@ export default function BlogPost() {
     );
   }
 
+  const currentUrl = window.location.href;
+
   return (
     <article className="min-h-screen bg-background">
       {post.featured_image && (
@@ -68,37 +73,74 @@ export default function BlogPost() {
         </div>
       )}
 
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <Link to="/blog">
-          <Button variant="ghost" className="mb-8">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Blog
-          </Button>
-        </Link>
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-4xl mx-auto">
+          <BlogBreadcrumb
+            items={[
+              { label: 'Blog', href: '/blog' },
+              { label: post.category, href: `/blog?category=${encodeURIComponent(post.category)}` },
+              { label: post.title },
+            ]}
+          />
 
-        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
-          <span className="flex items-center gap-1">
-            <Calendar className="w-4 h-4" />
-            {format(new Date(post.published_at), 'MMMM d, yyyy')}
-          </span>
-          <span className="flex items-center gap-1">
-            <Tag className="w-4 h-4" />
-            {post.category}
-          </span>
-        </div>
-
-        <h1 className="text-5xl font-bold mb-6">{post.title}</h1>
-
-        <div className="prose prose-lg max-w-none dark:prose-invert">
-          <ReactMarkdown>{post.content}</ReactMarkdown>
-        </div>
-
-        <RelatedArticles currentPostId={post.id} currentCategory={post.category} />
-
-        <div className="mt-12 pt-8 border-t">
           <Link to="/blog">
-            <Button>Read More Articles</Button>
+            <Button variant="ghost" className="mb-8">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Blog
+            </Button>
           </Link>
+
+          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
+            <span className="flex items-center gap-1">
+              <Calendar className="w-4 h-4" />
+              {format(new Date(post.published_at), 'MMMM d, yyyy')}
+            </span>
+            <span className="flex items-center gap-1">
+              <Tag className="w-4 h-4" />
+              {post.category}
+            </span>
+          </div>
+
+          <h1 className="text-5xl font-bold mb-6">{post.title}</h1>
+
+          <SocialShare url={currentUrl} title={post.title} />
+        </div>
+
+        <div className="max-w-7xl mx-auto mt-12">
+          <div className="grid lg:grid-cols-[1fr,300px] gap-12">
+            <div className="prose prose-lg max-w-none dark:prose-invert">
+              <ReactMarkdown
+                components={{
+                  h2: ({ children, ...props }) => {
+                    const id = `heading-${children?.toString().toLowerCase().replace(/\s+/g, '-')}`;
+                    return <h2 id={id} {...props}>{children}</h2>;
+                  },
+                  h3: ({ children, ...props }) => {
+                    const id = `heading-${children?.toString().toLowerCase().replace(/\s+/g, '-')}`;
+                    return <h3 id={id} {...props}>{children}</h3>;
+                  },
+                }}
+              >
+                {post.content}
+              </ReactMarkdown>
+            </div>
+
+            <aside>
+              <TableOfContents content={post.content} />
+            </aside>
+          </div>
+        </div>
+
+        <div className="max-w-4xl mx-auto mt-12">
+          <SocialShare url={currentUrl} title={post.title} />
+
+          <RelatedArticles currentPostId={post.id} currentCategory={post.category} />
+
+          <div className="mt-12 pt-8 border-t">
+            <Link to="/blog">
+              <Button>Read More Articles</Button>
+            </Link>
+          </div>
         </div>
       </div>
     </article>
