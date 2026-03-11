@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import {loadProjectEnv} from "./lib/env.mjs";
 
 const ROOT = process.cwd();
-const ENV_FILE = path.join(ROOT, ".env");
 
 const tourPackages = [
   {
@@ -157,26 +157,6 @@ const tourPackages = [
   },
 ];
 
-function parseEnv(text) {
-  const env = {};
-  for (const raw of text.split("\n")) {
-    const line = raw.trim();
-    if (!line || line.startsWith("#")) continue;
-    const idx = line.indexOf("=");
-    if (idx < 0) continue;
-    const key = line.slice(0, idx).trim();
-    let value = line.slice(idx + 1).trim();
-    if (
-      (value.startsWith('"') && value.endsWith('"')) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
-      value = value.slice(1, -1);
-    }
-    env[key] = value;
-  }
-  return env;
-}
-
 function toFirestoreValue(value) {
   if (value === null || value === undefined) return { nullValue: null };
   if (Array.isArray(value)) return { arrayValue: { values: value.map((v) => toFirestoreValue(v)) } };
@@ -262,18 +242,17 @@ async function main() {
   const args = new Set(process.argv.slice(2));
   const dryRun = args.has("--dry-run");
   const useEmulator = args.has("--emulator");
-  const envRaw = await fs.readFile(ENV_FILE, "utf8");
-  const env = parseEnv(envRaw);
+  const env = await loadProjectEnv(ROOT);
 
   const apiKey = env.VITE_FIREBASE_API_KEY;
   const projectId = env.VITE_FIREBASE_PROJECT_ID;
 
   if (!apiKey || !projectId) {
-    throw new Error("Missing Firebase config in .env.");
+    throw new Error("Missing Firebase config in .env.local or .env.");
   }
 
   const firestoreBase = useEmulator
-    ? `http://${process.env.FIRESTORE_EMULATOR_HOST || "127.0.0.1:8181"}/v1/projects/${projectId}/databases/(default)/documents`
+    ? `http://${process.env.FIRESTORE_EMULATOR_HOST || "127.0.0.1:8090"}/v1/projects/${projectId}/databases/(default)/documents`
     : `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`;
 
   console.log(`Prepared ${tourPackages.length} tour package records`);

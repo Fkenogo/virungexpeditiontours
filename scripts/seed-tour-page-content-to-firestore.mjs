@@ -1,9 +1,17 @@
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
+import { configureAdminSdkEmulator, getFirebaseProjectId, loadProjectEnv } from "./lib/env.mjs";
+
+const env = await loadProjectEnv();
+const projectId = getFirebaseProjectId(env);
+
+if (!projectId) {
+  throw new Error("Missing FIREBASE_PROJECT_ID or VITE_FIREBASE_PROJECT_ID in .env.local or .env.");
+}
 
 // Initialize Firebase Admin SDK
 const firebaseConfig = {
-  projectId: process.env.FIREBASE_PROJECT_ID || "virunga-tours",
+  projectId,
 };
 
 try {
@@ -19,14 +27,7 @@ const db = getFirestore();
 // Use emulator if running with --emulator flag
 if (process.argv.includes('--emulator')) {
   console.log('🔧 Using Firebase Emulator');
-  process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
-  process.env.FUNCTIONS_EMULATOR_HOST = 'localhost:5001';
-  
-  // Configure Firestore to use emulator
-  db.settings({
-    host: 'localhost:8090',
-    ssl: false
-  });
+  configureAdminSdkEmulator(db);
   console.log('📡 Connected to Firestore Emulator on localhost:8090');
 }
 

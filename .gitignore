@@ -27,3 +27,17 @@ dist-ssr
 .env
 .env.*
 !.env.example
+.env.local
+.env.*.local
+
+# Service account and credential files
+*-firebase-adminsdk-*.json
+*firebase-adminsdk*.json
+*service-account*.json
+*.pem
+*.key
+
+# Firebase local tooling output
+.firebase/
+firebase-debug.log
+firestore-debug.log

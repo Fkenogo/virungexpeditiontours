@@ -119,8 +119,8 @@ npm run migrate:tour-page-content -- --emulator
 **Solution**: Check emulator is running on correct port (default: 8080)
 
 ### Error: "Missing Firebase config"
-**Cause**: .env file missing or incomplete
-**Solution**: Ensure .env file has all required Firebase configuration variables
+**Cause**: `.env.local` or `.env` file missing or incomplete
+**Solution**: Ensure `.env.local` has all required Firebase configuration variables
 
 ## Development Workflow
 

@@ -1,27 +1,10 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {loadProjectEnv} from './lib/env.mjs';
 
 const ROOT = process.cwd();
 const TOURS_DIR = path.join(ROOT, 'src/pages/tours');
-const ENV_FILE = path.join(ROOT, '.env');
-
-function parseEnv(text) {
-  const env = {};
-  for (const raw of text.split('\n')) {
-    const line = raw.trim();
-    if (!line || line.startsWith('#')) continue;
-    const idx = line.indexOf('=');
-    if (idx < 0) continue;
-    const key = line.slice(0, idx).trim();
-    let value = line.slice(idx + 1).trim();
-    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-      value = value.slice(1, -1);
-    }
-    env[key] = value;
-  }
-  return env;
-}
 
 function normalizeSpaces(value) {
   return value.replace(/\s+/g, ' ').trim();
@@ -188,8 +171,7 @@ async function main() {
   const args = new Set(process.argv.slice(2));
   const dryRun = args.has('--dry-run');
 
-  const envRaw = await fs.readFile(ENV_FILE, 'utf8');
-  const env = parseEnv(envRaw);
+  const env = await loadProjectEnv(ROOT);
 
   const apiKey = env.VITE_FIREBASE_API_KEY;
   const projectId = env.VITE_FIREBASE_PROJECT_ID;
@@ -197,7 +179,7 @@ async function main() {
   const password = process.env.FIREBASE_ADMIN_PASSWORD;
 
   if (!apiKey || !projectId) {
-    throw new Error('Missing Firebase config in .env (VITE_FIREBASE_API_KEY / VITE_FIREBASE_PROJECT_ID).');
+    throw new Error('Missing Firebase config in .env.local or .env (VITE_FIREBASE_API_KEY / VITE_FIREBASE_PROJECT_ID).');
   }
 
   const extracted = await extractFromTourFiles();

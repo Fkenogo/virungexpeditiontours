@@ -1,8 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import {loadProjectEnv} from './lib/env.mjs';
 
 const ROOT = process.cwd();
-const ENV_FILE = path.join(ROOT, '.env');
 
 const itineraries = [
   {
@@ -294,23 +294,6 @@ const itineraries = [
   },
 ];
 
-function parseEnv(text) {
-  const env = {};
-  for (const raw of text.split('\n')) {
-    const line = raw.trim();
-    if (!line || line.startsWith('#')) continue;
-    const idx = line.indexOf('=');
-    if (idx < 0) continue;
-    const key = line.slice(0, idx).trim();
-    let value = line.slice(idx + 1).trim();
-    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-      value = value.slice(1, -1);
-    }
-    env[key] = value;
-  }
-  return env;
-}
-
 function toFirestoreValue(value) {
   if (value === null || value === undefined) return { nullValue: null };
   if (Array.isArray(value)) return { arrayValue: { values: value.map((v) => toFirestoreValue(v)) } };
@@ -382,14 +365,13 @@ async function upsertItinerary(projectId, idToken, itinerary) {
 
 async function main() {
   const dryRun = process.argv.includes('--dry-run');
-  const envRaw = await fs.readFile(ENV_FILE, 'utf8');
-  const env = parseEnv(envRaw);
+  const env = await loadProjectEnv(ROOT);
 
   const apiKey = env.VITE_FIREBASE_API_KEY;
   const projectId = env.VITE_FIREBASE_PROJECT_ID;
 
   if (!apiKey || !projectId) {
-    throw new Error('Missing Firebase config in .env.');
+    throw new Error('Missing Firebase config in .env.local or .env.');
   }
 
   console.log(`Prepared ${itineraries.length} itinerary records`);

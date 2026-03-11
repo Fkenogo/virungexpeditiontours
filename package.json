@@ -23,7 +23,8 @@
     "migrate:managed-content": "node scripts/seed-managed-content-to-firestore.mjs",
     "migrate:managed-content:emulator": "node scripts/seed-managed-content-to-firestore.mjs --emulator",
     "migrate:tour-page-content": "node scripts/seed-tour-page-content-to-firestore.mjs",
-    "migrate:seasonal-guide-content": "node scripts/seed-seasonal-guide-content-to-firestore.mjs"
+    "migrate:seasonal-guide-content": "node scripts/seed-seasonal-guide-content-to-firestore.mjs",
+    "audit:secrets": "node scripts/scan-secrets.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
