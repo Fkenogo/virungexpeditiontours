@@ -17,6 +17,12 @@ import kigaliCity from "@/assets/kigali-city-tours.jpg";
 import dianFosseyCenter from "@/assets/dian-fossey-center.png";
 import { useMediaAssets } from "@/hooks/useMediaAssets";
 import { useContentDoc } from "@/hooks/useContentDoc";
+import {
+  DESTINATION_GUIDES,
+  DESTINATION_GUIDES_BY_COUNTRY,
+  DESTINATION_PACKAGES,
+  DESTINATION_PAGE_CONTENT,
+} from "@/content/destinationDefaults";
 
 type DestinationPackage = {
   id: string;
@@ -54,12 +60,7 @@ type DestinationPageContent = {
   guides_heading: string;
 };
 
-const DEFAULT_PAGE_CONTENT: DestinationPageContent = {
-  hero_title: "Our Destinations",
-  hero_subtitle: "Discover extraordinary landscapes and wildlife across Rwanda, Uganda, and Eastern DRC",
-  featured_heading: "Featured Destination Packages",
-  guides_heading: "Destination Guides",
-};
+const DEFAULT_PAGE_CONTENT: DestinationPageContent = DESTINATION_PAGE_CONTENT;
 
 const imageMap: Record<DestinationPackage["image_key"], string> = {
   "virunga-mountains": virungaMountains,
@@ -136,12 +137,19 @@ const Destinations = () => {
           .map((d) => normalizeGuide(d.id, d.data() as Record<string, unknown>))
           .sort((a, b) => a.display_order - b.display_order);
 
-        setDestinationPackages(packages);
-        setGuides(guideDocs);
+        setDestinationPackages(packages.length > 0 ? packages : DESTINATION_PACKAGES);
+        setGuides(
+          guideDocs.length > 0
+            ? (["rwanda", "uganda", "drc"] as const).map((country) => ({
+                ...DESTINATION_GUIDES_BY_COUNTRY[country],
+                ...(guideDocs.find((guide) => guide.country === country) || {}),
+              }))
+            : DESTINATION_GUIDES,
+        );
       } catch (error) {
         console.error("Error fetching destination data:", error);
-        setDestinationPackages([]);
-        setGuides([]);
+        setDestinationPackages(DESTINATION_PACKAGES);
+        setGuides(DESTINATION_GUIDES);
       } finally {
         setLoading(false);
       }

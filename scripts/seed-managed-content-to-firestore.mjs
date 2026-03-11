@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {loadProjectEnv} from "./lib/env.mjs";
+import {DESTINATION_GUIDES, DESTINATION_PAGE_CONTENT} from "../src/content/destinationDefaults.js";
 
 const ROOT = process.cwd();
 const ASSETS_DIR = path.join(ROOT, "src/assets");
@@ -140,10 +141,7 @@ async function main() {
       created_at: now,
     }],
     ["destination_content", "main", {
-      hero_title: "Our Destinations",
-      hero_subtitle: "Discover extraordinary landscapes and wildlife across Rwanda, Uganda, and Eastern DRC",
-      featured_heading: "Featured Destination Packages",
-      guides_heading: "Destination Guides",
+      ...DESTINATION_PAGE_CONTENT,
       updated_at: now,
       created_at: now,
     }],
@@ -159,9 +157,15 @@ async function main() {
     ["legal_documents", "privacy-policy", { title: "Privacy Policy", content_markdown: "", is_active: false, updated_at: now, created_at: now }],
     ["legal_documents", "terms-and-conditions", { title: "Terms & Conditions", content_markdown: "", is_active: false, updated_at: now, created_at: now }],
     ["legal_documents", "booking-terms", { title: "Booking Terms", content_markdown: "", is_active: false, updated_at: now, created_at: now }],
-    ["destination_guides", "rwanda", { title: "Rwanda", intro: "Rwanda offers some of Africa's most accessible and well-protected wildlife experiences.", is_active: true, updated_at: now, created_at: now }],
-    ["destination_guides", "uganda", { title: "Uganda", intro: "Uganda offers exceptional gorilla trekking opportunities with lower permit prices and diverse wildlife experiences.", is_active: true, updated_at: now, created_at: now }],
-    ["destination_guides", "drc", { title: "Eastern DRC", intro: "Eastern DRC offers high-adventure conservation travel centered around Virunga and Nyiragongo.", is_active: true, updated_at: now, created_at: now }],
+    ...DESTINATION_GUIDES.map((guide) => [
+      "destination_guides",
+      guide.country,
+      {
+        ...guide,
+        updated_at: now,
+        created_at: now,
+      },
+    ]),
   ];
 
   const files = await walkFiles(ASSETS_DIR);

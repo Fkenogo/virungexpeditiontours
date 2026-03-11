@@ -11,6 +11,7 @@ import { Save, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { TourPageContent, DEFAULT_TOUR_PAGE_CONTENT } from "@/types/tourPageContent";
 import { SeasonalGuideContent, DEFAULT_SEASONAL_GUIDE } from "@/types/seasonalGuideContent";
+import { DESTINATION_GUIDES_BY_COUNTRY, DESTINATION_PAGE_CONTENT } from "@/content/destinationDefaults";
 
 type HomeContent = {
   hero_title: string;
@@ -108,12 +109,7 @@ const DEFAULT_SERVICES: ServicesContent = {
   booking_terms: [],
 };
 
-const DEFAULT_DESTINATION_PAGE: DestinationPageContent = {
-  hero_title: "Our Destinations",
-  hero_subtitle: "Discover extraordinary landscapes and wildlife across Rwanda, Uganda, and Eastern DRC",
-  featured_heading: "Featured Destination Packages",
-  guides_heading: "Destination Guides",
-};
+const DEFAULT_DESTINATION_PAGE: DestinationPageContent = DESTINATION_PAGE_CONTENT;
 
 const DEFAULT_FORM: FormConfig = {
   countries: ["United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "Netherlands", "Belgium", "South Africa", "Other"],
@@ -133,14 +129,8 @@ const DEFAULT_FORM: FormConfig = {
 };
 
 const DEFAULT_GUIDE = (country: DestinationGuide["country"], order: number): DestinationGuide => ({
+  ...DESTINATION_GUIDES_BY_COUNTRY[country],
   country,
-  title: country === "drc" ? "Eastern DRC" : country === "uganda" ? "Uganda" : "Rwanda",
-  intro: "",
-  content_markdown: "",
-  key_points: [],
-  cta_label: "Explore Itineraries",
-  cta_link: "/itineraries",
-  is_active: true,
   display_order: order,
 });
 
