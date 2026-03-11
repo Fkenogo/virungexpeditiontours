@@ -1,10 +1,13 @@
+import { toWhatsAppUrl, useSiteSettings } from "@/hooks/useSiteSettings";
+
 const WhatsAppFloat = () => {
+  const { settings } = useSiteSettings();
   return (
     <a
-      href="https://wa.me/250783959404"
+      href={toWhatsAppUrl(settings.whatsapp_numbers[0])}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 animate-pulse"
+      className="fixed bottom-24 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 animate-pulse"
       aria-label="Chat on WhatsApp"
     >
       <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">

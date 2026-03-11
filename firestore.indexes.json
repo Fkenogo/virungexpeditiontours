@@ -1,0 +1,22 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "tour_availability",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "tour_name", "order": "ASCENDING"},
+        {"fieldPath": "date", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "tour_bookings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "status", "order": "ASCENDING"},
+        {"fieldPath": "created_at", "order": "DESCENDING"}
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
+

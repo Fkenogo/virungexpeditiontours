@@ -4,8 +4,10 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { httpsCallable } from "firebase/functions";
+import { functions } from "@/integrations/firebase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 interface Message {
   role: "user" | "assistant";
@@ -26,6 +28,7 @@ const TravelChatbot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { settings } = useSiteSettings();
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -51,11 +54,9 @@ const TravelChatbot = () => {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke("travel-chatbot", {
-        body: { message: input.trim() },
-      });
-
-      if (error) throw error;
+      const invokeChatbot = httpsCallable(functions, "travelChatbot");
+      const response = await invokeChatbot({message: input.trim()});
+      const data = response.data as {response?: string; fallback?: string};
 
       const assistantMessage: Message = {
         role: "assistant",
@@ -64,12 +65,12 @@ const TravelChatbot = () => {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Chatbot error:", error);
       
       const errorMessage: Message = {
         role: "assistant",
-        content: "I'm having trouble connecting right now. For immediate assistance, please contact us via WhatsApp at +250 783 959 404 or email info@virungaexpeditiontours.com",
+        content: `I'm having trouble connecting right now. For immediate assistance, please contact us via WhatsApp at ${settings.whatsapp_numbers[0]} or email ${settings.emails[0]}`,
         timestamp: new Date(),
       };
 
@@ -171,7 +172,7 @@ const TravelChatbot = () => {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyPress}
                 placeholder="Ask about tours, bookings, permits..."
                 disabled={isLoading}
                 className="flex-1"

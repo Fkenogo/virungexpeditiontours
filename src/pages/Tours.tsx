@@ -1,4 +1,7 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "@/integrations/firebase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Clock, TrendingUp } from "lucide-react";
@@ -11,120 +14,86 @@ import akageraSafari from "@/assets/akagera-safari.jpg";
 import canopyWalkway from "@/assets/canopy-walkway.jpg";
 import virungaMountains from "@/assets/virunga-mountains.jpg";
 import kigaliCity from "@/assets/kigali-city-tours.jpg";
+import { useMediaAssets } from "@/hooks/useMediaAssets";
+import { useContentDoc } from "@/hooks/useContentDoc";
+import { TourPageContent, DEFAULT_TOUR_PAGE_CONTENT } from "@/types/tourPageContent";
+
+type TourPackage = {
+  id: string;
+  title: string;
+  subtitle: string;
+  location: string;
+  duration: string;
+  difficulty: string;
+  image_key:
+    | "hero-gorilla"
+    | "golden-monkeys"
+    | "chimpanzees"
+    | "colobus-monkeys"
+    | "chimpanzee-family"
+    | "akagera-safari"
+    | "canopy-walkway"
+    | "virunga-mountains"
+    | "kigali-city";
+  image_url: string | null;
+  description: string;
+  link: string;
+  display_order: number;
+  is_active: boolean;
+};
+
+const imageMap: Record<TourPackage["image_key"], string> = {
+  "hero-gorilla": heroGorilla,
+  "golden-monkeys": goldenMonkeys,
+  chimpanzees,
+  "colobus-monkeys": colobusMonkeys,
+  "chimpanzee-family": chimpanzeeFamily,
+  "akagera-safari": akageraSafari,
+  "canopy-walkway": canopyWalkway,
+  "virunga-mountains": virungaMountains,
+  "kigali-city": kigaliCity,
+};
+
+const normalizeTour = (id: string, raw: Record<string, unknown>): TourPackage => ({
+  id,
+  title: String(raw.title || ""),
+  subtitle: String(raw.subtitle || ""),
+  location: String(raw.location || ""),
+  duration: String(raw.duration || ""),
+  difficulty: String(raw.difficulty || ""),
+  image_key: (raw.image_key as TourPackage["image_key"]) || "hero-gorilla",
+  image_url: raw.image_url ? String(raw.image_url) : null,
+  description: String(raw.description || ""),
+  link: String(raw.link || "/tours"),
+  display_order: Number(raw.display_order || 0),
+  is_active: raw.is_active === undefined ? true : Boolean(raw.is_active),
+});
 
 const Tours = () => {
-  const tours = [
-    {
-      id: "gorilla-trekking",
-      title: "Mountain Gorilla Trekking",
-      subtitle: "The Ultimate Wildlife Encounter",
-      location: "Volcanoes National Park",
-      duration: "Full Day Experience",
-      difficulty: "Moderate to Challenging",
-      image: heroGorilla,
-      description: "Stand face-to-face with endangered mountain gorillas in their natural habitat. This life-changing experience in Volcanoes National Park ranks among the world's greatest wildlife encounters.",
-      link: "/tours/gorilla-trekking"
-    },
-    {
-      id: "golden-monkey",
-      title: "Golden Monkey Tracking",
-      subtitle: "Playful Bamboo Forest Primates",
-      location: "Volcanoes National Park",
-      duration: "Half Day",
-      difficulty: "Easy to Moderate",
-      image: goldenMonkeys,
-      description: "Watch endangered golden monkeys leap through bamboo forests with incredible energy and playfulness. Their striking golden fur makes for stunning photography.",
-      link: "/tours/golden-monkey"
-    },
-    {
-      id: "chimpanzee",
-      title: "Chimpanzee Trekking",
-      subtitle: "Meet Our Closest Relatives",
-      location: "Nyungwe Forest National Park",
-      duration: "Half to Full Day",
-      difficulty: "Moderate to Challenging",
-      image: chimpanzees,
-      description: "Trek through ancient rainforest to observe wild chimpanzees. Watch as they feed, play, and communicate with complex vocalizations in one of Africa's oldest forests.",
-      link: "/tours/chimpanzee"
-    },
-    {
-      id: "colobus-monkey",
-      title: "Colobus Monkey Tracking",
-      subtitle: "Spectacular Super-Troops",
-      location: "Nyungwe Forest National Park",
-      duration: "Half Day",
-      difficulty: "Easy",
-      image: colobusMonkeys,
-      description: "Observe troops of 300+ black and white colobus monkeys in stunning rainforest settings. Perfect for families and those wanting easier primate experiences.",
-      link: "/tours/colobus-monkey"
-    },
-    {
-      id: "lhoests-monkey",
-      title: "L'Hoest's Monkey Tracking",
-      subtitle: "The Shy Mountain Monkey",
-      location: "Nyungwe Forest National Park",
-      duration: "Half Day",
-      difficulty: "Moderate",
-      image: chimpanzeeFamily,
-      description: "Encounter one of Africa's least-known primates with distinctive white beards and chest bibs. A rare and rewarding experience for primate enthusiasts.",
-      link: "/tours/lhoests-monkey"
-    },
-    {
-      id: "owl-faced-monkey",
-      title: "Owl-Faced Monkey Tracking",
-      subtitle: "The Forest's Most Distinctive Primate",
-      location: "Nyungwe Forest National Park",
-      duration: "Half to Full Day",
-      difficulty: "Moderate to Challenging",
-      image: chimpanzees,
-      description: "Track the mysterious Hamlyn's monkey with striking owl-like facial markings. An exceptionally rare sighting for serious wildlife watchers.",
-      link: "/tours/owl-faced-monkey"
-    },
-    {
-      id: "canopy-walkway",
-      title: "Canopy Walkway",
-      subtitle: "Treetop Adventure",
-      location: "Nyungwe Forest National Park",
-      duration: "2-3 Hours",
-      difficulty: "Easy",
-      image: canopyWalkway,
-      description: "Walk 70 meters above the forest floor on East Africa's only canopy walkway. Experience the rainforest from a bird's eye view with stunning panoramic vistas.",
-      link: "/tours/canopy-walkway"
-    },
-    {
-      id: "dian-fossey-hike",
-      title: "Dian Fossey Tomb Hike",
-      subtitle: "Conservation History",
-      location: "Volcanoes National Park",
-      duration: "Half Day",
-      difficulty: "Moderate",
-      image: virungaMountains,
-      description: "Trek to the final resting place of legendary primatologist Dian Fossey. A moving tribute to the woman who saved mountain gorillas from extinction.",
-      link: "/tours/dian-fossey-hike"
-    },
-    {
-      id: "akagera-safari",
-      title: "Akagera National Park Safari",
-      subtitle: "Rwanda's Big Five Experience",
-      location: "Akagera National Park",
-      duration: "1-3 Days",
-      difficulty: "Easy",
-      image: akageraSafari,
-      description: "Classic African safari with lions, elephants, rhinos, buffalo, leopards, giraffes, zebras, and more. Game drives and boat safaris on scenic Lake Ihema.",
-      link: "/tours/akagera-safari"
-    },
-    {
-      id: "kigali-tour",
-      title: "Kigali City Tour",
-      subtitle: "Rwanda's Vibrant Capital",
-      location: "Kigali",
-      duration: "Half to Full Day",
-      difficulty: "Easy",
-      image: kigaliCity,
-      description: "Explore Kigali's genocide memorial, vibrant markets, art centers, and modern development. Essential context for understanding Rwanda's inspiring story.",
-      link: "/tours/kigali-city-tour"
-    }
-  ];
+  const { mediaMap } = useMediaAssets();
+  const { data: pageContent } = useContentDoc<TourPageContent>("tour_page_content", "main", DEFAULT_TOUR_PAGE_CONTENT);
+  const [tours, setTours] = useState<TourPackage[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTours = async () => {
+      try {
+        const toursQuery = query(collection(db, "tour_packages"), where("is_active", "==", true));
+        const snapshot = await getDocs(toursQuery);
+        const data = snapshot.docs
+          .map((docSnapshot) => normalizeTour(docSnapshot.id, docSnapshot.data() as Record<string, unknown>))
+          .sort((a, b) => a.display_order - b.display_order);
+        setTours(data);
+      } catch (error) {
+        console.error("Error fetching tour packages:", error);
+        setTours([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTours();
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -132,9 +101,9 @@ const Tours = () => {
       <section className="relative h-[400px] flex items-center justify-center bg-gradient-to-br from-primary to-primary-dark text-white">
         <div className="absolute inset-0 bg-black/30"></div>
         <div className="container mx-auto px-4 relative z-10 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Rwanda Tours & Safari Experiences</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">{pageContent.hero_title}</h1>
           <p className="text-xl md:text-2xl max-w-3xl mx-auto">
-            Discover Rwanda's Extraordinary Wildlife and Landscapes
+            {pageContent.hero_subtitle}
           </p>
         </div>
       </section>
@@ -144,10 +113,7 @@ const Tours = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-lg text-foreground/90 mb-6">
-              Rwanda, the "Land of a Thousand Hills," offers some of Africa's most profound wildlife encounters. From endangered mountain gorillas in misty volcanic forests to chimpanzees in ancient rainforests and Big Five safaris in savannah landscapes, Rwanda delivers unforgettable moments at every turn.
-            </p>
-            <p className="text-lg text-foreground/90">
-              Virunga Expedition Tours specializes in creating seamless, expertly-guided experiences across all of Rwanda's premier wildlife destinations.
+              {pageContent.introduction}
             </p>
           </div>
         </div>
@@ -158,12 +124,19 @@ const Tours = () => {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-12 text-center text-primary">Our Rwanda Safari Experiences</h2>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {tours.map((tour) => (
+          {loading ? (
+            <div className="text-center text-muted-foreground py-16">Loading tours...</div>
+          ) : tours.length === 0 ? (
+            <div className="text-center text-muted-foreground py-16">No tour packages available yet.</div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              {tours.map((tour) => {
+                const imageSrc = tour.image_url || mediaMap.get(tour.image_key) || imageMap[tour.image_key] || heroGorilla;
+                return (
               <Card key={tour.id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden">
                 <div className="relative h-64 overflow-hidden">
                   <img 
-                    src={tour.image} 
+                    src={imageSrc}
                     alt={tour.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
@@ -198,12 +171,16 @@ const Tours = () => {
                     <Link to={tour.link} className="flex-1">
                       <Button className="w-full">Learn More</Button>
                     </Link>
-                    <Button variant="outline" className="flex-1">Request Quote</Button>
+                    <Link to="/contact" className="flex-1">
+                      <Button variant="outline" className="w-full">Request Quote</Button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
-            ))}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
@@ -211,39 +188,20 @@ const Tours = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-3xl font-bold mb-8 text-center text-primary">Popular Tour Combinations</h2>
+            <h2 className="text-3xl font-bold mb-8 text-center text-primary">{pageContent.combo_experiences_title}</h2>
             <p className="text-lg text-center text-foreground/80 mb-12">
-              Many travelers combine multiple experiences for a comprehensive Rwanda adventure:
+              {pageContent.combo_experiences_description}
             </p>
             
             <div className="grid md:grid-cols-2 gap-6">
-              <Card className="border-secondary/30">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-3 text-secondary">Gorillas & Golden Monkeys</h3>
-                  <p className="text-foreground/80">Two-day Volcanoes Park experience combining both primate encounters</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-secondary/30">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-3 text-secondary">Primates & Safari</h3>
-                  <p className="text-foreground/80">Gorillas in Volcanoes Park plus Akagera game drives for complete wildlife experience</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-secondary/30">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-3 text-secondary">Complete Rwanda</h3>
-                  <p className="text-foreground/80">Gorillas, Chimps, and Safari across all major parks (7-10 days)</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-secondary/30">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-3 text-secondary">Family Adventure</h3>
-                  <p className="text-foreground/80">Golden monkeys, Akagera, and cultural experiences (no gorilla age restrictions)</p>
-                </CardContent>
-              </Card>
+              {pageContent.combo_experiences.map((combo, index) => (
+                <Card key={index} className="border-secondary/30">
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-semibold mb-3 text-secondary">{combo.title}</h3>
+                    <p className="text-foreground/80">{combo.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
 
             <div className="text-center mt-8">
@@ -262,13 +220,12 @@ const Tours = () => {
       <section className="section-padding bg-gradient-to-b from-background to-muted">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Best Time to Visit?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">{pageContent.seasonal_guide_title}</h2>
             <p className="text-lg text-muted-foreground mb-8">
-              Rwanda offers incredible experiences year-round, but each season brings unique advantages. 
-              Use our interactive comparison tool to see how parks transform throughout the year.
+              {pageContent.seasonal_guide_description}
             </p>
             <Button asChild size="lg">
-              <Link to="/tours/seasonal-comparison">Compare Seasonal Experiences →</Link>
+              <Link to={pageContent.seasonal_guide_link}>Compare Seasonal Experiences →</Link>
             </Button>
           </div>
         </div>
@@ -277,20 +234,16 @@ const Tours = () => {
       {/* CTA Section */}
       <section className="py-16 bg-secondary text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Book Your Rwanda Adventure?</h2>
+          <h2 className="text-3xl font-bold mb-6">{pageContent.cta_title}</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Our team will help you select the perfect combination of experiences based on your interests, timeframe, and budget.
+            {pageContent.cta_description}
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <Button size="lg" variant="default" className="bg-white text-secondary hover:bg-white/90">
-              Request Custom Quote
-            </Button>
-            <Button size="lg" variant="outlineLight">
-              WhatsApp: +250 783 959 404
-            </Button>
-            <Button size="lg" variant="outlineLight">
-              Call: +250 783 007 010
-            </Button>
+            {pageContent.cta_buttons.map((button, index) => (
+              <Button key={index} asChild size="lg" variant={button.variant as any}>
+                <Link to={button.link}>{button.label}</Link>
+              </Button>
+            ))}
           </div>
         </div>
       </section>

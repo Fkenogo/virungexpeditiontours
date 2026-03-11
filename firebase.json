@@ -1,0 +1,79 @@
+{
+  "firestore": {
+    "database": "(default)",
+    "location": "africa-south1",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ],
+  "hosting": {
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "emulators": {
+    "auth": {
+      "host": "127.0.0.1",
+      "port": 9200
+    },
+    "functions": {
+      "host": "127.0.0.1",
+      "port": 5106
+    },
+    "firestore": {
+      "host": "127.0.0.1",
+      "port": 8090
+    },
+    "hosting": {
+      "host": "127.0.0.1",
+      "port": 5004
+    },
+    "ui": {
+      "enabled": true,
+      "host": "127.0.0.1",
+      "port": 4003
+    },
+    "hub": {
+      "host": "127.0.0.1",
+      "port": 4411
+    },
+    "logging": {
+      "host": "127.0.0.1",
+      "port": 4511
+    },
+    "eventarc": {
+      "host": "127.0.0.1",
+      "port": 9302
+    },
+    "tasks": {
+      "host": "127.0.0.1",
+      "port": 9502
+    },
+    "singleProjectMode": true
+  }
+}

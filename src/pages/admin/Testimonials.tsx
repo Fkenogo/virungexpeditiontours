@@ -1,17 +1,18 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Star, MessageSquare } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
+import { db } from '@/integrations/firebase/client';
+import { useToast } from '@/hooks/use-toast';
+import { Plus, Pencil, Trash2, Star, MessageSquare } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 interface Testimonial {
   id: string;
@@ -28,16 +29,26 @@ interface Testimonial {
 }
 
 const TOUR_NAMES = [
-  "Mountain Gorilla Trekking",
-  "Golden Monkey Tracking",
-  "Chimpanzee Trekking",
-  "Colobus Monkey Tracking",
-  "Canopy Walkway",
-  "Dian Fossey Tomb Hike",
-  "Akagera Safari",
-  "Kigali City Tour",
-  "Multi-Day Safari",
+  'Mountain Gorilla Trekking',
+  'Golden Monkey Tracking',
+  'Chimpanzee Trekking',
+  'Colobus Monkey Tracking',
+  'Canopy Walkway',
+  'Dian Fossey Tomb Hike',
+  'Akagera Safari',
+  'Kigali City Tour',
+  'Multi-Day Safari',
 ];
+
+const normalizeDate = (value: unknown): string => {
+  if (typeof value === 'string') return value;
+  if (value instanceof Date) return value.toISOString();
+  if (value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
+    const parsed = value.toDate() as Date;
+    return parsed.toISOString();
+  }
+  return new Date().toISOString();
+};
 
 export default function Testimonials() {
   const { toast } = useToast();
@@ -46,12 +57,12 @@ export default function Testimonials() {
   const [showDialog, setShowDialog] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
   const [formData, setFormData] = useState({
-    customer_name: "",
-    customer_location: "",
-    tour_name: "",
+    customer_name: '',
+    customer_location: '',
+    tour_name: '',
     rating: 5,
-    testimonial_text: "",
-    visit_date: "",
+    testimonial_text: '',
+    visit_date: '',
     is_featured: false,
     is_active: true,
     display_order: 0,
@@ -63,19 +74,33 @@ export default function Testimonials() {
 
   const fetchTestimonials = async () => {
     try {
-      const { data, error } = await supabase
-        .from("testimonials")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const snapshot = await getDocs(collection(db, 'testimonials'));
+      const data = snapshot.docs
+        .map((docSnapshot) => {
+          const row = docSnapshot.data() as Omit<Testimonial, 'id' | 'created_at'> & { created_at?: unknown };
+          return {
+            id: docSnapshot.id,
+            customer_name: row.customer_name,
+            customer_location: row.customer_location,
+            tour_name: row.tour_name,
+            rating: Number(row.rating || 5),
+            testimonial_text: row.testimonial_text,
+            visit_date: row.visit_date || null,
+            is_featured: Boolean(row.is_featured),
+            is_active: Boolean(row.is_active),
+            display_order: Number(row.display_order || 0),
+            created_at: normalizeDate(row.created_at),
+          };
+        })
+        .sort((a, b) => normalizeDate(b.created_at).localeCompare(normalizeDate(a.created_at)));
 
-      if (error) throw error;
-      setTestimonials(data || []);
+      setTestimonials(data);
     } catch (error) {
-      console.error("Error fetching testimonials:", error);
+      console.error('Error fetching testimonials:', error);
       toast({
-        title: "Error",
-        description: "Failed to fetch testimonials",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to fetch testimonials',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -86,67 +111,62 @@ export default function Testimonials() {
     e.preventDefault();
 
     try {
-      if (editingTestimonial) {
-        const { error } = await supabase
-          .from("testimonials")
-          .update(formData)
-          .eq("id", editingTestimonial.id);
+      const payload = {
+        ...formData,
+        visit_date: formData.visit_date || null,
+        updated_at: new Date().toISOString(),
+      };
 
-        if (error) throw error;
+      if (editingTestimonial) {
+        await updateDoc(doc(db, 'testimonials', editingTestimonial.id), payload);
 
         toast({
-          title: "Success",
-          description: "Testimonial updated successfully",
+          title: 'Success',
+          description: 'Testimonial updated successfully',
         });
       } else {
-        const { error } = await supabase
-          .from("testimonials")
-          .insert([formData]);
-
-        if (error) throw error;
+        await addDoc(collection(db, 'testimonials'), {
+          ...payload,
+          created_at: new Date().toISOString(),
+        });
 
         toast({
-          title: "Success",
-          description: "Testimonial added successfully",
+          title: 'Success',
+          description: 'Testimonial added successfully',
         });
       }
 
       setShowDialog(false);
       setEditingTestimonial(null);
       resetForm();
-      fetchTestimonials();
+      await fetchTestimonials();
     } catch (error) {
-      console.error("Error saving testimonial:", error);
+      console.error('Error saving testimonial:', error);
       toast({
-        title: "Error",
-        description: "Failed to save testimonial",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to save testimonial',
+        variant: 'destructive',
       });
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this testimonial?")) return;
+    if (!confirm('Are you sure you want to delete this testimonial?')) return;
 
     try {
-      const { error } = await supabase
-        .from("testimonials")
-        .delete()
-        .eq("id", id);
-
-      if (error) throw error;
+      await deleteDoc(doc(db, 'testimonials', id));
 
       toast({
-        title: "Success",
-        description: "Testimonial deleted successfully",
+        title: 'Success',
+        description: 'Testimonial deleted successfully',
       });
-      fetchTestimonials();
+      await fetchTestimonials();
     } catch (error) {
-      console.error("Error deleting testimonial:", error);
+      console.error('Error deleting testimonial:', error);
       toast({
-        title: "Error",
-        description: "Failed to delete testimonial",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to delete testimonial',
+        variant: 'destructive',
       });
     }
   };
@@ -159,7 +179,7 @@ export default function Testimonials() {
       tour_name: testimonial.tour_name,
       rating: testimonial.rating,
       testimonial_text: testimonial.testimonial_text,
-      visit_date: testimonial.visit_date || "",
+      visit_date: testimonial.visit_date || '',
       is_featured: testimonial.is_featured,
       is_active: testimonial.is_active,
       display_order: testimonial.display_order,
@@ -169,12 +189,12 @@ export default function Testimonials() {
 
   const resetForm = () => {
     setFormData({
-      customer_name: "",
-      customer_location: "",
-      tour_name: "",
+      customer_name: '',
+      customer_location: '',
+      tour_name: '',
       rating: 5,
-      testimonial_text: "",
-      visit_date: "",
+      testimonial_text: '',
+      visit_date: '',
       is_featured: false,
       is_active: true,
       display_order: 0,
@@ -191,9 +211,7 @@ export default function Testimonials() {
     return Array.from({ length: 5 }).map((_, i) => (
       <Star
         key={i}
-        className={`w-4 h-4 ${
-          i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-        }`}
+        className={`w-4 h-4 ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
       />
     ));
   };
@@ -239,9 +257,7 @@ export default function Testimonials() {
                     <TableCell>
                       <div>
                         <p className="font-medium">{testimonial.customer_name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {testimonial.customer_location}
-                        </p>
+                        <p className="text-sm text-muted-foreground">{testimonial.customer_location}</p>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -255,8 +271,8 @@ export default function Testimonials() {
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
-                        <Badge variant={testimonial.is_active ? "default" : "outline"}>
-                          {testimonial.is_active ? "Active" : "Inactive"}
+                        <Badge variant={testimonial.is_active ? 'default' : 'outline'}>
+                          {testimonial.is_active ? 'Active' : 'Inactive'}
                         </Badge>
                         {testimonial.is_featured && (
                           <Badge variant="secondary" className="ml-1">
@@ -270,11 +286,7 @@ export default function Testimonials() {
                         <Button variant="ghost" size="sm" onClick={() => handleEdit(testimonial)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDelete(testimonial.id)}
-                        >
+                        <Button variant="ghost" size="sm" onClick={() => handleDelete(testimonial.id)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -290,12 +302,8 @@ export default function Testimonials() {
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>
-              {editingTestimonial ? "Edit Testimonial" : "Add New Testimonial"}
-            </DialogTitle>
-            <DialogDescription>
-              Add or update customer testimonials and reviews
-            </DialogDescription>
+            <DialogTitle>{editingTestimonial ? 'Edit Testimonial' : 'Add New Testimonial'}</DialogTitle>
+            <DialogDescription>Add or update customer testimonials and reviews</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -317,9 +325,7 @@ export default function Testimonials() {
                   id="customer_location"
                   placeholder="New York, USA"
                   value={formData.customer_location}
-                  onChange={(e) =>
-                    setFormData({ ...formData, customer_location: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, customer_location: e.target.value })}
                   required
                 />
               </div>
@@ -349,8 +355,8 @@ export default function Testimonials() {
               <div className="space-y-2">
                 <Label htmlFor="rating">Rating *</Label>
                 <Select
-                  value={formData.rating.toString()}
-                  onValueChange={(value) => setFormData({ ...formData, rating: parseInt(value) })}
+                  value={String(formData.rating)}
+                  onValueChange={(value) => setFormData({ ...formData, rating: Number(value) })}
                   required
                 >
                   <SelectTrigger>
@@ -358,8 +364,8 @@ export default function Testimonials() {
                   </SelectTrigger>
                   <SelectContent>
                     {[5, 4, 3, 2, 1].map((rating) => (
-                      <SelectItem key={rating} value={rating.toString()}>
-                        {rating} Star{rating !== 1 ? "s" : ""}
+                      <SelectItem key={rating} value={String(rating)}>
+                        {rating} Star{rating !== 1 ? 's' : ''}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -397,29 +403,29 @@ export default function Testimonials() {
                   type="number"
                   min="0"
                   value={formData.display_order}
-                  onChange={(e) =>
-                    setFormData({ ...formData, display_order: parseInt(e.target.value) })
-                  }
+                  onChange={(e) => setFormData({ ...formData, display_order: Number(e.target.value) })}
                 />
               </div>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="is_featured"
-                checked={formData.is_featured}
-                onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
-              />
-              <Label htmlFor="is_featured">Featured (show on homepage)</Label>
-            </div>
+            <div className="flex gap-6">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="is_featured"
+                  checked={formData.is_featured}
+                  onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
+                />
+                <Label htmlFor="is_featured">Featured</Label>
+              </div>
 
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="is_active"
-                checked={formData.is_active}
-                onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-              />
-              <Label htmlFor="is_active">Active (visible on website)</Label>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="is_active"
+                  checked={formData.is_active}
+                  onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+                />
+                <Label htmlFor="is_active">Active (visible on website)</Label>
+              </div>
             </div>
 
             <div className="flex justify-end gap-2">
@@ -428,7 +434,7 @@ export default function Testimonials() {
               </Button>
               <Button type="submit">
                 <MessageSquare className="mr-2 h-4 w-4" />
-                {editingTestimonial ? "Update Testimonial" : "Add Testimonial"}
+                {editingTestimonial ? 'Update Testimonial' : 'Add Testimonial'}
               </Button>
             </div>
           </form>

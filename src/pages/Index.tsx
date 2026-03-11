@@ -1,4 +1,7 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
+import { db } from "@/integrations/firebase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,15 +21,105 @@ import akageraElephant from "@/assets/akagera-elephant.jpg";
 import colobusMonkeys from "@/assets/colobus-monkeys-nyungwe.jpg";
 import dianFosseyTomb from "@/assets/dian-fossey-tomb.jpg";
 import kigaliCity from "@/assets/kigali-city.jpg";
+import { useMediaAssets } from "@/hooks/useMediaAssets";
+import { toTelUrl, toWhatsAppUrl, useSiteSettings } from "@/hooks/useSiteSettings";
+import { useContentDoc } from "@/hooks/useContentDoc";
+
+type HomeContent = {
+  hero_title: string;
+  hero_subtitle: string;
+  hero_cta_primary: string;
+  hero_cta_secondary: string;
+  intro_heading: string;
+  intro_body_1: string;
+  intro_body_2: string;
+};
+
+const DEFAULT_HOME: HomeContent = {
+  hero_title: "Discover the Heart of Africa with Virunga Expedition Tours",
+  hero_subtitle: "Experience unforgettable gorilla trekking, wildlife safaris, and volcano adventures across Rwanda, Uganda, and Eastern DRC",
+  hero_cta_primary: "Explore Rwanda Tours",
+  hero_cta_secondary: "Request Custom Quote",
+  intro_heading: "Welcome to Virunga Expedition Tours",
+  intro_body_1: "We are your gateway to Rwanda's most extraordinary wildlife experiences. Based in Kigali and specializing in the spectacular Virunga Mountains region, we create unforgettable adventures that connect you with endangered mountain gorillas, rare primates, and Africa's most breathtaking landscapes.",
+  intro_body_2: "Whether you dream of tracking mountain gorillas in Volcanoes National Park, watching chimpanzees swing through ancient rainforests, or embarking on Big Five safaris in Akagera, we curate personalized journeys that exceed expectations.",
+};
+
+type Testimonial = {
+  id: string;
+  customer_name: string;
+  customer_location: string;
+  rating: number;
+  testimonial_text: string;
+  visit_date: string | null;
+  is_featured: boolean;
+};
+
+const FALLBACK_TESTIMONIALS: Testimonial[] = [
+  {
+    id: "fallback-1",
+    customer_name: "Jennifer M.",
+    customer_location: "Australia",
+    rating: 5,
+    testimonial_text: "The gorilla trek was absolutely life-changing. Our guide from Virunga Expedition Tours was knowledgeable, patient, and made sure everything went smoothly. Standing meters from a silverback gorilla is something I'll never forget!",
+    visit_date: "March 2024",
+    is_featured: true,
+  },
+  {
+    id: "fallback-2",
+    customer_name: "David & Sarah T.",
+    customer_location: "UK",
+    rating: 5,
+    testimonial_text: "We booked a 7-day Rwanda safari and it exceeded every expectation. From Akagera's game drives to Nyungwe's chimps to the incredible gorilla encounter - everything was perfectly organized. Highly recommend!",
+    visit_date: "August 2024",
+    is_featured: true,
+  },
+  {
+    id: "fallback-3",
+    customer_name: "Marie L.",
+    customer_location: "Canada",
+    rating: 5,
+    testimonial_text: "As a solo traveler, I was nervous about logistics. Virunga Expedition Tours handled everything - permits, transport, accommodation. I just showed up and experienced magic. The golden monkeys were a bonus highlight!",
+    visit_date: "June 2024",
+    is_featured: true,
+  },
+];
 
 const Index = () => {
+  const { settings } = useSiteSettings();
+  const { mediaMap } = useMediaAssets();
+  const { data: home } = useContentDoc<HomeContent>("home_content", "main", DEFAULT_HOME);
+  const media = (key: string, fallback: string) => mediaMap.get(key) || fallback;
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(FALLBACK_TESTIMONIALS);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const snap = await getDocs(
+          query(
+            collection(db, "testimonials"),
+            where("is_active", "==", true),
+            orderBy("display_order", "asc"),
+          ),
+        );
+        if (!snap.empty) {
+          const items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Testimonial, "id">) }));
+          setTestimonials(items.slice(0, 3));
+        }
+      } catch {
+        // Silently keep fallback testimonials
+      }
+    };
+    fetchTestimonials();
+  }, []);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative h-[600px] md:h-[700px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
-            src={heroGorilla} 
+            src={media("home-hero", heroGorilla)}
             alt="Mountain gorillas in Virunga Mountains" 
             className="w-full h-full object-cover"
           />
@@ -35,21 +128,21 @@ const Index = () => {
         
         <div className="container mx-auto px-4 z-10 text-center text-white">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in-up">
-            Discover the Heart of Africa with<br />Virunga Expedition Tours
+            {home.hero_title}
           </h1>
           <p className="text-lg md:text-xl mb-8 max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: "0.2s" }}>
-            Experience unforgettable gorilla trekking, wildlife safaris, and volcano adventures across Rwanda, Uganda, and Eastern DRC
+            {home.hero_subtitle}
           </p>
           
           <div className="flex flex-wrap gap-4 justify-center animate-fade-in" style={{ animationDelay: "0.4s" }}>
             <Button asChild size="lg" variant="secondary">
-              <Link to="/tours">Explore Rwanda Tours</Link>
+              <Link to="/tours">{home.hero_cta_primary}</Link>
             </Button>
             <Button asChild size="lg" variant="outlineLight">
-              <Link to="/contact">Request Custom Quote</Link>
+              <Link to="/contact">{home.hero_cta_secondary}</Link>
             </Button>
             <Button asChild size="lg" variant="whatsapp">
-              <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">
+              <a href={toWhatsAppUrl(settings.whatsapp_numbers[0])} target="_blank" rel="noopener noreferrer">
                 WhatsApp Us
               </a>
             </Button>
@@ -99,7 +192,7 @@ const Index = () => {
                 <Link to="/tours/gorilla-trekking" className="block group">
                   <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
                     <img
-                      src={gorillaGroup}
+                      src={media("home-carousel-gorilla-group", gorillaGroup)}
                       alt="Mountain gorillas in Volcanoes National Park"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading="lazy"
@@ -117,7 +210,7 @@ const Index = () => {
                 <Link to="/tours/golden-monkey" className="block group">
                   <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
                     <img
-                      src={goldenMonkeysVolcanoes}
+                      src={media("home-carousel-golden-monkeys", goldenMonkeysVolcanoes)}
                       alt="Golden monkeys in bamboo forest"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading="lazy"
@@ -135,7 +228,7 @@ const Index = () => {
                 <Link to="/tours/akagera-safari" className="block group">
                   <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
                     <img
-                      src={akageraElephant}
+                      src={media("home-carousel-akagera-elephant", akageraElephant)}
                       alt="Elephant in Akagera National Park"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading="lazy"
@@ -153,7 +246,7 @@ const Index = () => {
                 <Link to="/tours/chimpanzee" className="block group">
                   <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
                     <img
-                      src={chimpanzees}
+                      src={media("home-carousel-chimpanzees", chimpanzees)}
                       alt="Chimpanzees in Nyungwe Forest"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading="lazy"
@@ -171,7 +264,7 @@ const Index = () => {
                 <Link to="/tours/colobus" className="block group">
                   <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
                     <img
-                      src={colobusMonkeys}
+                      src={media("home-carousel-colobus", colobusMonkeys)}
                       alt="Colobus monkeys in Nyungwe"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading="lazy"
@@ -189,7 +282,7 @@ const Index = () => {
                 <Link to="/tours/dian-fossey-hike" className="block group">
                   <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
                     <img
-                      src={dianFosseyTomb}
+                      src={media("home-carousel-dian-fossey", dianFosseyTomb)}
                       alt="Dian Fossey tomb site"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading="lazy"
@@ -207,7 +300,7 @@ const Index = () => {
                 <Link to="/tours/kigali-city-tour" className="block group">
                   <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
                     <img
-                      src={kigaliCity}
+                      src={media("home-carousel-kigali", kigaliCity)}
                       alt="Kigali city tour"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading="lazy"
@@ -225,7 +318,7 @@ const Index = () => {
                 <Link to="/tours/canopy-walkway" className="block group">
                   <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
                     <img
-                      src={canopyWalkway}
+                      src={media("home-carousel-canopy", canopyWalkway)}
                       alt="Canopy walkway in Nyungwe"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading="lazy"
@@ -249,13 +342,13 @@ const Index = () => {
       <section className="section-padding bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Welcome to Virunga Expedition Tours</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">{home.intro_heading}</h2>
             <div className="space-y-4 text-lg text-muted-foreground">
               <p>
-                We are your gateway to Rwanda's most extraordinary wildlife experiences. Based in Kigali and specializing in the spectacular Virunga Mountains region, we create unforgettable adventures that connect you with endangered mountain gorillas, rare primates, and Africa's most breathtaking landscapes.
+                {home.intro_body_1}
               </p>
               <p>
-                Whether you dream of tracking mountain gorillas in Volcanoes National Park, watching chimpanzees swing through ancient rainforests, or embarking on Big Five safaris in Akagera, we curate personalized journeys that exceed expectations.
+                {home.intro_body_2}
               </p>
               <p>
                 With deep local expertise, international standards, and a commitment to sustainable tourism, Virunga Expedition Tours transforms your African safari dreams into reality.
@@ -281,7 +374,7 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <Card className="card-hover overflow-hidden">
               <div className="relative h-64">
-                <img src={heroGorilla} alt="Mountain Gorilla Family in Volcanoes National Park" className="w-full h-full object-cover" />
+                <img src={media("home-featured-gorilla", heroGorilla)} alt="Mountain Gorilla Family in Volcanoes National Park" className="w-full h-full object-cover" />
                 <Badge className="absolute top-4 right-4 bg-secondary">Most Popular</Badge>
               </div>
               <CardHeader>
@@ -300,7 +393,7 @@ const Index = () => {
 
             <Card className="card-hover overflow-hidden">
               <div className="relative h-64">
-                <img src={goldenMonkeys} alt="Golden Monkey Tracking" className="w-full h-full object-cover" />
+                <img src={media("home-featured-golden-monkeys", goldenMonkeys)} alt="Golden Monkey Tracking" className="w-full h-full object-cover" />
               </div>
               <CardHeader>
                 <CardTitle>Golden Monkey Tracking</CardTitle>
@@ -318,7 +411,7 @@ const Index = () => {
 
             <Card className="card-hover overflow-hidden">
               <div className="relative h-64">
-                <img src={akageraSafari} alt="Akagera Safari" className="w-full h-full object-cover" />
+                <img src={media("home-featured-akagera", akageraSafari)} alt="Akagera Safari" className="w-full h-full object-cover" />
               </div>
               <CardHeader>
                 <CardTitle>Akagera Safari</CardTitle>
@@ -431,7 +524,7 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="card-hover">
               <div className="relative h-48">
-                <img src={rwandaVirunga} alt="Rwanda - The Ultimate Gorilla Kingdom" className="w-full h-full object-cover" />
+                <img src={media("home-destination-rwanda", rwandaVirunga)} alt="Rwanda - The Ultimate Gorilla Kingdom" className="w-full h-full object-cover" />
               </div>
               <CardHeader>
                 <CardTitle>Rwanda: The Ultimate Gorilla Kingdom</CardTitle>
@@ -451,7 +544,7 @@ const Index = () => {
 
             <Card className="card-hover">
               <div className="relative h-48">
-                <img src={bwindiTrails} alt="Western Uganda - The Impenetrable Wild" className="w-full h-full object-cover" />
+                <img src={media("home-destination-uganda", bwindiTrails)} alt="Western Uganda - The Impenetrable Wild" className="w-full h-full object-cover" />
               </div>
               <CardHeader>
                 <CardTitle>Western Uganda: The Impenetrable Wild</CardTitle>
@@ -471,7 +564,7 @@ const Index = () => {
 
             <Card className="card-hover">
               <div className="relative h-48">
-                <img src={virungaVolcanoes} alt="Eastern DRC - Africa's Most Epic Adventure" className="w-full h-full object-cover" />
+                <img src={media("home-destination-drc", virungaVolcanoes)} alt="Eastern DRC - Africa's Most Epic Adventure" className="w-full h-full object-cover" />
               </div>
               <CardHeader>
                 <CardTitle>Eastern DRC: Africa's Most Epic Adventure in the Virunga</CardTitle>
@@ -498,58 +591,29 @@ const Index = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">What Our Travelers Say</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="card-hover">
-              <CardHeader>
-                <div className="flex gap-1 mb-2">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-secondary text-secondary" />
-                  ))}
-                </div>
-                <CardDescription>Jennifer M., Australia • March 2024</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">
-                  "The gorilla trek was absolutely life-changing. Our guide from Virunga Expedition Tours was knowledgeable, patient, and made sure everything went smoothly. Standing meters from a silverback gorilla is something I'll never forget!"
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="card-hover">
-              <CardHeader>
-                <div className="flex gap-1 mb-2">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-secondary text-secondary" />
-                  ))}
-                </div>
-                <CardDescription>David & Sarah T., UK • August 2024</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">
-                  "We booked a 7-day Rwanda safari and it exceeded every expectation. From Akagera's game drives to Nyungwe's chimps to the incredible gorilla encounter - everything was perfectly organized. Highly recommend!"
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="card-hover">
-              <CardHeader>
-                <div className="flex gap-1 mb-2">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-secondary text-secondary" />
-                  ))}
-                </div>
-                <CardDescription>Marie L., Canada • June 2024</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">
-                  "As a solo traveler, I was nervous about logistics. Virunga Expedition Tours handled everything - permits, transport, accommodation. I just showed up and experienced magic. The golden monkeys were a bonus highlight!"
-                </p>
-              </CardContent>
-            </Card>
+            {testimonials.map((t) => (
+              <Card key={t.id} className="card-hover">
+                <CardHeader>
+                  <div className="flex gap-1 mb-2">
+                    {[...Array(Math.min(5, Math.max(1, t.rating || 5)))].map((_, i) => (
+                      <Star key={i} className="h-5 w-5 fill-secondary text-secondary" />
+                    ))}
+                  </div>
+                  <CardDescription>
+                    {t.customer_name}{t.customer_location ? `, ${t.customer_location}` : ""}
+                    {t.visit_date ? ` • ${t.visit_date}` : ""}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm">"{t.testimonial_text}"</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
           <div className="text-center mt-8">
             <Button asChild variant="outline" size="lg">
-              <Link to="/about">Read More Reviews</Link>
+              <Link to="/contact">Share Your Experience</Link>
             </Button>
           </div>
         </div>
@@ -576,7 +640,7 @@ const Index = () => {
               <h3 className="font-bold mb-2">WhatsApp Us Now</h3>
               <p className="text-sm opacity-90 mb-4">Get instant answers to your questions</p>
               <Button asChild variant="whatsapp" className="w-full">
-                <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">Chat Now</a>
+                <a href={toWhatsAppUrl(settings.whatsapp_numbers[0])} target="_blank" rel="noopener noreferrer">Chat Now</a>
               </Button>
             </div>
 
@@ -584,7 +648,7 @@ const Index = () => {
               <h3 className="font-bold mb-2">Call Us</h3>
               <p className="text-sm opacity-90 mb-4">Speak with our travel experts</p>
               <Button asChild variant="outlineLight" className="w-full">
-                <a href="tel:+250783007010">+250 783 007 010</a>
+                <a href={toTelUrl(settings.phones[1] || settings.phones[0])}>{settings.phones[1] || settings.phones[0]}</a>
               </Button>
             </div>
           </div>

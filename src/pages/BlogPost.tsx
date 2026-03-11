@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '@/integrations/firebase/client';
 import { format } from 'date-fns';
 import { Calendar, Tag, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,22 +11,39 @@ import BlogBreadcrumb from '@/components/Breadcrumb';
 import TableOfContents from '@/components/TableOfContents';
 import SocialShare from '@/components/SocialShare';
 
+type BlogPostData = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  featured_image: string | null;
+  meta_title: string | null;
+  meta_description: string | null;
+  published: boolean;
+  published_at: string | null;
+};
+
+const normalizeDate = (value: unknown): string | null => {
+  if (!value) return null;
+  if (typeof value === 'string') return value;
+  if (value instanceof Date) return value.toISOString();
+  if (value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
+    const parsed = value.toDate() as Date;
+    return parsed.toISOString();
+  }
+  return null;
+};
+
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
+  const [post, setPost] = useState<BlogPostData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { data: post, isLoading } = useQuery({
-    queryKey: ['blog-post', slug],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('blog_posts')
-        .select('*')
-        .eq('slug', slug)
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-  });
+  useEffect(() => {
+    fetchPost();
+  }, [slug]);
 
   useEffect(() => {
     if (post) {
@@ -37,6 +54,52 @@ export default function BlogPost() {
       }
     }
   }, [post]);
+
+  const fetchPost = async () => {
+    if (!slug) {
+      setPost(null);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const blogQuery = query(collection(db, 'blog_posts'), where('slug', '==', slug));
+      const snapshot = await getDocs(blogQuery);
+
+      if (snapshot.empty) {
+        setPost(null);
+        return;
+      }
+
+      const docSnapshot = snapshot.docs[0];
+      const row = docSnapshot.data() as Omit<BlogPostData, 'id' | 'published_at'> & { published_at?: unknown };
+      const publishedAt = normalizeDate(row.published_at);
+
+      if (!row.published && !publishedAt) {
+        setPost(null);
+        return;
+      }
+
+      setPost({
+        id: docSnapshot.id,
+        title: row.title,
+        slug: row.slug,
+        excerpt: row.excerpt,
+        content: row.content,
+        category: row.category,
+        featured_image: row.featured_image || null,
+        meta_title: row.meta_title || null,
+        meta_description: row.meta_description || null,
+        published: Boolean(row.published || publishedAt),
+        published_at: publishedAt,
+      });
+    } catch (error) {
+      console.error('Error fetching blog post:', error);
+      setPost(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -65,11 +128,7 @@ export default function BlogPost() {
     <article className="min-h-screen bg-background">
       {post.featured_image && (
         <div className="w-full h-[400px] overflow-hidden">
-          <img
-            src={post.featured_image}
-            alt={post.title}
-            className="w-full h-full object-cover"
-          />
+          <img src={post.featured_image} alt={post.title} className="w-full h-full object-cover" />
         </div>
       )}
 
@@ -93,7 +152,7 @@ export default function BlogPost() {
           <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
             <span className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
-              {format(new Date(post.published_at), 'MMMM d, yyyy')}
+              {format(new Date(post.published_at || Date.now()), 'MMMM d, yyyy')}
             </span>
             <span className="flex items-center gap-1">
               <Tag className="w-4 h-4" />
@@ -113,41 +172,67 @@ export default function BlogPost() {
                 components={{
                   h2: ({ children, ...props }) => {
                     const id = `heading-${children?.toString().toLowerCase().replace(/\s+/g, '-')}`;
-                    return <h2 id={id} className="scroll-mt-20" {...props}>{children}</h2>;
+                    return (
+                      <h2 id={id} className="scroll-mt-20" {...props}>
+                        {children}
+                      </h2>
+                    );
                   },
                   h3: ({ children, ...props }) => {
                     const id = `heading-${children?.toString().toLowerCase().replace(/\s+/g, '-')}`;
-                    return <h3 id={id} className="scroll-mt-20" {...props}>{children}</h3>;
+                    return (
+                      <h3 id={id} className="scroll-mt-20" {...props}>
+                        {children}
+                      </h3>
+                    );
                   },
                   p: ({ children, ...props }) => (
-                    <p className="mb-4" {...props}>{children}</p>
+                    <p className="mb-4" {...props}>
+                      {children}
+                    </p>
                   ),
                   ul: ({ children, ...props }) => (
-                    <ul className="list-disc pl-6 space-y-2 mb-4" {...props}>{children}</ul>
+                    <ul className="list-disc pl-6 space-y-2 mb-4" {...props}>
+                      {children}
+                    </ul>
                   ),
                   ol: ({ children, ...props }) => (
-                    <ol className="list-decimal pl-6 space-y-2 mb-4" {...props}>{children}</ol>
+                    <ol className="list-decimal pl-6 space-y-2 mb-4" {...props}>
+                      {children}
+                    </ol>
                   ),
                   li: ({ children, ...props }) => (
-                    <li className="leading-relaxed" {...props}>{children}</li>
+                    <li className="leading-relaxed" {...props}>
+                      {children}
+                    </li>
                   ),
                   blockquote: ({ children, ...props }) => (
-                    <blockquote className="border-l-4 border-primary/50 bg-muted/30 py-3 px-4 my-6 rounded-r-md" {...props}>{children}</blockquote>
+                    <blockquote className="border-l-4 border-primary/50 bg-muted/30 py-3 px-4 my-6 rounded-r-md" {...props}>
+                      {children}
+                    </blockquote>
                   ),
                   table: ({ children, ...props }) => (
                     <div className="overflow-x-auto my-6">
-                      <table className="min-w-full border border-border rounded-lg overflow-hidden" {...props}>{children}</table>
+                      <table className="min-w-full border border-border rounded-lg overflow-hidden" {...props}>
+                        {children}
+                      </table>
                     </div>
                   ),
                   th: ({ children, ...props }) => (
-                    <th className="bg-muted px-4 py-3 text-left font-semibold border-b border-border" {...props}>{children}</th>
+                    <th className="bg-muted px-4 py-3 text-left font-semibold border-b border-border" {...props}>
+                      {children}
+                    </th>
                   ),
                   td: ({ children, ...props }) => (
-                    <td className="px-4 py-3 border-b border-border" {...props}>{children}</td>
+                    <td className="px-4 py-3 border-b border-border" {...props}>
+                      {children}
+                    </td>
                   ),
                   hr: () => <hr className="my-8 border-border" />,
                   a: ({ children, href, ...props }) => (
-                    <a href={href} className="text-primary hover:underline font-medium" {...props}>{children}</a>
+                    <a href={href} className="text-primary hover:underline font-medium" {...props}>
+                      {children}
+                    </a>
                   ),
                 }}
               >

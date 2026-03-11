@@ -1,53 +1,93 @@
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useEffect, useState } from 'react';
+import { collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore';
+import { db } from '@/integrations/firebase/client';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Clock } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
+type BlogPost = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  category: string;
+  featured_image: string | null;
+  content: string;
+  published: boolean;
+  published_at: string | null;
+};
+
 interface RelatedArticlesProps {
   currentPostId: string;
   currentCategory: string;
 }
 
+const normalizeDate = (value: unknown): string | null => {
+  if (!value) return null;
+  if (typeof value === 'string') return value;
+  if (value instanceof Date) return value.toISOString();
+  if (value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
+    const parsed = value.toDate() as Date;
+    return parsed.toISOString();
+  }
+  return null;
+};
+
 export default function RelatedArticles({ currentPostId, currentCategory }: RelatedArticlesProps) {
-  const { data: relatedPosts, isLoading } = useQuery({
-    queryKey: ['related-posts', currentPostId, currentCategory],
-    queryFn: async () => {
-      // First, try to get posts from the same category
-      const { data: sameCategoryPosts, error: categoryError } = await supabase
-        .from('blog_posts')
-        .select('id, title, slug, excerpt, category, featured_image, content, published_at')
-        .eq('category', currentCategory)
-        .neq('id', currentPostId)
-        .not('published_at', 'is', null)
-        .lte('published_at', new Date().toISOString())
-        .order('published_at', { ascending: false })
-        .limit(3);
+  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-      if (categoryError) throw categoryError;
+  useEffect(() => {
+    fetchRelatedPosts();
+  }, [currentPostId, currentCategory]);
 
-      // If we have enough posts from the same category, return them
-      if (sameCategoryPosts && sameCategoryPosts.length >= 3) {
-        return sameCategoryPosts;
-      }
+  const fetchRelatedPosts = async () => {
+    try {
+      const postsQuery = query(
+        collection(db, 'blog_posts'),
+        where('published', '==', true),
+        orderBy('published_at', 'desc'),
+        limit(20),
+      );
+      const snapshot = await getDocs(postsQuery);
+      const now = Date.now();
+      const allPublished = snapshot.docs
+        .map((docSnapshot) => {
+          const row = docSnapshot.data() as Omit<BlogPost, 'id' | 'published_at'> & { published_at?: unknown };
+          return {
+            id: docSnapshot.id,
+            title: row.title,
+            slug: row.slug,
+            excerpt: row.excerpt,
+            category: row.category,
+            featured_image: row.featured_image || null,
+            content: row.content || '',
+            published: Boolean(row.published || row.published_at),
+            published_at: normalizeDate(row.published_at),
+          };
+        })
+        .filter((post) => post.id !== currentPostId)
+        .filter((post) => post.published_at && new Date(post.published_at).getTime() <= now);
 
-      // Otherwise, supplement with recent posts from other categories
-      const { data: recentPosts, error: recentError } = await supabase
-        .from('blog_posts')
-        .select('id, title, slug, excerpt, category, featured_image, content, published_at')
-        .neq('id', currentPostId)
-        .not('published_at', 'is', null)
-        .lte('published_at', new Date().toISOString())
-        .order('published_at', { ascending: false })
-        .limit(3);
+      const sameCategory = allPublished.filter((post) => post.category === currentCategory).slice(0, 3);
+      const combined =
+        sameCategory.length >= 3
+          ? sameCategory
+          : [
+              ...sameCategory,
+              ...allPublished.filter((post) => post.category !== currentCategory).slice(0, 3 - sameCategory.length),
+            ];
 
-      if (recentError) throw recentError;
-
-      return recentPosts || [];
-    },
-  });
+      setRelatedPosts(combined);
+    } catch (error) {
+      console.error('Error fetching related posts:', error);
+      setRelatedPosts([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const calculateReadTime = (content: string) => {
     const wordsPerMinute = 200;
@@ -79,7 +119,7 @@ export default function RelatedArticles({ currentPostId, currentCategory }: Rela
     );
   }
 
-  if (!relatedPosts || relatedPosts.length === 0) {
+  if (!relatedPosts.length) {
     return null;
   }
 
@@ -103,14 +143,10 @@ export default function RelatedArticles({ currentPostId, currentCategory }: Rela
                 <Badge variant="secondary" className="w-fit mb-2">
                   {post.category}
                 </Badge>
-                <CardTitle className="line-clamp-2 text-xl hover:text-primary transition-colors">
-                  {post.title}
-                </CardTitle>
+                <CardTitle className="line-clamp-2 text-xl hover:text-primary transition-colors">{post.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="line-clamp-2 mb-4">
-                  {post.excerpt}
-                </CardDescription>
+                <CardDescription className="line-clamp-2 mb-4">{post.excerpt}</CardDescription>
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <Clock className="w-4 h-4" />
                   <span>{calculateReadTime(post.content)} min read</span>
@@ -123,4 +159,3 @@ export default function RelatedArticles({ currentPostId, currentCategory }: Rela
     </div>
   );
 }
-

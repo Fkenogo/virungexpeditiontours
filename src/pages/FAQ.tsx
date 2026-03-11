@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
+import { db } from "@/integrations/firebase/client";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HelpCircle } from "lucide-react";
+import { toWhatsAppUrl, useSiteSettings } from "@/hooks/useSiteSettings";
 
 interface FAQItem {
   id: string;
@@ -14,6 +16,7 @@ interface FAQItem {
 }
 
 export default function FAQ() {
+  const { settings } = useSiteSettings();
   const [faqs, setFaqs] = useState<FAQItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<string[]>([]);
@@ -24,16 +27,18 @@ export default function FAQ() {
 
   const fetchFAQs = async () => {
     try {
-      const { data, error } = await supabase
-        .from("faq_items")
-        .select("*")
-        .eq("is_active", true)
-        .order("category")
-        .order("display_order");
-
-      if (error) throw error;
-
-      setFaqs(data || []);
+      const faqQuery = query(
+        collection(db, "faq_items"),
+        where("is_active", "==", true),
+        orderBy("category"),
+        orderBy("display_order"),
+      );
+      const snapshot = await getDocs(faqQuery);
+      const data = snapshot.docs.map((docSnapshot) => ({
+        id: docSnapshot.id,
+        ...(docSnapshot.data() as Omit<FAQItem, "id">),
+      }));
+      setFaqs(data);
       
       // Extract unique categories
       const uniqueCategories = Array.from(new Set(data?.map((faq) => faq.category) || []));
@@ -130,7 +135,7 @@ export default function FAQ() {
               <CardContent className="text-center space-y-4">
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a
-                    href="https://wa.me/250783959404"
+                    href={toWhatsAppUrl(settings.whatsapp_numbers[0])}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center px-6 py-3 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors font-semibold"

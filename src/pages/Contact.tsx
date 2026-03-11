@@ -9,10 +9,45 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Phone, Mail, MessageCircle, MapPin, Clock, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
+import { db, functions } from "@/integrations/firebase/client";
+import { toTelUrl, toWhatsAppUrl, useSiteSettings } from "@/hooks/useSiteSettings";
+import { useContentDoc } from "@/hooks/useContentDoc";
+
+type ContactFormConfig = {
+  countries: string[];
+  nationalities: string[];
+  tour_interests: string[];
+  accommodation_options: string[];
+  heard_from_options: string[];
+};
+
+const DEFAULT_FORM_CONFIG: ContactFormConfig = {
+  countries: ["United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "Netherlands", "Belgium", "South Africa", "Other"],
+  nationalities: ["United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "Netherlands", "Belgium", "South Africa", "Other"],
+  tour_interests: [
+    "Mountain Gorilla Trekking",
+    "Golden Monkey Tracking",
+    "Chimpanzee Trekking",
+    "Colobus Monkey Tracking",
+    "Canopy Walkway",
+    "Dian Fossey Tomb Hike",
+    "Akagera Safari (Big Five)",
+    "Kigali City Tour",
+    "Lake Kivu",
+    "Cultural Experiences",
+    "Volcano Hiking",
+    "Bird Watching",
+  ],
+  accommodation_options: ["Budget", "Mid-Range", "Luxury", "Ultra-Luxury", "Mixed (Combination)"],
+  heard_from_options: ["Google Search", "TripAdvisor", "Social Media (Facebook, Instagram, etc.)", "Friend or Family Referral", "Travel Agent", "Previous Client", "Online Advertisement", "Other"],
+};
 
 const Contact = () => {
   const { toast } = useToast();
+  const { settings } = useSiteSettings();
+  const { data: formConfig } = useContentDoc<ContactFormConfig>("form_configs", "contact_quote", DEFAULT_FORM_CONFIG);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [quickIsSubmitting, setQuickIsSubmitting] = useState(false);
@@ -64,18 +99,15 @@ const Contact = () => {
     };
 
     try {
-      const { error: dbError } = await supabase
-        .from("quote_requests")
-        .insert([quoteData]);
+      await addDoc(collection(db, "quote_requests"), {
+        ...quoteData,
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
+      });
 
-      if (dbError) throw dbError;
-
-      const { data: emailData, error: emailError } = await supabase.functions.invoke(
-        "send-quote-notification",
-        { body: quoteData }
-      );
-
-      if (emailError) console.error("Email notification error:", emailError);
+      const sendQuoteNotification = httpsCallable(functions, "sendQuoteNotification");
+      const response = await sendQuoteNotification(quoteData);
+      const emailData = response.data as { delivery?: { customerEmail?: { success?: boolean } } };
 
       setSubmitted(true);
       
@@ -125,37 +157,20 @@ const Contact = () => {
       message: formData.get("qMessage") as string,
     };
 
-    console.log("Submitting inquiry data:", inquiryData);
-
     try {
       // Validate data before submission
       if (!inquiryData.name || !inquiryData.email || !inquiryData.message) {
         throw new Error("All fields are required");
       }
 
-      const { data: dbData, error: dbError } = await supabase
-        .from("quick_inquiries")
-        .insert([inquiryData])
-        .select();
+      await addDoc(collection(db, "quick_inquiries"), {
+        ...inquiryData,
+        created_at: serverTimestamp(),
+      });
 
-      if (dbError) {
-        console.error("Database error:", dbError);
-        throw dbError;
-      }
-
-      console.log("Database insert successful:", dbData);
-
-      const { data: emailData, error: emailError } = await supabase.functions.invoke(
-        "send-inquiry-notification",
-        { body: inquiryData }
-      );
-
-      if (emailError) {
-        console.error("Email notification error:", emailError);
-        // Email failure shouldn't stop the submission since data is in database
-      } else {
-        console.log("Email notification successful:", emailData);
-      }
+      const sendInquiryNotification = httpsCallable(functions, "sendInquiryNotification");
+      const response = await sendInquiryNotification(inquiryData);
+      const emailData = response.data as { delivery?: { customerEmail?: { success?: boolean } } };
 
       e.currentTarget.reset();
       setQuickPrivacyAccepted(false);
@@ -172,11 +187,12 @@ const Contact = () => {
           description: "We have your message and will respond via WhatsApp or email soon.",
         });
       }
-    } catch (error: any) {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Please try again or contact us directly via WhatsApp.";
       console.error("Error submitting inquiry:", error);
       toast({
         title: "Submission Error",
-        description: error.message || "Please try again or contact us directly via WhatsApp.",
+        description: message,
         variant: "destructive",
       });
     } finally {
@@ -208,8 +224,9 @@ const Contact = () => {
                   <h3 className="text-xl font-semibold mb-3">WhatsApp (Fastest)</h3>
                   <p className="text-foreground/80 mb-4">Click to chat instantly</p>
                   <div className="space-y-2 text-sm">
-                    <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer" className="font-medium hover:text-secondary transition-colors block">+250 783 959 404 (Lorraine)</a>
-                    <a href="https://wa.me/250783007010" target="_blank" rel="noopener noreferrer" className="font-medium hover:text-secondary transition-colors block">+250 783 007 010 (Egide)</a>
+                    {settings.whatsapp_numbers.map((phone) => (
+                      <a key={phone} href={toWhatsAppUrl(phone)} target="_blank" rel="noopener noreferrer" className="font-medium hover:text-secondary transition-colors block">{phone}</a>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
@@ -220,8 +237,9 @@ const Contact = () => {
                   <h3 className="text-xl font-semibold mb-3">Email</h3>
                   <p className="text-foreground/80 mb-4">For detailed inquiries</p>
                   <div className="space-y-2 text-sm">
-                    <a href="mailto:info@virungaexpeditiontours.com" className="font-medium hover:text-secondary transition-colors block">info@virungaexpeditiontours.com</a>
-                    <a href="mailto:egide@virungaexpeditiontours.com" className="font-medium hover:text-secondary transition-colors block">egide@virungaexpeditiontours.com</a>
+                    {settings.emails.map((email) => (
+                      <a key={email} href={`mailto:${email}`} className="font-medium hover:text-secondary transition-colors block">{email}</a>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
@@ -232,8 +250,9 @@ const Contact = () => {
                   <h3 className="text-xl font-semibold mb-3">Phone</h3>
                   <p className="text-foreground/80 mb-4">Speak with our experts</p>
                   <div className="space-y-2 text-sm">
-                    <a href="tel:+250783959404" className="font-medium hover:text-secondary transition-colors block">+250 783 959 404</a>
-                    <a href="tel:+250783007010" className="font-medium hover:text-secondary transition-colors block">+250 783 007 010</a>
+                    {settings.phones.map((phone) => (
+                      <a key={phone} href={toTelUrl(phone)} className="font-medium hover:text-secondary transition-colors block">{phone}</a>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
@@ -244,8 +263,9 @@ const Contact = () => {
                 <CardContent className="p-6">
                   <Clock className="w-8 h-8 text-primary mb-3" />
                   <h3 className="text-lg font-semibold mb-2">Office Hours</h3>
-                  <p className="text-foreground/80">Monday-Saturday: 8:00 AM - 6:00 PM CAT</p>
-                  <p className="text-foreground/80">Sunday: Closed</p>
+                  {settings.office_hours.map((line) => (
+                    <p key={line} className="text-foreground/80">{line}</p>
+                  ))}
                 </CardContent>
               </Card>
 
@@ -253,7 +273,7 @@ const Contact = () => {
                 <CardContent className="p-6">
                   <MapPin className="w-8 h-8 text-primary mb-3" />
                   <h3 className="text-lg font-semibold mb-2">Location</h3>
-                  <p className="text-foreground/80">Kigali, Rwanda</p>
+                  <p className="text-foreground/80">{settings.office_location}</p>
                   <p className="text-sm text-foreground/60">(Exact address provided upon booking)</p>
                 </CardContent>
               </Card>
@@ -303,16 +323,9 @@ const Contact = () => {
                               <SelectValue placeholder="Select country" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="United States">United States</SelectItem>
-                              <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-                              <SelectItem value="Canada">Canada</SelectItem>
-                              <SelectItem value="Australia">Australia</SelectItem>
-                              <SelectItem value="Germany">Germany</SelectItem>
-                              <SelectItem value="France">France</SelectItem>
-                              <SelectItem value="Netherlands">Netherlands</SelectItem>
-                              <SelectItem value="Belgium">Belgium</SelectItem>
-                              <SelectItem value="South Africa">South Africa</SelectItem>
-                              <SelectItem value="Other">Other</SelectItem>
+                              {formConfig.countries.map((country) => (
+                                <SelectItem key={country} value={country}>{country}</SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                         </div>
@@ -325,16 +338,9 @@ const Contact = () => {
                             <SelectValue placeholder="Select nationality" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="United States">United States</SelectItem>
-                            <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-                            <SelectItem value="Canada">Canada</SelectItem>
-                            <SelectItem value="Australia">Australia</SelectItem>
-                            <SelectItem value="Germany">Germany</SelectItem>
-                            <SelectItem value="France">France</SelectItem>
-                            <SelectItem value="Netherlands">Netherlands</SelectItem>
-                            <SelectItem value="Belgium">Belgium</SelectItem>
-                            <SelectItem value="South Africa">South Africa</SelectItem>
-                            <SelectItem value="Other">Other</SelectItem>
+                            {formConfig.nationalities.map((nationality) => (
+                              <SelectItem key={nationality} value={nationality}>{nationality}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>
@@ -376,20 +382,7 @@ const Contact = () => {
                       <h3 className="text-xl font-semibold text-secondary">Tour Interests (Select all that apply)</h3>
                       
                       <div className="grid md:grid-cols-2 gap-3">
-                        {[
-                          "Mountain Gorilla Trekking",
-                          "Golden Monkey Tracking",
-                          "Chimpanzee Trekking",
-                          "Colobus Monkey Tracking",
-                          "Canopy Walkway",
-                          "Dian Fossey Tomb Hike",
-                          "Akagera Safari (Big Five)",
-                          "Kigali City Tour",
-                          "Lake Kivu",
-                          "Cultural Experiences",
-                          "Volcano Hiking",
-                          "Bird Watching"
-                        ].map((interest) => (
+                        {formConfig.tour_interests.map((interest) => (
                           <div key={interest} className="flex items-center space-x-2">
                             <Checkbox id={`interest-${interest}`} name={`interest-${interest}`} />
                             <Label htmlFor={`interest-${interest}`} className="font-normal">{interest}</Label>
@@ -418,11 +411,9 @@ const Contact = () => {
                           <SelectValue placeholder="Select accommodation preference" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Budget">Budget</SelectItem>
-                          <SelectItem value="Mid-Range">Mid-Range</SelectItem>
-                          <SelectItem value="Luxury">Luxury</SelectItem>
-                          <SelectItem value="Ultra-Luxury">Ultra-Luxury</SelectItem>
-                          <SelectItem value="Mixed">Mixed (Combination)</SelectItem>
+                          {formConfig.accommodation_options.map((option) => (
+                            <SelectItem key={option} value={option}>{option}</SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -446,14 +437,9 @@ const Contact = () => {
                           <SelectValue placeholder="Select an option" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Google Search">Google Search</SelectItem>
-                          <SelectItem value="TripAdvisor">TripAdvisor</SelectItem>
-                          <SelectItem value="Social Media">Social Media (Facebook, Instagram, etc.)</SelectItem>
-                          <SelectItem value="Friend Referral">Friend or Family Referral</SelectItem>
-                          <SelectItem value="Travel Agent">Travel Agent</SelectItem>
-                          <SelectItem value="Previous Client">Previous Client</SelectItem>
-                          <SelectItem value="Online Ad">Online Advertisement</SelectItem>
-                          <SelectItem value="Other">Other</SelectItem>
+                          {formConfig.heard_from_options.map((option) => (
+                            <SelectItem key={option} value={option}>{option}</SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -693,12 +679,12 @@ const Contact = () => {
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
                 <Button asChild variant="default">
-                  <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">
+                  <a href={toWhatsAppUrl(settings.whatsapp_numbers[0])} target="_blank" rel="noopener noreferrer">
                     WhatsApp Us
                   </a>
                 </Button>
                 <Button asChild variant="outline">
-                  <a href="mailto:info@virungaexpeditiontours.com">
+                  <a href={`mailto:${settings.emails[0]}`}>
                     Email Us
                   </a>
                 </Button>

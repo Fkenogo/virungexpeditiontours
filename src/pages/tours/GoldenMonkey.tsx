@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, Camera, Users, Star, Video, Image as ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { toWhatsAppUrl, useSiteSettings } from "@/hooks/useSiteSettings";
 import goldenMonkeysImg from "@/assets/golden-monkeys-volcanoes-family.webp";
 import goldenMonkeysCloseup from "@/assets/golden-monkeys-closeup.jpg";
 import goldenMonkeysRwanda from "@/assets/golden-monkeys-rwanda.jpg";
@@ -12,6 +13,7 @@ import { VideoEmbed } from "@/components/VideoEmbed";
 import { PhotoGallery } from "@/components/PhotoGallery";
 
 const GoldenMonkey = () => {
+  const { settings } = useSiteSettings();
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -34,7 +36,7 @@ const GoldenMonkey = () => {
               <Link to="/contact">Request Quote</Link>
             </Button>
             <Button asChild size="lg" variant="outlineLight">
-              <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">
+              <a href={toWhatsAppUrl(settings.whatsapp_numbers[0])} target="_blank" rel="noopener noreferrer">
                 WhatsApp Us
               </a>
             </Button>
@@ -434,7 +436,7 @@ const GoldenMonkey = () => {
               <Link to="/contact">Request Quote</Link>
             </Button>
             <Button asChild size="lg" variant="outlineLight">
-              <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">
+              <a href={toWhatsAppUrl(settings.whatsapp_numbers[0])} target="_blank" rel="noopener noreferrer">
                 WhatsApp: +250 783 959 404
               </a>
             </Button>

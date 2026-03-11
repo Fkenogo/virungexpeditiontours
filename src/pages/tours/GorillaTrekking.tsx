@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { toWhatsAppUrl, useSiteSettings } from "@/hooks/useSiteSettings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -14,6 +15,7 @@ import { VideoEmbed } from "@/components/VideoEmbed";
 import { PhotoGallery } from "@/components/PhotoGallery";
 
 const GorillaTrekking = () => {
+  const { settings } = useSiteSettings();
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -36,7 +38,7 @@ const GorillaTrekking = () => {
               <a href="/contact">Request Quote</a>
             </Button>
             <Button asChild size="lg" variant="outlineLight">
-              <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">WhatsApp Us</a>
+              <a href={toWhatsAppUrl(settings.whatsapp_numbers[0])} target="_blank" rel="noopener noreferrer">WhatsApp Us</a>
             </Button>
           </div>
         </div>

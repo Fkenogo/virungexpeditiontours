@@ -1,4 +1,4 @@
-import { Calendar, Home, LogOut, Package, Users, FileText, Video, HelpCircle, MessageSquare, FileSearch } from 'lucide-react';
+import { Calendar, Home, LogOut, Package, Users, FileText, Video, HelpCircle, MessageSquare, FileSearch, Route, Mountain, Globe, Settings, Image as ImageIcon, FilePenLine } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -26,6 +26,12 @@ const adminItems = [
   { title: 'Tour Videos', url: '/admin/tour-videos', icon: Video },
   { title: 'FAQ Management', url: '/admin/faq', icon: HelpCircle },
   { title: 'Testimonials', url: '/admin/testimonials', icon: MessageSquare },
+  { title: 'Itineraries', url: '/admin/itineraries', icon: Route },
+  { title: 'Tour Packages', url: '/admin/tours', icon: Mountain },
+  { title: 'Destinations', url: '/admin/destinations', icon: Globe },
+  { title: 'Site Settings', url: '/admin/settings', icon: Settings },
+  { title: 'Media Library', url: '/admin/media', icon: ImageIcon },
+  { title: 'Content', url: '/admin/content', icon: FilePenLine },
 ];
 
 export function AdminSidebar() {

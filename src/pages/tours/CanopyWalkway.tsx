@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Clock, Camera, Heart, Star, Video, Image as ImageIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { toWhatsAppUrl, useSiteSettings } from "@/hooks/useSiteSettings";
 import canopyWalkwayImg from "@/assets/canopy-walk-nyungwe.jpg";
 import canopyWalkImg2 from "@/assets/canopy-walkway.jpg";
 import { BookingCalendar } from "@/components/BookingCalendar";
@@ -9,6 +10,7 @@ import { VideoEmbed } from "@/components/VideoEmbed";
 import { PhotoGallery } from "@/components/PhotoGallery";
 
 const CanopyWalkway = () => {
+  const { settings } = useSiteSettings();
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -31,7 +33,7 @@ const CanopyWalkway = () => {
               <Link to="/contact">Request Quote</Link>
             </Button>
             <Button asChild size="lg" variant="outlineLight">
-              <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">
+              <a href={toWhatsAppUrl(settings.whatsapp_numbers[0])} target="_blank" rel="noopener noreferrer">
                 WhatsApp Us
               </a>
             </Button>
@@ -370,7 +372,7 @@ const CanopyWalkway = () => {
               <Link to="/contact">Request Quote</Link>
             </Button>
             <Button asChild size="lg" variant="outlineLight">
-              <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">
+              <a href={toWhatsAppUrl(settings.whatsapp_numbers[0])} target="_blank" rel="noopener noreferrer">
                 WhatsApp: +250 783 959 404
               </a>
             </Button>

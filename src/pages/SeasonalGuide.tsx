@@ -1,577 +1,501 @@
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/integrations/firebase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, CloudRain, Sun, Leaf, Users, CheckCircle2 } from "lucide-react";
-import heroImage from "@/assets/hero-gorilla-family.jpg";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Calendar,
+  MapPin,
+  Users,
+  DollarSign,
+  Sun,
+  CloudRain,
+  TreePine,
+  Camera,
+  Utensils,
+  TrendingUp,
+  BarChart3,
+  Info
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const SeasonalGuide = () => {
+type SeasonalGuideContent = {
+  title: string;
+  subtitle: string;
+  introduction: string;
+  parks: Array<{
+    id: string;
+    name: string;
+    description: string;
+    image_url: string;
+    location: string;
+    best_seasons: string[];
+    key_activities: string[];
+  }>;
+  seasons: Array<{
+    id: string;
+    name: string;
+    months: string;
+    weather: string;
+    description: string;
+    pros: string[];
+    cons: string[];
+    best_for: string[];
+    travel_tips: string[];
+  }>;
+  activities: Array<{
+    id: string;
+    name: string;
+    description: string;
+    difficulty: "Easy" | "Moderate" | "Challenging" | "Expert";
+    best_seasons: string[];
+    duration: string;
+    cost_range: string;
+  }>;
+  travel_tips: Array<{
+    id: string;
+    category: string;
+    tips: string[];
+  }>;
+  comparison_chart: {
+    chart_title: string;
+    chart_description: string;
+    metrics: Array<{
+      id: string;
+      name: string;
+      description: string;
+    }>;
+    data_points: Array<{
+      season: string;
+      values: Record<string, number>;
+    }>;
+  };
+};
+
+const DEFAULT_SEASONAL_GUIDE: SeasonalGuideContent = {
+  title: "Rwanda & Uganda Seasonal Guide",
+  subtitle: "When to Visit for the Best Safari Experience",
+  introduction: "Plan your perfect African safari with our comprehensive seasonal guide. Learn about the best times to visit Rwanda and Uganda for gorilla trekking, wildlife viewing, and cultural experiences.",
+  parks: [],
+  seasons: [],
+  activities: [],
+  travel_tips: [],
+  comparison_chart: {
+    chart_title: "Seasonal Comparison",
+    chart_description: "Compare seasons across key metrics to plan your perfect safari",
+    metrics: [],
+    data_points: []
+  }
+};
+
+export default function SeasonalGuide() {
+  const [content, setContent] = useState<SeasonalGuideContent>(DEFAULT_SEASONAL_GUIDE);
+  const [activeTab, setActiveTab] = useState("overview");
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const snap = await getDoc(doc(db, "seasonal_guide", "main"));
+        if (snap.exists()) {
+          setContent({ ...DEFAULT_SEASONAL_GUIDE, ...(snap.data() as Partial<SeasonalGuideContent>) });
+        }
+      } catch (error) {
+        console.error("Error loading seasonal guide:", error);
+      }
+    };
+
+    load();
+  }, []);
+
+  const getSeasonColor = (seasonName: string) => {
+    const colors = {
+      "Dry Season": "bg-blue-100 text-blue-800",
+      "Wet Season": "bg-green-100 text-green-800",
+      "High Season": "bg-orange-100 text-orange-800",
+      "Low Season": "bg-purple-100 text-purple-800"
+    };
+    return colors[seasonName as keyof typeof colors] || "bg-gray-100 text-gray-800";
+  };
+
+  const getActivityColor = (difficulty: string) => {
+    const colors = {
+      "Easy": "bg-green-100 text-green-800",
+      "Moderate": "bg-yellow-100 text-yellow-800", 
+      "Challenging": "bg-orange-100 text-orange-800",
+      "Expert": "bg-red-100 text-red-800"
+    };
+    return colors[difficulty as keyof typeof colors] || "bg-gray-100 text-gray-800";
+  };
+
+  const getMetricIcon = (metricName: string) => {
+    const icons = {
+      "Weather": <CloudRain className="h-4 w-4" />,
+      "Crowds": <Users className="h-4 w-4" />,
+      "Prices": <DollarSign className="h-4 w-4" />,
+      "Wildlife": <TreePine className="h-4 w-4" />,
+      "Accessibility": <MapPin className="h-4 w-4" />
+    };
+    return icons[metricName as keyof typeof icons] || <Info className="h-4 w-4" />;
+  };
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
       {/* Hero Section */}
-      <section className="relative h-[400px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src={heroImage} 
-            alt="Seasonal Travel Guide" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
-        </div>
-        
-        <div className="container mx-auto px-4 z-10 text-center text-white">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Seasonal Travel Guide
-          </h1>
-          <p className="text-lg md:text-xl max-w-3xl mx-auto">
-            Plan your perfect visit: weather patterns, wildlife viewing, and permit availability throughout the year
-          </p>
-        </div>
-      </section>
-
-      {/* Overview Section */}
-      <section className="section-padding bg-background">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Year-Round Wildlife Encounters</h2>
-            <p className="text-lg text-muted-foreground">
-              Rwanda, Uganda, and Eastern DRC offer incredible wildlife experiences throughout the year. 
-              Each season brings unique advantages for different activities and destinations.
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 opacity-90"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+              {content.title}
+            </h1>
+            <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
+              {content.subtitle}
+            </p>
+            <p className="text-lg text-white/80 max-w-4xl mx-auto">
+              {content.introduction}
             </p>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Main Seasons Overview */}
-      <section className="section-padding bg-muted">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            <Card className="border-2 border-primary/20">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-2">
-                  <Sun className="h-8 w-8 text-secondary" />
-                  <CardTitle className="text-2xl">Dry Season (Peak)</CardTitle>
-                </div>
-                <Badge className="w-fit">June - September & December - February</Badge>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h4 className="font-semibold mb-2">Weather Conditions</h4>
-                  <ul className="space-y-1 text-sm text-muted-foreground">
-                    <li>• Minimal rainfall, clear skies</li>
-                    <li>• Daytime: 20-25°C (68-77°F)</li>
-                    <li>• Cooler mornings in highlands</li>
-                    <li>• Excellent visibility for photography</li>
-                  </ul>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold mb-2 text-secondary">Best For</h4>
-                  <ul className="space-y-1 text-sm">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-secondary mt-0.5 flex-shrink-0" />
-                      <span><strong>Gorilla Trekking:</strong> Easier hiking conditions, drier trails</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-secondary mt-0.5 flex-shrink-0" />
-                      <span><strong>Akagera Safari:</strong> Animals gather at water sources, easier spotting</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-secondary mt-0.5 flex-shrink-0" />
-                      <span><strong>Chimpanzee Tracking:</strong> Clearer forest paths, better viewing</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-secondary mt-0.5 flex-shrink-0" />
-                      <span><strong>Canopy Walkway:</strong> Stunning views, comfortable conditions</span>
-                    </li>
-                  </ul>
-                </div>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="grid grid-cols-6 gap-2 max-w-4xl mx-auto">
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+              <Info className="h-4 w-4" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="seasons" className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Seasons
+            </TabsTrigger>
+            <TabsTrigger value="parks" className="flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              Parks
+            </TabsTrigger>
+            <TabsTrigger value="activities" className="flex items-center gap-2">
+              <Camera className="h-4 w-4" />
+              Activities
+            </TabsTrigger>
+            <TabsTrigger value="comparison" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Comparison
+            </TabsTrigger>
+            <TabsTrigger value="tips" className="flex items-center gap-2">
+              <Utensils className="h-4 w-4" />
+              Tips
+            </TabsTrigger>
+          </TabsList>
 
-                <div className="bg-secondary/10 p-4 rounded-lg">
-                  <h4 className="font-semibold mb-2">Permit Availability</h4>
-                  <p className="text-sm text-muted-foreground">
-                    <strong className="text-destructive">High Demand:</strong> Book 3-6 months in advance. 
-                    Peak season prices apply. Limited last-minute availability.
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-8">
+            <div className="grid md:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <Sun className="h-6 w-6 text-yellow-600" />
+                    Best Time to Visit
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Dry seasons offer the best conditions for wildlife viewing and trekking
                   </p>
-                </div>
-              </CardContent>
-            </Card>
+                  <div className="space-y-2">
+                    {content.seasons.slice(0, 2).map((season) => (
+                      <div key={season.id} className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                        <span className="font-medium">{season.name}</span>
+                        <span className="text-sm text-muted-foreground">{season.months}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
 
-            <Card className="border-2 border-accent/20">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-2">
-                  <CloudRain className="h-8 w-8 text-accent" />
-                  <CardTitle className="text-2xl">Wet Season (Green)</CardTitle>
-                </div>
-                <Badge variant="outline" className="w-fit">March - May & October - November</Badge>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h4 className="font-semibold mb-2">Weather Conditions</h4>
-                  <ul className="space-y-1 text-sm text-muted-foreground">
-                    <li>• Afternoon rain showers (1-2 hours)</li>
-                    <li>• Daytime: 18-23°C (64-73°F)</li>
-                    <li>• Lush green landscapes</li>
-                    <li>• Muddy trails in highland parks</li>
-                  </ul>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold mb-2 text-accent">Advantages</h4>
-                  <ul className="space-y-1 text-sm">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
-                      <span><strong>Lower Prices:</strong> Discounted permits and accommodation</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
-                      <span><strong>Fewer Crowds:</strong> More intimate wildlife encounters</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
-                      <span><strong>Lush Scenery:</strong> Spectacular green landscapes, waterfalls</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
-                      <span><strong>Bird Watching:</strong> Migratory species, active breeding</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="bg-accent/10 p-4 rounded-lg">
-                  <h4 className="font-semibold mb-2">Permit Availability</h4>
-                  <p className="text-sm text-muted-foreground">
-                    <strong className="text-primary">Better Availability:</strong> Easier booking, 
-                    last-minute permits possible. Some operators offer rainy season discounts.
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <TreePine className="h-6 w-6 text-green-600" />
+                    Wildlife Highlights
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Prime viewing opportunities for different species
                   </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                      <span className="font-medium">Mountain Gorillas</span>
+                      <span className="text-sm text-green-600">Year-round</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                      <span className="font-medium">Golden Monkeys</span>
+                      <span className="text-sm text-green-600">Dry season</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-      {/* Destination-Specific Guide */}
-      <section className="section-padding bg-background">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Best Times by Destination</h2>
-          
-          <div className="space-y-8">
-            {/* Rwanda - Volcanoes National Park */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div>
-                    <CardTitle className="text-2xl mb-2">Rwanda: Volcanoes National Park</CardTitle>
-                    <p className="text-muted-foreground">Gorilla & Golden Monkey Trekking</p>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <DollarSign className="h-6 w-6 text-blue-600" />
+                    Budget Planning
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Seasonal variations in accommodation and tour prices
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                      <span className="font-medium">High Season</span>
+                      <span className="text-sm text-red-600">+30-50%</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                      <span className="font-medium">Low Season</span>
+                      <span className="text-sm text-green-600">-20-30%</span>
+                    </div>
                   </div>
-                  <Badge variant="secondary" className="text-sm">Year-Round Destination</Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <Sun className="h-5 w-5 text-secondary" />
-                      Peak Season (Jun-Sep, Dec-Feb)
-                    </h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>✓ Easier trekking conditions</li>
-                      <li>✓ Clear mountain views</li>
-                      <li>✓ Best for photography</li>
-                      <li>⚠️ Book permits 4-6 months ahead</li>
-                      <li>⚠️ More trekkers on trails</li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <CloudRain className="h-5 w-5 text-accent" />
-                      Green Season (Mar-May, Oct-Nov)
-                    </h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>✓ 20% cheaper permits possible</li>
-                      <li>✓ Smaller trekking groups</li>
-                      <li>✓ Lush bamboo forests</li>
-                      <li>⚠️ Muddy, slippery trails</li>
-                      <li>⚠️ Afternoon rain likely</li>
-                    </ul>
-                  </div>
-                  
-                  <div className="bg-primary/5 p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2">Our Recommendation</h4>
-                    <p className="text-sm text-muted-foreground">
-                      <strong>June-September</strong> for first-time visitors. 
-                      <strong> April-May</strong> for budget-conscious travelers seeking 
-                      solitude and willing to trek in rain.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
-            {/* Rwanda - Nyungwe Forest */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div>
-                    <CardTitle className="text-2xl mb-2">Rwanda: Nyungwe Forest</CardTitle>
-                    <p className="text-muted-foreground">Chimpanzees, Colobus Monkeys & Canopy Walk</p>
-                  </div>
-                  <Badge variant="secondary" className="text-sm">Year-Round Destination</Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <Sun className="h-5 w-5 text-secondary" />
-                      Peak Season (Jun-Sep, Dec-Feb)
-                    </h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>✓ Drier forest trails</li>
-                      <li>✓ Easier chimp tracking</li>
-                      <li>✓ Clear canopy walkway views</li>
-                      <li>✓ Less leeches and mud</li>
-                      <li>⚠️ Chimps may be higher in trees</li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <CloudRain className="h-5 w-5 text-accent" />
-                      Green Season (Mar-May, Oct-Nov)
-                    </h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>✓ Chimps feed on lower branches</li>
-                      <li>✓ Better primate encounters</li>
-                      <li>✓ Spectacular waterfalls</li>
-                      <li>✓ Vibrant bird activity</li>
-                      <li>⚠️ Wet, slippery forest paths</li>
-                    </ul>
-                  </div>
-                  
-                  <div className="bg-primary/5 p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2">Our Recommendation</h4>
-                    <p className="text-sm text-muted-foreground">
-                      <strong>July-August</strong> for canopy walks and hiking. 
-                      <strong> March-April</strong> for best chimpanzee viewing 
-                      (they're closer to ground level).
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Rwanda - Akagera National Park */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div>
-                    <CardTitle className="text-2xl mb-2">Rwanda: Akagera National Park</CardTitle>
-                    <p className="text-muted-foreground">Big Five Safaris & Boat Tours</p>
-                  </div>
-                  <Badge variant="secondary" className="text-sm">Best: June-September</Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <Sun className="h-5 w-5 text-secondary" />
-                      Peak Season (Jun-Sep, Dec-Feb)
-                    </h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>✓ Animals at water holes</li>
-                      <li>✓ Easier wildlife spotting</li>
-                      <li>✓ Dry roads for game drives</li>
-                      <li>✓ Prime lion sightings</li>
-                      <li>✓ Excellent photography</li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <CloudRain className="h-5 w-5 text-accent" />
-                      Green Season (Mar-May, Oct-Nov)
-                    </h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>✓ Lush landscapes, baby animals</li>
-                      <li>✓ Migratory bird species</li>
-                      <li>✓ Lower accommodation rates</li>
-                      <li>⚠️ Animals dispersed (water everywhere)</li>
-                      <li>⚠️ Some tracks may be muddy</li>
-                    </ul>
-                  </div>
-                  
-                  <div className="bg-primary/5 p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2">Our Recommendation</h4>
-                    <p className="text-sm text-muted-foreground">
-                      <strong>June-September</strong> for guaranteed Big Five sightings. 
-                      Combine with gorilla trekking for the ultimate Rwanda experience.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Uganda - Bwindi */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div>
-                    <CardTitle className="text-2xl mb-2">Uganda: Bwindi Impenetrable Forest</CardTitle>
-                    <p className="text-muted-foreground">Gorilla Trekking in Uganda's Wilderness</p>
-                  </div>
-                  <Badge variant="secondary" className="text-sm">Year-Round Destination</Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <Sun className="h-5 w-5 text-secondary" />
-                      Peak Season (Jun-Sep, Dec-Feb)
-                    </h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>✓ Better hiking conditions</li>
-                      <li>✓ Less rain during treks</li>
-                      <li>✓ Clearer forest paths</li>
-                      <li>⚠️ More trekkers present</li>
-                      <li>⚠️ Higher accommodation costs</li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <CloudRain className="h-5 w-5 text-accent" />
-                      Green Season (Mar-May, Oct-Nov)
-                    </h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>✓ Cheaper Uganda permits (USD $400 vs $700)</li>
-                      <li>✓ Fewer tourists, more solitude</li>
-                      <li>✓ Gorillas easier to find (eating low)</li>
-                      <li>⚠️ Very challenging terrain</li>
-                      <li>⚠️ Heavy afternoon rains</li>
-                    </ul>
-                  </div>
-                  
-                  <div className="bg-primary/5 p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2">Our Recommendation</h4>
-                    <p className="text-sm text-muted-foreground">
-                      <strong>June-August</strong> for easier trekking. 
-                      <strong> April-May</strong> to save $300 on permits if you don't mind rain and mud.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Eastern DRC - Virunga */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div>
-                    <CardTitle className="text-2xl mb-2">Eastern DRC: Virunga National Park</CardTitle>
-                    <p className="text-muted-foreground">Gorillas & Nyiragongo Volcano</p>
-                  </div>
-                  <Badge variant="secondary" className="text-sm">Best: June-September</Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <Sun className="h-5 w-5 text-secondary" />
-                      Peak Season (Jun-Sep, Dec-Feb)
-                    </h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>✓ Best for volcano treks</li>
-                      <li>✓ Clear lava lake views</li>
-                      <li>✓ Safer hiking conditions</li>
-                      <li>✓ Optimal gorilla trekking</li>
-                      <li>⚠️ Limited permit availability</li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <CloudRain className="h-5 w-5 text-accent" />
-                      Green Season (Mar-May, Oct-Nov)
-                    </h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>✓ Fewer adventurers, exclusivity</li>
-                      <li>✓ Dramatic storm backdrops</li>
-                      <li>⚠️ Volcano treks may be closed</li>
-                      <li>⚠️ Challenging, muddy trails</li>
-                      <li>⚠️ Security considerations</li>
-                    </ul>
-                  </div>
-                  
-                  <div className="bg-primary/5 p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2">Our Recommendation</h4>
-                    <p className="text-sm text-muted-foreground">
-                      <strong>June-September</strong> only. Virunga requires optimal 
-                      conditions. We closely monitor security and only operate during safe periods.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Permit Booking Timeline */}
-      <section className="section-padding bg-muted">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-8">Permit Booking Timeline</h2>
-            
-            <Card>
-              <CardContent className="pt-6">
-                <div className="space-y-6">
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center font-bold">
-                        6+
+          {/* Seasons Tab */}
+          <TabsContent value="seasons" className="space-y-8">
+            <div className="grid gap-6">
+              {content.seasons.map((season) => (
+                <Card key={season.id}>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-3">
+                          <Calendar className="h-6 w-6" />
+                          {season.name}
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground">{season.months}</p>
+                      </div>
+                      <Badge className={getSeasonColor(season.name)}>
+                        {season.weather}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="font-semibold mb-2">Description</h4>
+                      <p className="text-sm text-muted-foreground mb-4">{season.description}</p>
+                      
+                      <h4 className="font-semibold mb-2">Best For</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {season.best_for.map((item) => (
+                          <Badge key={item} variant="secondary">{item}</Badge>
+                        ))}
                       </div>
                     </div>
+                    
                     <div>
-                      <h4 className="font-semibold mb-1">6+ Months in Advance</h4>
-                      <p className="text-sm text-muted-foreground">
-                        <strong>Peak Season (Dec-Feb, Jun-Sep):</strong> Rwanda gorilla permits, 
-                        Uganda peak season permits, Virunga DRC permits. Essential for large groups and specific dates.
-                      </p>
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <h4 className="font-semibold text-green-600 mb-2">Pros</h4>
+                          <ul className="text-sm space-y-1">
+                            {season.pros.map((pro) => (
+                              <li key={pro} className="text-muted-foreground">✓ {pro}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-red-600 mb-2">Cons</h4>
+                          <ul className="text-sm space-y-1">
+                            {season.cons.map((con) => (
+                              <li key={con} className="text-muted-foreground">✗ {con}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                      
+                      <h4 className="font-semibold mb-2">Travel Tips</h4>
+                      <ul className="text-sm space-y-1">
+                        {season.travel_tips.map((tip) => (
+                          <li key={tip} className="text-muted-foreground">• {tip}</li>
+                        ))}
+                      </ul>
                     </div>
-                  </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
 
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center font-bold">
-                        3-4
+          {/* Parks Tab */}
+          <TabsContent value="parks" className="space-y-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {content.parks.map((park) => (
+                <Card key={park.id} className="overflow-hidden">
+                  <img 
+                    src={park.image_url} 
+                    alt={park.name}
+                    className="w-full h-48 object-cover"
+                  />
+                  <CardHeader>
+                    <CardTitle>{park.name}</CardTitle>
+                    <p className="text-sm text-muted-foreground">{park.location}</p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm">{park.description}</p>
+                    
+                    <div>
+                      <h4 className="font-semibold mb-2">Best Seasons</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {park.best_seasons.map((season) => (
+                          <Badge key={season} variant="outline">{season}</Badge>
+                        ))}
                       </div>
                     </div>
+                    
                     <div>
-                      <h4 className="font-semibold mb-1">3-4 Months in Advance</h4>
-                      <p className="text-sm text-muted-foreground">
-                        <strong>Shoulder Season:</strong> Good availability for most parks. 
-                        Rwanda permits still recommended, Uganda more flexible. Akagera and Nyungwe usually available.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-bold">
-                        1-2
+                      <h4 className="font-semibold mb-2">Key Activities</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {park.key_activities.map((activity) => (
+                          <Badge key={activity} variant="secondary">{activity}</Badge>
+                        ))}
                       </div>
                     </div>
-                    <div>
-                      <h4 className="font-semibold mb-1">1-2 Months in Advance</h4>
-                      <p className="text-sm text-muted-foreground">
-                        <strong>Green Season (Mar-May, Oct-Nov):</strong> Last-minute permits often 
-                        available. Good for flexible travelers. Chimpanzee and golden monkey tracking readily available.
-                      </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Activities Tab */}
+          <TabsContent value="activities" className="space-y-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {content.activities.map((activity) => (
+                <Card key={activity.id}>
+                  <CardHeader>
+                    <CardTitle>{activity.name}</CardTitle>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Badge className={getActivityColor(activity.difficulty)}>
+                        {activity.difficulty}
+                      </Badge>
+                      <span>• {activity.duration}</span>
                     </div>
-                  </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm">{activity.description}</p>
+                    
+                    <div>
+                      <h4 className="font-semibold mb-2">Best Seasons</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {activity.best_seasons.map((season) => (
+                          <Badge key={season} variant="outline">{season}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Cost Range</span>
+                      <Badge variant="secondary">{activity.cost_range}</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
 
-                  <div className="bg-primary/5 p-4 rounded-lg">
-                    <p className="text-sm">
-                      <strong>Pro Tip:</strong> We monitor permit availability daily and can secure 
-                      last-minute permits when possible. Contact us immediately if you need urgent bookings—we 
-                      have direct relationships with park authorities.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Packing Guide by Season */}
-      <section className="section-padding bg-background">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">What to Pack by Season</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {/* Comparison Tab */}
+          <TabsContent value="comparison" className="space-y-8">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Sun className="h-6 w-6 text-secondary" />
-                  Dry Season Packing List
+                <CardTitle className="flex items-center gap-3">
+                  <TrendingUp className="h-6 w-6" />
+                  {content.comparison_chart.chart_title}
                 </CardTitle>
+                <p className="text-sm text-muted-foreground">{content.comparison_chart.chart_description}</p>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-2 text-sm">
-                  <li>✓ Light, breathable hiking clothes</li>
-                  <li>✓ Sturdy waterproof hiking boots</li>
-                  <li>✓ Light rain jacket (brief showers possible)</li>
-                  <li>✓ Sun hat and sunglasses</li>
-                  <li>✓ Sunscreen (SPF 50+)</li>
-                  <li>✓ Insect repellent</li>
-                  <li>✓ Warm fleece for early mornings</li>
-                  <li>✓ Camera with dust protection</li>
-                  <li>✓ Binoculars for wildlife</li>
-                  <li>✓ Daypack (20-30L)</li>
-                </ul>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse border border-gray-200">
+                    <thead>
+                      <tr className="bg-muted">
+                        <th className="border border-gray-200 p-3 text-left">Season</th>
+                        {content.comparison_chart.metrics.map((metric) => (
+                          <th key={metric.id} className="border border-gray-200 p-3 text-left">
+                            <div className="flex items-center gap-2">
+                              {getMetricIcon(metric.name)}
+                              <span>{metric.name}</span>
+                            </div>
+                            <span className="text-xs text-muted-foreground">{metric.description}</span>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {content.comparison_chart.data_points.map((dataPoint) => (
+                        <tr key={dataPoint.season} className="hover:bg-muted/50">
+                          <td className="border border-gray-200 p-3 font-medium">{dataPoint.season}</td>
+                          {content.comparison_chart.metrics.map((metric) => {
+                            const value = dataPoint.values[metric.id];
+                            const percentage = Math.round((value / 5) * 100);
+                            
+                            return (
+                              <td key={metric.id} className="border border-gray-200 p-3">
+                                <div className="flex items-center gap-2">
+                                  <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div 
+                                      className={cn(
+                                        "h-2 rounded-full transition-all duration-300",
+                                        percentage > 80 ? "bg-green-500" :
+                                        percentage > 60 ? "bg-yellow-500" :
+                                        percentage > 40 ? "bg-orange-500" : "bg-red-500"
+                                      )}
+                                      style={{ width: `${percentage}%` }}
+                                    ></div>
+                                  </div>
+                                  <span className="text-sm font-medium w-12">{value}/5</span>
+                                </div>
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </CardContent>
             </Card>
+          </TabsContent>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CloudRain className="h-6 w-6 text-accent" />
-                  Wet Season Packing List
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm">
-                  <li>✓ High-quality rain jacket (waterproof)</li>
-                  <li>✓ Rain pants or gaiters</li>
-                  <li>✓ Extra pair of hiking boots (backup)</li>
-                  <li>✓ Quick-dry clothing (multiple layers)</li>
-                  <li>✓ Waterproof backpack cover</li>
-                  <li>✓ Dry bags for electronics</li>
-                  <li>✓ Gardening gloves (muddy trails)</li>
-                  <li>✓ Extra socks (you'll need them!)</li>
-                  <li>✓ Camera rain cover</li>
-                  <li>✓ Zip-lock bags for phone/camera</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="section-padding bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 text-center">
-          <Calendar className="h-16 w-16 mx-auto mb-6 opacity-90" />
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Plan Your Perfect Visit?</h2>
-          <p className="text-lg mb-8 max-w-2xl mx-auto opacity-90">
-            Let our experts help you choose the ideal time for your African adventure. We'll secure permits, 
-            recommend the best season for your priorities, and handle every detail.
-          </p>
-          
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Button asChild size="lg" variant="secondary">
-              <Link to="/contact">Request Custom Quote</Link>
-            </Button>
-            <Button asChild size="lg" variant="outlineLight">
-              <Link to="/tours">Browse Our Tours</Link>
-            </Button>
-            <Button asChild size="lg" variant="whatsapp">
-              <a href="https://wa.me/250783959404" target="_blank" rel="noopener noreferrer">
-                WhatsApp for Advice
-              </a>
-            </Button>
-          </div>
-        </div>
-      </section>
+          {/* Tips Tab */}
+          <TabsContent value="tips" className="space-y-8">
+            <div className="grid gap-6">
+              {content.travel_tips.map((tipCategory) => (
+                <Card key={tipCategory.id}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <Utensils className="h-6 w-6" />
+                      {tipCategory.category}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2">
+                      {tipCategory.tips.map((tip, index) => (
+                        <li key={index} className="flex items-start gap-3">
+                          <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                          <span className="text-sm">{tip}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
-};
-
-export default SeasonalGuide;
+}

@@ -12,11 +12,13 @@ import {
 } from "@/components/ui/navigation-menu";
 import { useAuth } from "@/hooks/useAuth";
 import logo from "@/assets/logo.png";
+import { toTelUrl, toWhatsAppUrl, useSiteSettings } from "@/hooks/useSiteSettings";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, isAdmin } = useAuth();
+  const { settings } = useSiteSettings();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,17 +53,17 @@ const Header = () => {
       <div className="bg-primary text-primary-foreground py-2 px-4 text-sm hidden md:block">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex gap-6">
-            <a href="tel:+250783007010" className="flex items-center gap-2 hover:text-secondary transition-colors">
+            <a href={toTelUrl(settings.phones[1] || settings.phones[0])} className="flex items-center gap-2 hover:text-secondary transition-colors">
               <Phone className="h-4 w-4" />
-              +250 783 007 010
+              {settings.phones[1] || settings.phones[0]}
             </a>
-            <a href="mailto:info@virungaexpeditiontours.com" className="flex items-center gap-2 hover:text-secondary transition-colors">
+            <a href={`mailto:${settings.emails[0]}`} className="flex items-center gap-2 hover:text-secondary transition-colors">
               <Mail className="h-4 w-4" />
-              info@virungaexpeditiontours.com
+              {settings.emails[0]}
             </a>
           </div>
           <a 
-            href="https://wa.me/250783959404" 
+            href={toWhatsAppUrl(settings.whatsapp_numbers[0])}
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-center gap-2 hover:text-secondary transition-colors font-medium"

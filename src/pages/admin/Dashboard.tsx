@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { collection, getCountFromServer, query, where } from 'firebase/firestore';
+import { db } from '@/integrations/firebase/client';
+import { auth } from '@/integrations/firebase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Package, TrendingUp, Users } from 'lucide-react';
+
+type SystemStatus = 'checking' | 'ok' | 'error';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -11,38 +15,54 @@ export default function AdminDashboard() {
     recentBookings: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [dbStatus, setDbStatus] = useState<SystemStatus>('checking');
+  const [authStatus, setAuthStatus] = useState<SystemStatus>('checking');
 
   useEffect(() => {
     fetchStats();
+    checkSystemStatus();
   }, []);
+
+  const checkSystemStatus = () => {
+    // Auth status: check if the auth module has a current user or is initialized
+    try {
+      // If auth object exists and currentUser is accessible, auth is active
+      void auth.currentUser;
+      setAuthStatus('ok');
+    } catch {
+      setAuthStatus('error');
+    }
+  };
 
   const fetchStats = async () => {
     try {
-      const [bookingsResult, toursResult, recentResult] = await Promise.all([
-        supabase.from('tour_bookings').select('status', { count: 'exact', head: true }),
-        supabase.from('tour_availability').select('tour_name', { count: 'exact', head: true }),
-        supabase
-          .from('tour_bookings')
-          .select('*', { count: 'exact', head: true })
-          .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
+      const weekAgoISO = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const [totalBookingsSnap, pendingSnap, toursSnap, recentSnap] = await Promise.all([
+        getCountFromServer(collection(db, 'tour_bookings')),
+        getCountFromServer(query(collection(db, 'tour_bookings'), where('status', '==', 'pending'))),
+        getCountFromServer(collection(db, 'tour_availability')),
+        getCountFromServer(query(collection(db, 'tour_bookings'), where('created_at', '>=', weekAgoISO))),
       ]);
 
-      const pendingResult = await supabase
-        .from('tour_bookings')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'pending');
-
       setStats({
-        totalBookings: bookingsResult.count || 0,
-        pendingBookings: pendingResult.count || 0,
-        totalTours: toursResult.count || 0,
-        recentBookings: recentResult.count || 0,
+        totalBookings: totalBookingsSnap.data().count,
+        pendingBookings: pendingSnap.data().count,
+        totalTours: toursSnap.data().count,
+        recentBookings: recentSnap.data().count,
       });
+      setDbStatus('ok');
     } catch (error) {
       console.error('Error fetching stats:', error);
+      setDbStatus('error');
     } finally {
       setLoading(false);
     }
+  };
+
+  const statusLabel = (s: SystemStatus) => {
+    if (s === 'checking') return { text: 'Checking…', className: 'text-yellow-600' };
+    if (s === 'ok') return { text: 'Connected', className: 'text-green-600' };
+    return { text: 'Error', className: 'text-red-600' };
   };
 
   const statCards = [
@@ -120,15 +140,21 @@ export default function AdminDashboard() {
           <CardContent className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm">Database</span>
-              <span className="text-sm font-medium text-green-600">Connected</span>
+              <span className={`text-sm font-medium ${statusLabel(dbStatus).className}`}>
+                {statusLabel(dbStatus).text}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Authentication</span>
-              <span className="text-sm font-medium text-green-600">Active</span>
+              <span className={`text-sm font-medium ${statusLabel(authStatus).className}`}>
+                {statusLabel(authStatus).text}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Booking System</span>
-              <span className="text-sm font-medium text-green-600">Operational</span>
+              <span className={`text-sm font-medium ${statusLabel(dbStatus).className}`}>
+                {dbStatus === 'ok' ? 'Operational' : statusLabel(dbStatus).text}
+              </span>
             </div>
           </CardContent>
         </Card>

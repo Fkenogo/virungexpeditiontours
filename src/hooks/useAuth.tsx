@@ -1,16 +1,27 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import {
+  User,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  updateProfile,
+} from 'firebase/auth';
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { auth, db } from '@/integrations/firebase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+type AuthResult = {
+  error: Error | null;
+};
+
 interface AuthContextType {
   user: User | null;
-  session: Session | null;
   isAdmin: boolean;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<AuthResult>;
+  signUp: (email: string, password: string, fullName: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
 }
 
@@ -18,62 +29,48 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        // Check admin role when user changes
-        if (session?.user) {
-          setTimeout(() => {
-            checkAdminRole(session.user.id);
-          }, 0);
-        } else {
-          setIsAdmin(false);
-        }
-        
-        setLoading(false);
-      }
-    );
+    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+      setUser(authUser);
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        setTimeout(() => {
-          checkAdminRole(session.user.id);
-        }, 0);
+      if (authUser) {
+        setIsAdmin(false);
+        await checkAdminRole(authUser.uid);
+      } else {
+        setIsAdmin(false);
       }
-      
+
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => unsubscribe();
   }, []);
 
   const checkAdminRole = async (userId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId)
-        .eq('role', 'admin')
-        .maybeSingle();
-
-      if (!error && data) {
-        setIsAdmin(true);
-      } else {
-        setIsAdmin(false);
+      const rolesDoc = await getDoc(doc(db, 'user_roles', userId));
+      if (rolesDoc.exists()) {
+        const roleData = rolesDoc.data() as { role?: string; roles?: string[] };
+        if (roleData.role === 'admin' || roleData.roles?.includes('admin')) {
+          setIsAdmin(true);
+          return;
+        }
       }
+
+      const userDoc = await getDoc(doc(db, 'users', userId));
+      if (userDoc.exists()) {
+        const userData = userDoc.data() as { role?: string; roles?: string[] };
+        if (userData.role === 'admin' || userData.roles?.includes('admin')) {
+          setIsAdmin(true);
+          return;
+        }
+      }
+
+      setIsAdmin(false);
     } catch (error) {
       console.error('Error checking admin role:', error);
       setIsAdmin(false);
@@ -82,78 +79,64 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        toast.error(error.message);
-        return { error };
-      }
+      await signInWithEmailAndPassword(auth, email, password);
 
       toast.success('Signed in successfully');
       navigate('/');
       return { error: null };
-    } catch (error: any) {
-      toast.error('An unexpected error occurred');
-      return { error };
+    } catch (error) {
+      const authError = error instanceof Error ? error : new Error('Sign in failed');
+      toast.error(authError.message);
+      return { error: authError };
     }
   };
 
   const signUp = async (email: string, password: string, fullName: string) => {
     try {
-      const redirectUrl = `${window.location.origin}/`;
-      
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: fullName,
-          },
+      const credential = await createUserWithEmailAndPassword(auth, email, password);
+
+      await updateProfile(credential.user, { displayName: fullName });
+
+      await setDoc(
+        doc(db, 'users', credential.user.uid),
+        {
+          full_name: fullName,
+          email,
+          roles: ['user'],
+          created_at: serverTimestamp(),
+          updated_at: serverTimestamp(),
         },
-      });
+        { merge: true },
+      );
 
-      if (error) {
-        toast.error(error.message);
-        return { error };
-      }
+      await setDoc(
+        doc(db, 'user_roles', credential.user.uid),
+        {
+          role: 'user',
+          roles: ['user'],
+          updated_at: serverTimestamp(),
+        },
+        { merge: true },
+      );
 
-      // Notify admins of new user registration
-      if (data.user) {
-        try {
-          await supabase.functions.invoke('send-admin-notification', {
-            body: {
-              type: 'new_user',
-              userId: data.user.id,
-              userName: fullName,
-              userEmail: email,
-            },
-          });
-        } catch (notifError) {
-          console.error('Failed to send admin notification:', notifError);
-          // Don't fail signup if notification fails
-        }
-      }
-
-      toast.success('Account created successfully! Please check your email to confirm.');
+      toast.success('Account created successfully!');
+      navigate('/');
       return { error: null };
-    } catch (error: any) {
-      toast.error('An unexpected error occurred');
-      return { error };
+    } catch (error) {
+      const authError = error instanceof Error ? error : new Error('Sign up failed');
+      toast.error(authError.message);
+      return { error: authError };
     }
   };
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      await firebaseSignOut(auth);
       
       toast.success('Signed out successfully');
       navigate('/auth');
-    } catch (error: any) {
+    } catch (error) {
+      console.error('Error signing out:', error);
       toast.error('Error signing out');
     }
   };
@@ -162,7 +145,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        session,
         isAdmin,
         loading,
         signIn,

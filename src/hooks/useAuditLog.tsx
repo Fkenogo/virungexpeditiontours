@@ -1,23 +1,25 @@
-import { supabase } from '@/integrations/supabase/client';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { auth, db } from '@/integrations/firebase/client';
 
 export const useAuditLog = () => {
   const logAction = async (
     action: string,
     entityType: string,
     entityId?: string,
-    details?: any
+    details?: unknown
   ) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = auth.currentUser;
       
       if (!user) return;
 
-      await supabase.from('audit_logs').insert({
-        user_id: user.id,
+      await addDoc(collection(db, 'audit_logs'), {
+        user_id: user.uid,
         action,
         entity_type: entityType,
         entity_id: entityId,
-        details: details ? JSON.parse(JSON.stringify(details)) : null,
+        details: details ?? null,
+        created_at: serverTimestamp(),
       });
     } catch (error) {
       console.error('Failed to log audit action:', error);

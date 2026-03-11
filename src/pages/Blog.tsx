@@ -1,10 +1,21 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/integrations/firebase/client';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { Calendar, Tag } from 'lucide-react';
+
+type BlogPost = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  category: string;
+  featured_image: string | null;
+  published: boolean;
+  published_at: string | null;
+};
 
 const CATEGORIES = [
   'All',
@@ -15,28 +26,72 @@ const CATEGORIES = [
   'Rwanda Culture',
 ];
 
+const normalizeDate = (value: unknown): string | null => {
+  if (!value) return null;
+  if (typeof value === 'string') return value;
+  if (value instanceof Date) return value.toISOString();
+  if (value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
+    const parsed = value.toDate() as Date;
+    return parsed.toISOString();
+  }
+  return null;
+};
+
 export default function Blog() {
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialCategory = CATEGORIES.includes(searchParams.get('category') || '') ? searchParams.get('category')! : 'All';
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
 
-  const { data: posts, isLoading } = useQuery({
-    queryKey: ['blog-posts', selectedCategory],
-    queryFn: async () => {
-      let query = supabase
-        .from('blog_posts')
-        .select('*')
-        .not('published_at', 'is', null)
-        .lte('published_at', new Date().toISOString())
-        .order('published_at', { ascending: false });
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    if (category === 'All') {
+      setSearchParams({});
+    } else {
+      setSearchParams({ category });
+    }
+  };
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-      if (selectedCategory !== 'All') {
-        query = query.eq('category', selectedCategory);
-      }
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
-      const { data, error } = await query;
-      if (error) throw error;
-      return data;
-    },
-  });
+  const fetchPosts = async () => {
+    try {
+      const snapshot = await getDocs(collection(db, 'blog_posts'));
+      const now = Date.now();
+
+      const data = snapshot.docs
+        .map((docSnapshot) => {
+          const row = docSnapshot.data() as Omit<BlogPost, 'id' | 'published_at'> & { published_at?: unknown };
+          return {
+            id: docSnapshot.id,
+            title: row.title,
+            slug: row.slug,
+            excerpt: row.excerpt,
+            category: row.category,
+            featured_image: row.featured_image || null,
+            published: Boolean(row.published || row.published_at),
+            published_at: normalizeDate(row.published_at),
+          };
+        })
+        .filter((post) => post.published && post.published_at && new Date(post.published_at).getTime() <= now)
+        .sort((a, b) => new Date(b.published_at || 0).getTime() - new Date(a.published_at || 0).getTime());
+
+      setPosts(data);
+    } catch (error) {
+      console.error('Error fetching blog posts:', error);
+      setPosts([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const filteredPosts = useMemo(() => {
+    if (selectedCategory === 'All') return posts;
+    return posts.filter((post) => post.category === selectedCategory);
+  }, [posts, selectedCategory]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -55,7 +110,7 @@ export default function Blog() {
             <Button
               key={category}
               variant={selectedCategory === category ? 'default' : 'outline'}
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => handleCategoryChange(category)}
             >
               {category}
             </Button>
@@ -64,18 +119,12 @@ export default function Blog() {
 
         {isLoading ? (
           <div className="text-center py-12">Loading posts...</div>
-        ) : posts?.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            No posts found in this category
-          </div>
+        ) : filteredPosts.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">No posts found in this category</div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts?.map((post) => (
-              <Link
-                key={post.id}
-                to={`/blog/${post.slug}`}
-                className="group block"
-              >
+            {filteredPosts.map((post) => (
+              <Link key={post.id} to={`/blog/${post.slug}`} className="group block">
                 <article className="h-full border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                   {post.featured_image && (
                     <div className="aspect-video overflow-hidden">
@@ -90,19 +139,15 @@ export default function Blog() {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
-                        {format(new Date(post.published_at), 'MMM d, yyyy')}
+                        {format(new Date(post.published_at || Date.now()), 'MMM d, yyyy')}
                       </span>
                       <span className="flex items-center gap-1">
                         <Tag className="w-4 h-4" />
                         {post.category}
                       </span>
                     </div>
-                    <h2 className="text-2xl font-bold mb-3 group-hover:text-primary transition-colors">
-                      {post.title}
-                    </h2>
-                    <p className="text-muted-foreground line-clamp-3">
-                      {post.excerpt}
-                    </p>
+                    <h2 className="text-2xl font-bold mb-3 group-hover:text-primary transition-colors">{post.title}</h2>
+                    <p className="text-muted-foreground line-clamp-3">{post.excerpt}</p>
                   </div>
                 </article>
               </Link>

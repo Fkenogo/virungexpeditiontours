@@ -26,9 +26,6 @@ import OwlFaced from "./pages/tours/OwlFaced";
 import Destinations from "./pages/Destinations";
 import Itineraries from "./pages/Itineraries";
 import Services from "./pages/Services";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsConditions from "./pages/TermsConditions";
-import BookingTerms from "./pages/BookingTerms";
 import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminBookings from "./pages/admin/Bookings";
@@ -39,11 +36,18 @@ import AdminBlogPosts from "./pages/admin/BlogPosts";
 import TourVideos from "./pages/admin/TourVideos";
 import FAQManagement from "./pages/admin/FAQManagement";
 import Testimonials from "./pages/admin/Testimonials";
+import ItinerariesManagement from "./pages/admin/ItinerariesManagement";
+import ToursManagement from "./pages/admin/ToursManagement";
+import DestinationsManagement from "./pages/admin/DestinationsManagement";
+import SiteSettingsManagement from "./pages/admin/SiteSettingsManagement";
+import MediaManagement from "./pages/admin/MediaManagement";
+import ContentManagement from "./pages/admin/ContentManagement";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import FAQ from "./pages/FAQ";
 import VideoGallery from "./pages/VideoGallery";
 import NotFound from "./pages/NotFound";
+import LegalDocumentPage from "./pages/LegalDocumentPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import WhatsAppFloat from "./components/WhatsAppFloat";
@@ -170,6 +174,66 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin/itineraries"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminLayout>
+                    <ItinerariesManagement />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/tours"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminLayout>
+                    <ToursManagement />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/destinations"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminLayout>
+                    <DestinationsManagement />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/settings"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminLayout>
+                    <SiteSettingsManagement />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/media"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminLayout>
+                    <MediaManagement />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/content"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminLayout>
+                    <ContentManagement />
+                  </AdminLayout>
+                </ProtectedRoute>
+              }
+            />
 
             {/* Public Routes */}
             <Route
@@ -198,9 +262,9 @@ const App = () => (
                       <Route path="/destinations" element={<Destinations />} />
                       <Route path="/itineraries" element={<Itineraries />} />
                       <Route path="/services" element={<Services />} />
-                      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                      <Route path="/terms-and-conditions" element={<TermsConditions />} />
-                      <Route path="/booking-terms" element={<BookingTerms />} />
+                      <Route path="/privacy-policy" element={<LegalDocumentPage slug="privacy-policy" />} />
+                      <Route path="/terms-and-conditions" element={<LegalDocumentPage slug="terms-and-conditions" />} />
+                      <Route path="/booking-terms" element={<LegalDocumentPage slug="booking-terms" />} />
                       <Route path="/blog" element={<Blog />} />
                       <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/faq" element={<FAQ />} />

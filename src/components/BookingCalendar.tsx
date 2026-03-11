@@ -7,7 +7,15 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  orderBy,
+} from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
+import { db, functions } from "@/integrations/firebase/client";
 import { format, isSameDay, isAfter, startOfToday } from "date-fns";
 import { toast } from "sonner";
 import { CalendarDays, DollarSign, Users } from "lucide-react";
@@ -19,6 +27,7 @@ interface BookingCalendarProps {
 }
 
 interface TourAvailability {
+  id: string;
   date: string;
   season_type: 'peak' | 'shoulder' | 'low';
   base_price: number;
@@ -31,6 +40,8 @@ export const BookingCalendar = ({ tourName, className }: BookingCalendarProps) =
   const [availability, setAvailability] = useState<TourAvailability[]>([]);
   const [loading, setLoading] = useState(true);
   const [showBookingDialog, setShowBookingDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [idempotencyKey, setIdempotencyKey] = useState("");
   const [bookingForm, setBookingForm] = useState({
     name: "",
     email: "",
@@ -46,15 +57,20 @@ export const BookingCalendar = ({ tourName, className }: BookingCalendarProps) =
   const fetchAvailability = async () => {
     try {
       const today = startOfToday();
-      const { data, error } = await supabase
-        .from('tour_availability')
-        .select('*')
-        .eq('tour_name', tourName)
-        .gte('date', format(today, 'yyyy-MM-dd'))
-        .order('date', { ascending: true });
+      const availabilityQuery = query(
+        collection(db, "tour_availability"),
+        where("tour_name", "==", tourName),
+        where("date", ">=", format(today, "yyyy-MM-dd")),
+        orderBy("date", "asc"),
+      );
 
-      if (error) throw error;
-      setAvailability((data || []) as TourAvailability[]);
+      const snapshot = await getDocs(availabilityQuery);
+      const items = snapshot.docs.map((docSnapshot) => {
+        const data = docSnapshot.data() as Omit<TourAvailability, "id">;
+        return { id: docSnapshot.id, ...data };
+      });
+
+      setAvailability(items);
     } catch (error) {
       console.error('Error fetching availability:', error);
       toast.error('Failed to load availability');
@@ -90,6 +106,7 @@ export const BookingCalendar = ({ tourName, className }: BookingCalendarProps) =
     }
 
     setSelectedDate(date);
+    setIdempotencyKey(`${Date.now()}-${Math.random().toString(36).slice(2)}`);
     setShowBookingDialog(true);
   };
 
@@ -101,50 +118,34 @@ export const BookingCalendar = ({ tourName, className }: BookingCalendarProps) =
     const dateAvailability = getAvailabilityForDate(selectedDate);
     if (!dateAvailability) return;
 
-    const totalPrice = dateAvailability.base_price * bookingForm.numberOfPeople;
-
+    setIsSubmitting(true);
     try {
-      const { data: bookingData, error } = await supabase
-        .from('tour_bookings')
-        .insert({
-          tour_name: tourName,
-          booking_date: format(selectedDate, 'yyyy-MM-dd'),
-          customer_name: bookingForm.name,
-          customer_email: bookingForm.email,
-          customer_phone: bookingForm.phone,
-          number_of_people: bookingForm.numberOfPeople,
-          total_price: totalPrice,
-          special_requests: bookingForm.specialRequests,
-        })
-        .select()
-        .single();
+      const createBookingRequest = httpsCallable(functions, "createBookingRequest");
+      const response = await createBookingRequest({
+        availabilityId: dateAvailability.id,
+        tourName: tourName,
+        bookingDate: format(selectedDate, "yyyy-MM-dd"),
+        customerName: bookingForm.name,
+        customerEmail: bookingForm.email,
+        customerPhone: bookingForm.phone,
+        numberOfPeople: bookingForm.numberOfPeople,
+        specialRequests: bookingForm.specialRequests || undefined,
+        idempotencyKey,
+        // totalPrice intentionally omitted — always computed server-side
+      });
 
-      if (error) throw error;
+      const bookingData = response.data as {
+        success: boolean;
+        bookingId?: string;
+        emailSent?: boolean;
+      };
 
-      // Send email notifications
-      try {
-        const { error: emailError } = await supabase.functions.invoke('send-booking-notification', {
-          body: {
-            bookingId: bookingData.id,
-            tourName: tourName,
-            bookingDate: format(selectedDate, 'yyyy-MM-dd'),
-            customerName: bookingForm.name,
-            customerEmail: bookingForm.email,
-            customerPhone: bookingForm.phone,
-            numberOfPeople: bookingForm.numberOfPeople,
-            totalPrice: totalPrice,
-            specialRequests: bookingForm.specialRequests || undefined,
-          },
-        });
+      if (!bookingData.success) {
+        throw new Error("Booking creation failed");
+      }
 
-        if (emailError) {
-          console.error('Email notification error:', emailError);
-          // Don't fail the booking if email fails
-          toast.warning('Booking submitted, but email notifications may be delayed.');
-        }
-      } catch (emailError) {
-        console.error('Failed to send email notifications:', emailError);
-        // Don't fail the booking if email fails
+      if (!bookingData.emailSent) {
+        toast.warning("Booking submitted, but email notifications may be delayed.");
       }
 
       toast.success('Booking request submitted! Check your email for confirmation.');
@@ -156,9 +157,12 @@ export const BookingCalendar = ({ tourName, className }: BookingCalendarProps) =
         numberOfPeople: 1,
         specialRequests: "",
       });
+      fetchAvailability();
     } catch (error) {
       console.error('Error submitting booking:', error);
       toast.error('Failed to submit booking. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -338,8 +342,8 @@ export const BookingCalendar = ({ tourName, className }: BookingCalendarProps) =
               <Button type="button" variant="outline" onClick={() => setShowBookingDialog(false)} className="flex-1">
                 Cancel
               </Button>
-              <Button type="submit" className="flex-1">
-                Submit Booking Request
+              <Button type="submit" className="flex-1" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit Booking Request"}
               </Button>
             </div>
           </form>

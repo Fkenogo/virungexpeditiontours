@@ -1,16 +1,36 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield, Heart, Users, Leaf, Award, Clock } from "lucide-react";
+import { useContentDoc } from "@/hooks/useContentDoc";
+import { toWhatsAppUrl, useSiteSettings } from "@/hooks/useSiteSettings";
+
+type AboutContent = {
+  hero_title: string;
+  hero_subtitle: string;
+  story_intro: string;
+  mission_statement: string;
+};
+
+const DEFAULT_ABOUT: AboutContent = {
+  hero_title: "About Virunga Expedition Tours",
+  hero_subtitle: "Your Trusted Partner for Rwanda Safari Adventures",
+  story_intro:
+    "Founded with a passion for Rwanda's extraordinary natural beauty and wildlife, Virunga Expedition Tours has grown into one of the region's most trusted safari operators.",
+  mission_statement:
+    "To provide exceptional, sustainable safari experiences that connect travelers with Rwanda's wildlife while supporting conservation and local communities.",
+};
 
 const About = () => {
+  const { settings } = useSiteSettings();
+  const { data: about } = useContentDoc<AboutContent>("about_content", "main", DEFAULT_ABOUT);
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative h-[400px] flex items-center justify-center bg-gradient-to-br from-primary to-primary-dark text-white">
         <div className="absolute inset-0 bg-black/30"></div>
         <div className="container mx-auto px-4 relative z-10 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">About Virunga Expedition Tours</h1>
-          <p className="text-xl md:text-2xl">Your Trusted Partner for Rwanda Safari Adventures</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">{about.hero_title}</h1>
+          <p className="text-xl md:text-2xl">{about.hero_subtitle}</p>
         </div>
       </section>
 
@@ -21,7 +41,7 @@ const About = () => {
             <h2 className="text-3xl font-bold mb-6 text-primary">Our Story</h2>
             <div className="space-y-4 text-lg text-foreground/90">
               <p>
-                Founded with a passion for Rwanda's extraordinary natural beauty and wildlife, Virunga Expedition Tours has grown into one of the region's most trusted safari operators. Based in Kigali, we specialize in creating authentic, life-changing experiences across the Virunga Mountains region - spanning Rwanda, western Uganda, and eastern DRC.
+                {about.story_intro} Based in Kigali, we specialize in creating authentic, life-changing experiences across the Virunga Mountains region - spanning Rwanda, western Uganda, and eastern DRC.
               </p>
               <p>
                 Our journey began with a simple belief: that connecting people with endangered mountain gorillas and Africa's incredible wildlife creates not just memories, but champions for conservation. Today, we're proud to have facilitated hundreds of gorilla encounters, wildlife safaris, and cultural experiences that contribute to both conservation and community development.
@@ -43,7 +63,7 @@ const About = () => {
             <div className="mb-12 text-center max-w-3xl mx-auto">
               <h3 className="text-2xl font-semibold mb-4 text-secondary">Our Mission</h3>
               <p className="text-lg text-foreground/90">
-                To provide exceptional, sustainable safari experiences that connect travelers with Rwanda's wildlife while supporting conservation and local communities.
+                {about.mission_statement}
               </p>
             </div>
 
@@ -304,8 +324,10 @@ const About = () => {
             <Button size="lg" variant="outlineLight">
               Contact Us
             </Button>
-            <Button size="lg" variant="outlineLight">
-              WhatsApp: +250 783 959 404
+            <Button asChild size="lg" variant="outlineLight">
+              <a href={toWhatsAppUrl(settings.whatsapp_numbers[0])} target="_blank" rel="noopener noreferrer">
+                WhatsApp: {settings.whatsapp_numbers[0]}
+              </a>
             </Button>
           </div>
         </div>

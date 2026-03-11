@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
+import { db } from '@/integrations/firebase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -20,7 +21,7 @@ type AuditLog = {
   action: string;
   entity_type: string;
   entity_id: string | null;
-  details: any;
+  details: unknown;
   ip_address: string | null;
   user_agent: string | null;
   created_at: string;
@@ -64,25 +65,23 @@ export default function AuditLogs() {
 
   const fetchLogs = async () => {
     try {
-      const { data: auditLogs, error: logsError } = await supabase
-        .from('audit_logs')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100);
-
-      if (logsError) throw logsError;
+      const logsQuery = query(collection(db, 'audit_logs'), orderBy('created_at', 'desc'), limit(100));
+      const logsSnapshot = await getDocs(logsQuery);
+      const auditLogs = logsSnapshot.docs.map((docSnapshot) => ({
+        id: docSnapshot.id,
+        ...(docSnapshot.data() as Omit<AuditLog, 'id' | 'created_at'>),
+        created_at: normalizeDate(docSnapshot.data().created_at),
+      }));
 
       // Get user details for each log
-      const userIds = [...new Set(auditLogs.map(log => log.user_id))];
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, email, full_name')
-        .in('id', userIds);
+      const usersSnapshot = await getDocs(collection(db, 'users'));
+      const usersById = new Map<string, {email?: string; full_name?: string}>();
+      usersSnapshot.forEach((docSnapshot) => {
+        usersById.set(docSnapshot.id, docSnapshot.data() as {email?: string; full_name?: string});
+      });
 
-      if (profilesError) throw profilesError;
-
-      const logsWithUserInfo = auditLogs.map(log => {
-        const profile = profiles.find(p => p.id === log.user_id);
+      const logsWithUserInfo = auditLogs.map((log) => {
+        const profile = usersById.get(log.user_id);
         return {
           ...log,
           user_email: profile?.email,
@@ -91,7 +90,7 @@ export default function AuditLogs() {
       });
 
       setLogs(logsWithUserInfo);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error fetching audit logs:', error);
       toast.error('Failed to load audit logs');
     } finally {
@@ -180,3 +179,13 @@ export default function AuditLogs() {
     </div>
   );
 }
+
+const normalizeDate = (value: unknown): string => {
+  if (typeof value === 'string') return value;
+  if (value instanceof Date) return value.toISOString();
+  if (value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
+    const parsed = value.toDate() as Date;
+    return parsed.toISOString();
+  }
+  return new Date().toISOString();
+};

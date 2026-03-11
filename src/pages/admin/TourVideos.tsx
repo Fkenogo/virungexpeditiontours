@@ -1,23 +1,24 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Video } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
+import { db } from '@/integrations/firebase/client';
+import { useToast } from '@/hooks/use-toast';
+import { Plus, Pencil, Trash2, Video } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 interface TourVideo {
   id: string;
   tour_name: string;
   video_url: string;
-  video_type: "preview" | "testimonial";
+  video_type: 'preview' | 'testimonial';
   title: string;
   description: string | null;
   display_order: number;
@@ -26,15 +27,25 @@ interface TourVideo {
 }
 
 const TOUR_OPTIONS = [
-  "Mountain Gorilla Trekking",
-  "Golden Monkey Tracking",
-  "Chimpanzee Trekking",
-  "Colobus Monkey Tracking",
-  "Canopy Walkway",
-  "Dian Fossey Tomb Hike",
-  "Akagera Safari",
-  "Kigali City Tour",
+  'Mountain Gorilla Trekking',
+  'Golden Monkey Tracking',
+  'Chimpanzee Trekking',
+  'Colobus Monkey Tracking',
+  'Canopy Walkway',
+  'Dian Fossey Tomb Hike',
+  'Akagera Safari',
+  'Kigali City Tour',
 ];
+
+const normalizeDate = (value: unknown): string => {
+  if (typeof value === 'string') return value;
+  if (value instanceof Date) return value.toISOString();
+  if (value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
+    const parsed = value.toDate() as Date;
+    return parsed.toISOString();
+  }
+  return new Date().toISOString();
+};
 
 export default function TourVideos() {
   const { toast } = useToast();
@@ -43,11 +54,11 @@ export default function TourVideos() {
   const [showDialog, setShowDialog] = useState(false);
   const [editingVideo, setEditingVideo] = useState<TourVideo | null>(null);
   const [formData, setFormData] = useState({
-    tour_name: "",
-    video_url: "",
-    video_type: "preview" as "preview" | "testimonial",
-    title: "",
-    description: "",
+    tour_name: '',
+    video_url: '',
+    video_type: 'preview' as 'preview' | 'testimonial',
+    title: '',
+    description: '',
     display_order: 0,
     is_active: true,
   });
@@ -58,20 +69,35 @@ export default function TourVideos() {
 
   const fetchVideos = async () => {
     try {
-      const { data, error } = await supabase
-        .from("tour_videos")
-        .select("*")
-        .order("tour_name")
-        .order("display_order");
+      const snapshot = await getDocs(collection(db, 'tour_videos'));
+      const data = snapshot.docs
+        .map((docSnapshot) => {
+          const row = docSnapshot.data() as Omit<TourVideo, 'id' | 'created_at'> & { created_at?: unknown };
+          return {
+            id: docSnapshot.id,
+            tour_name: row.tour_name,
+            video_url: row.video_url,
+            video_type: row.video_type,
+            title: row.title,
+            description: row.description || null,
+            display_order: Number(row.display_order || 0),
+            is_active: Boolean(row.is_active),
+            created_at: normalizeDate(row.created_at),
+          };
+        })
+        .sort((a, b) => {
+          const tourSort = a.tour_name.localeCompare(b.tour_name);
+          if (tourSort !== 0) return tourSort;
+          return a.display_order - b.display_order;
+        });
 
-      if (error) throw error;
-      setVideos((data as TourVideo[]) || []);
+      setVideos(data);
     } catch (error) {
-      console.error("Error fetching videos:", error);
+      console.error('Error fetching videos:', error);
       toast({
-        title: "Error",
-        description: "Failed to fetch videos",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to fetch videos',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -83,66 +109,60 @@ export default function TourVideos() {
 
     try {
       if (editingVideo) {
-        const { error } = await supabase
-          .from("tour_videos")
-          .update(formData)
-          .eq("id", editingVideo.id);
-
-        if (error) throw error;
+        await updateDoc(doc(db, 'tour_videos', editingVideo.id), {
+          ...formData,
+          description: formData.description || null,
+          updated_at: new Date().toISOString(),
+        });
 
         toast({
-          title: "Success",
-          description: "Video updated successfully",
+          title: 'Success',
+          description: 'Video updated successfully',
         });
       } else {
-        const { error } = await supabase
-          .from("tour_videos")
-          .insert([formData]);
-
-        if (error) throw error;
+        await addDoc(collection(db, 'tour_videos'), {
+          ...formData,
+          description: formData.description || null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
 
         toast({
-          title: "Success",
-          description: "Video added successfully",
+          title: 'Success',
+          description: 'Video added successfully',
         });
       }
 
       setShowDialog(false);
       setEditingVideo(null);
       resetForm();
-      fetchVideos();
+      await fetchVideos();
     } catch (error) {
-      console.error("Error saving video:", error);
+      console.error('Error saving video:', error);
       toast({
-        title: "Error",
-        description: "Failed to save video",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to save video',
+        variant: 'destructive',
       });
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this video?")) return;
+    if (!confirm('Are you sure you want to delete this video?')) return;
 
     try {
-      const { error } = await supabase
-        .from("tour_videos")
-        .delete()
-        .eq("id", id);
-
-      if (error) throw error;
-
+      await deleteDoc(doc(db, 'tour_videos', id));
       toast({
-        title: "Success",
-        description: "Video deleted successfully",
+        title: 'Success',
+        description: 'Video deleted successfully',
       });
-      fetchVideos();
+      await fetchVideos();
     } catch (error) {
-      console.error("Error deleting video:", error);
+      console.error('Error deleting video:', error);
       toast({
-        title: "Error",
-        description: "Failed to delete video",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to delete video',
+        variant: 'destructive',
       });
     }
   };
@@ -154,7 +174,7 @@ export default function TourVideos() {
       video_url: video.video_url,
       video_type: video.video_type,
       title: video.title,
-      description: video.description || "",
+      description: video.description || '',
       display_order: video.display_order,
       is_active: video.is_active,
     });
@@ -163,11 +183,11 @@ export default function TourVideos() {
 
   const resetForm = () => {
     setFormData({
-      tour_name: "",
-      video_url: "",
-      video_type: "preview",
-      title: "",
-      description: "",
+      tour_name: '',
+      video_url: '',
+      video_type: 'preview',
+      title: '',
+      description: '',
       display_order: 0,
       is_active: true,
     });
@@ -219,15 +239,15 @@ export default function TourVideos() {
                   <TableRow key={video.id}>
                     <TableCell className="font-medium">{video.tour_name}</TableCell>
                     <TableCell>
-                      <Badge variant={video.video_type === "preview" ? "default" : "secondary"}>
+                      <Badge variant={video.video_type === 'preview' ? 'default' : 'secondary'}>
                         {video.video_type}
                       </Badge>
                     </TableCell>
                     <TableCell>{video.title}</TableCell>
                     <TableCell>{video.display_order}</TableCell>
                     <TableCell>
-                      <Badge variant={video.is_active ? "default" : "outline"}>
-                        {video.is_active ? "Active" : "Inactive"}
+                      <Badge variant={video.is_active ? 'default' : 'outline'}>
+                        {video.is_active ? 'Active' : 'Inactive'}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -251,10 +271,8 @@ export default function TourVideos() {
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingVideo ? "Edit Video" : "Add New Video"}</DialogTitle>
-            <DialogDescription>
-              Add YouTube or Vimeo video URLs to display on tour pages
-            </DialogDescription>
+            <DialogTitle>{editingVideo ? 'Edit Video' : 'Add New Video'}</DialogTitle>
+            <DialogDescription>Add YouTube or Vimeo video URLs to display on tour pages</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -282,7 +300,7 @@ export default function TourVideos() {
               <Label htmlFor="video_type">Video Type *</Label>
               <Select
                 value={formData.video_type}
-                onValueChange={(value: "preview" | "testimonial") =>
+                onValueChange={(value: 'preview' | 'testimonial') =>
                   setFormData({ ...formData, video_type: value })
                 }
                 required
@@ -337,7 +355,7 @@ export default function TourVideos() {
                 type="number"
                 min="0"
                 value={formData.display_order}
-                onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })}
+                onChange={(e) => setFormData({ ...formData, display_order: Number(e.target.value) })}
               />
             </div>
 
@@ -356,7 +374,7 @@ export default function TourVideos() {
               </Button>
               <Button type="submit">
                 <Video className="mr-2 h-4 w-4" />
-                {editingVideo ? "Update Video" : "Add Video"}
+                {editingVideo ? 'Update Video' : 'Add Video'}
               </Button>
             </div>
           </form>

@@ -1,17 +1,18 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, HelpCircle } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
+import { db } from '@/integrations/firebase/client';
+import { useToast } from '@/hooks/use-toast';
+import { Plus, Pencil, Trash2, HelpCircle } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 interface FAQItem {
   id: string;
@@ -24,15 +25,25 @@ interface FAQItem {
 }
 
 const FAQ_CATEGORIES = [
-  "Gorilla Permits",
-  "Booking & Payment",
-  "Travel Requirements",
-  "Tours & Activities",
-  "Accommodation",
-  "Safety & Health",
-  "Transportation",
-  "General",
+  'Gorilla Permits',
+  'Booking & Payment',
+  'Travel Requirements',
+  'Tours & Activities',
+  'Accommodation',
+  'Safety & Health',
+  'Transportation',
+  'General',
 ];
+
+const normalizeDate = (value: unknown): string => {
+  if (typeof value === 'string') return value;
+  if (value instanceof Date) return value.toISOString();
+  if (value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
+    const parsed = value.toDate() as Date;
+    return parsed.toISOString();
+  }
+  return new Date().toISOString();
+};
 
 export default function FAQManagement() {
   const { toast } = useToast();
@@ -41,9 +52,9 @@ export default function FAQManagement() {
   const [showDialog, setShowDialog] = useState(false);
   const [editingFAQ, setEditingFAQ] = useState<FAQItem | null>(null);
   const [formData, setFormData] = useState({
-    category: "",
-    question: "",
-    answer: "",
+    category: '',
+    question: '',
+    answer: '',
     display_order: 0,
     is_active: true,
   });
@@ -54,20 +65,33 @@ export default function FAQManagement() {
 
   const fetchFAQs = async () => {
     try {
-      const { data, error } = await supabase
-        .from("faq_items")
-        .select("*")
-        .order("category")
-        .order("display_order");
+      const snapshot = await getDocs(collection(db, 'faq_items'));
+      const data = snapshot.docs
+        .map((docSnapshot) => {
+          const row = docSnapshot.data() as Omit<FAQItem, 'id' | 'created_at'> & { created_at?: unknown };
+          return {
+            id: docSnapshot.id,
+            category: row.category,
+            question: row.question,
+            answer: row.answer,
+            display_order: Number(row.display_order || 0),
+            is_active: Boolean(row.is_active),
+            created_at: normalizeDate(row.created_at),
+          };
+        })
+        .sort((a, b) => {
+          const categorySort = a.category.localeCompare(b.category);
+          if (categorySort !== 0) return categorySort;
+          return a.display_order - b.display_order;
+        });
 
-      if (error) throw error;
-      setFaqs(data || []);
+      setFaqs(data);
     } catch (error) {
-      console.error("Error fetching FAQs:", error);
+      console.error('Error fetching FAQs:', error);
       toast({
-        title: "Error",
-        description: "Failed to fetch FAQs",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to fetch FAQs',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -79,66 +103,58 @@ export default function FAQManagement() {
 
     try {
       if (editingFAQ) {
-        const { error } = await supabase
-          .from("faq_items")
-          .update(formData)
-          .eq("id", editingFAQ.id);
-
-        if (error) throw error;
+        await updateDoc(doc(db, 'faq_items', editingFAQ.id), {
+          ...formData,
+          updated_at: new Date().toISOString(),
+        });
 
         toast({
-          title: "Success",
-          description: "FAQ updated successfully",
+          title: 'Success',
+          description: 'FAQ updated successfully',
         });
       } else {
-        const { error } = await supabase
-          .from("faq_items")
-          .insert([formData]);
-
-        if (error) throw error;
+        await addDoc(collection(db, 'faq_items'), {
+          ...formData,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
 
         toast({
-          title: "Success",
-          description: "FAQ added successfully",
+          title: 'Success',
+          description: 'FAQ added successfully',
         });
       }
 
       setShowDialog(false);
       setEditingFAQ(null);
       resetForm();
-      fetchFAQs();
+      await fetchFAQs();
     } catch (error) {
-      console.error("Error saving FAQ:", error);
+      console.error('Error saving FAQ:', error);
       toast({
-        title: "Error",
-        description: "Failed to save FAQ",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to save FAQ',
+        variant: 'destructive',
       });
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this FAQ?")) return;
+    if (!confirm('Are you sure you want to delete this FAQ?')) return;
 
     try {
-      const { error } = await supabase
-        .from("faq_items")
-        .delete()
-        .eq("id", id);
-
-      if (error) throw error;
-
+      await deleteDoc(doc(db, 'faq_items', id));
       toast({
-        title: "Success",
-        description: "FAQ deleted successfully",
+        title: 'Success',
+        description: 'FAQ deleted successfully',
       });
-      fetchFAQs();
+      await fetchFAQs();
     } catch (error) {
-      console.error("Error deleting FAQ:", error);
+      console.error('Error deleting FAQ:', error);
       toast({
-        title: "Error",
-        description: "Failed to delete FAQ",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to delete FAQ',
+        variant: 'destructive',
       });
     }
   };
@@ -157,9 +173,9 @@ export default function FAQManagement() {
 
   const resetForm = () => {
     setFormData({
-      category: "",
-      question: "",
-      answer: "",
+      category: '',
+      question: '',
+      answer: '',
       display_order: 0,
       is_active: true,
     });
@@ -214,8 +230,8 @@ export default function FAQManagement() {
                     <TableCell className="max-w-md truncate">{faq.question}</TableCell>
                     <TableCell>{faq.display_order}</TableCell>
                     <TableCell>
-                      <Badge variant={faq.is_active ? "default" : "outline"}>
-                        {faq.is_active ? "Active" : "Inactive"}
+                      <Badge variant={faq.is_active ? 'default' : 'outline'}>
+                        {faq.is_active ? 'Active' : 'Inactive'}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -239,10 +255,8 @@ export default function FAQManagement() {
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingFAQ ? "Edit FAQ" : "Add New FAQ"}</DialogTitle>
-            <DialogDescription>
-              Add or update frequently asked questions for travelers
-            </DialogDescription>
+            <DialogTitle>{editingFAQ ? 'Edit FAQ' : 'Add New FAQ'}</DialogTitle>
+            <DialogDescription>Add or update frequently asked questions for travelers</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -296,7 +310,7 @@ export default function FAQManagement() {
                 type="number"
                 min="0"
                 value={formData.display_order}
-                onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })}
+                onChange={(e) => setFormData({ ...formData, display_order: Number(e.target.value) })}
               />
             </div>
 
@@ -315,7 +329,7 @@ export default function FAQManagement() {
               </Button>
               <Button type="submit">
                 <HelpCircle className="mr-2 h-4 w-4" />
-                {editingFAQ ? "Update FAQ" : "Add FAQ"}
+                {editingFAQ ? 'Update FAQ' : 'Add FAQ'}
               </Button>
             </div>
           </form>

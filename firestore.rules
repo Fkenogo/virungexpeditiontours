@@ -1,0 +1,157 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/user_roles/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/user_roles/$(request.auth.uid)).data.role == "admin";
+    }
+
+    match /quote_requests/{documentId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /quick_inquiries/{documentId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /tour_availability/{documentId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /tour_bookings/{documentId} {
+      // Direct client writes are blocked — bookings must go through createBookingRequest Cloud Function
+      // which uses the Firebase Admin SDK and is exempt from these rules.
+      allow create: if false;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /blog_posts/{documentId} {
+      allow read: if resource.data.published_at != null || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /faq_items/{documentId} {
+      allow read: if resource.data.is_active == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /tour_videos/{documentId} {
+      allow read: if resource.data.is_active == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /testimonials/{documentId} {
+      allow read: if resource.data.is_active == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /itineraries/{documentId} {
+      allow read: if resource.data.is_active == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /tour_packages/{documentId} {
+      allow read: if resource.data.is_active == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /destination_packages/{documentId} {
+      allow read: if resource.data.is_active == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /site_settings/{documentId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /media_assets/{documentId} {
+      allow read: if resource.data.is_active == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /home_content/{documentId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /about_content/{documentId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /services_content/{documentId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /destination_content/{documentId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /form_configs/{documentId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /legal_documents/{documentId} {
+      allow read: if resource.data.is_active == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /destination_guides/{documentId} {
+      allow read: if resource.data.is_active == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /audit_logs/{documentId} {
+      allow read: if isAdmin();
+      allow create: if signedIn() && request.resource.data.user_id == request.auth.uid;
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if signedIn() && request.auth.uid == userId;
+      // Users may update their own profile but cannot modify role or roles fields —
+      // only admins can change role assignments.
+      allow update: if signedIn() && (
+        (request.auth.uid == userId &&
+          !('role' in request.resource.data) &&
+          !('roles' in request.resource.data)) ||
+        isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
+    match /user_roles/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if (signedIn() && request.auth.uid == userId &&
+        request.resource.data.role == "user") || isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    match /tour_page_content/{documentId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /seasonal_guide/{documentId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

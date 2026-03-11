@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
+import { db } from '@/integrations/firebase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,37 +37,44 @@ export default function AdminUsers() {
 
   const fetchUsers = async () => {
     try {
-      // Fetch profiles with email and last_sign_in
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, created_at, last_sign_in')
-        .order('created_at', { ascending: false });
+      const [usersSnapshot, rolesSnapshot] = await Promise.all([
+        getDocs(collection(db, 'users')),
+        getDocs(collection(db, 'user_roles')),
+      ]);
 
-      if (profilesError) throw profilesError;
-
-      // Fetch roles for all users
-      const { data: roles, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('user_id, role');
-
-      if (rolesError) throw rolesError;
+      const rolesByUserId = new Map<string, string[]>();
+      rolesSnapshot.forEach((docSnapshot) => {
+        const data = docSnapshot.data() as {role?: string; roles?: string[]};
+        if (data.roles?.length) {
+          rolesByUserId.set(docSnapshot.id, data.roles);
+        } else if (data.role) {
+          rolesByUserId.set(docSnapshot.id, [data.role]);
+        }
+      });
 
       // Combine the data
-      const usersWithRoles: UserWithRole[] = profiles.map((profile) => {
-        const userRoles = roles?.filter((r) => r.user_id === profile.id).map((r) => r.role) || [];
+      const usersWithRoles: UserWithRole[] = usersSnapshot.docs.map((userDoc) => {
+        const profile = userDoc.data() as {
+          full_name?: string;
+          email?: string;
+          created_at?: string;
+          last_sign_in?: string | null;
+          roles?: string[];
+        };
+        const userRoles = rolesByUserId.get(userDoc.id) || profile.roles || ['user'];
 
         return {
-          id: profile.id,
+          id: userDoc.id,
           email: profile.email || 'No email',
           full_name: profile.full_name,
-          created_at: profile.created_at,
-          last_sign_in: profile.last_sign_in,
+          created_at: profile.created_at || new Date().toISOString(),
+          last_sign_in: profile.last_sign_in || null,
           roles: userRoles,
         };
       });
 
       setUsers(usersWithRoles);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error fetching users:', error);
       toast.error('Failed to load users');
     } finally {
@@ -78,25 +86,16 @@ export default function AdminUsers() {
     const isAdmin = currentRoles.includes('admin');
 
     try {
+      const nextRoles = isAdmin ? ['user'] : ['admin'];
       if (isAdmin) {
-        // Remove admin role
-        const { error } = await supabase
-          .from('user_roles')
-          .delete()
-          .eq('user_id', userId)
-          .eq('role', 'admin');
-
-        if (error) throw error;
+        await setDoc(doc(db, 'user_roles', userId), {role: 'user', roles: nextRoles}, {merge: true});
+        await setDoc(doc(db, 'users', userId), {roles: nextRoles, updated_at: new Date().toISOString()}, {merge: true});
         
         await logAction('revoke_admin', 'user_roles', userId, { role: 'admin' });
         toast.success('Admin role removed');
       } else {
-        // Add admin role
-        const { error } = await supabase
-          .from('user_roles')
-          .insert({ user_id: userId, role: 'admin' });
-
-        if (error) throw error;
+        await setDoc(doc(db, 'user_roles', userId), {role: 'admin', roles: nextRoles}, {merge: true});
+        await setDoc(doc(db, 'users', userId), {roles: nextRoles, updated_at: new Date().toISOString()}, {merge: true});
         
         await logAction('grant_admin', 'user_roles', userId, { role: 'admin' });
         toast.success('Admin role granted');

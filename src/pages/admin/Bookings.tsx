@@ -1,5 +1,14 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import {
+  collection,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
+import { db } from '@/integrations/firebase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,69 +45,58 @@ type Booking = {
   created_at: string;
 };
 
+const normalizeDate = (value: unknown): string => {
+  if (typeof value === 'string') return value;
+  if (value instanceof Date) return value.toISOString();
+  if (value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
+    const parsed = value.toDate() as Date;
+    return parsed.toISOString();
+  }
+  return new Date().toISOString();
+};
+
 export default function AdminBookings() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
 
   useEffect(() => {
-    fetchBookings();
+    setLoading(true);
+    const bookingsQuery =
+      filter !== 'all'
+        ? query(collection(db, 'tour_bookings'), where('status', '==', filter), orderBy('created_at', 'desc'))
+        : query(collection(db, 'tour_bookings'), orderBy('created_at', 'desc'));
 
-    // Set up realtime subscription
-    const channel = supabase
-      .channel('bookings-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tour_bookings',
-        },
-        () => {
-          fetchBookings();
-        }
-      )
-      .subscribe();
+    const unsubscribe = onSnapshot(
+      bookingsQuery,
+      (snapshot) => {
+        const items = snapshot.docs.map((docSnapshot) => ({
+          id: docSnapshot.id,
+          ...(docSnapshot.data() as Omit<Booking, 'id' | 'created_at' | 'booking_date'>),
+          created_at: normalizeDate(docSnapshot.data().created_at),
+          booking_date: normalizeDate(docSnapshot.data().booking_date),
+        }));
+        setBookings(items);
+        setLoading(false);
+      },
+      (error) => {
+        console.error('Error fetching bookings:', error);
+        toast.error('Failed to load bookings');
+        setLoading(false);
+      },
+    );
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => unsubscribe();
   }, [filter]);
-
-  const fetchBookings = async () => {
-    try {
-      let query = supabase
-        .from('tour_bookings')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (filter !== 'all') {
-        query = query.eq('status', filter);
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
-      setBookings(data || []);
-    } catch (error) {
-      console.error('Error fetching bookings:', error);
-      toast.error('Failed to load bookings');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const updateBookingStatus = async (bookingId: string, newStatus: string) => {
     try {
-      const { error } = await supabase
-        .from('tour_bookings')
-        .update({ status: newStatus })
-        .eq('id', bookingId);
-
-      if (error) throw error;
+      await updateDoc(doc(db, 'tour_bookings', bookingId), {
+        status: newStatus,
+        updated_at: new Date().toISOString(),
+      });
 
       toast.success('Booking status updated');
-      fetchBookings();
     } catch (error) {
       console.error('Error updating booking:', error);
       toast.error('Failed to update booking status');

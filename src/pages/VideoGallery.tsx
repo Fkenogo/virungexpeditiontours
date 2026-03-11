@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { supabase } from "@/integrations/supabase/client";
+import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
+import { db } from "@/integrations/firebase/client";
 import { VideoEmbed } from "@/components/VideoEmbed";
-import { Play, Calendar, Eye } from "lucide-react";
+import { Play, Calendar } from "lucide-react";
+import { toWhatsAppUrl, useSiteSettings } from "@/hooks/useSiteSettings";
 
 interface TourVideo {
   id: string;
@@ -18,6 +20,7 @@ interface TourVideo {
 }
 
 export default function VideoGallery() {
+  const { settings } = useSiteSettings();
   const [videos, setVideos] = useState<TourVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTour, setSelectedTour] = useState<string>("all");
@@ -28,15 +31,18 @@ export default function VideoGallery() {
 
   const fetchVideos = async () => {
     try {
-      const { data, error } = await supabase
-        .from("tour_videos")
-        .select("*")
-        .eq("is_active", true)
-        .order("tour_name")
-        .order("display_order");
-
-      if (error) throw error;
-      setVideos(data || []);
+      const videosQuery = query(
+        collection(db, "tour_videos"),
+        where("is_active", "==", true),
+        orderBy("tour_name"),
+        orderBy("display_order"),
+      );
+      const snapshot = await getDocs(videosQuery);
+      const data = snapshot.docs.map((docSnapshot) => ({
+        id: docSnapshot.id,
+        ...(docSnapshot.data() as Omit<TourVideo, "id">),
+      }));
+      setVideos(data);
     } catch (error) {
       console.error("Error fetching videos:", error);
     } finally {
@@ -169,7 +175,7 @@ export default function VideoGallery() {
               Request Custom Quote
             </a>
             <a
-              href="https://wa.me/250783959404"
+              href={toWhatsAppUrl(settings.whatsapp_numbers[0])}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center px-8 py-3 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-colors font-semibold"

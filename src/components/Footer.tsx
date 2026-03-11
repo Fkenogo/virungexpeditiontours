@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Mail, Phone } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { toWhatsAppUrl, useSiteSettings } from "@/hooks/useSiteSettings";
 
 const Footer = () => {
+  const { settings } = useSiteSettings();
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 py-12">
@@ -55,23 +57,24 @@ const Footer = () => {
             <div className="space-y-3 text-sm">
               <div>
                 <p className="font-semibold mb-1">WhatsApp:</p>
-                <a href="https://wa.me/250783959404" className="hover:text-secondary transition-colors block">+250 783 959 404 (Lorraine)</a>
-                <a href="https://wa.me/250783007010" className="hover:text-secondary transition-colors block">+250 783 007 010 (Egide)</a>
+                {settings.whatsapp_numbers.map((phone) => (
+                  <a key={phone} href={toWhatsAppUrl(phone)} className="hover:text-secondary transition-colors block">{phone}</a>
+                ))}
               </div>
               <div>
                 <p className="font-semibold mb-1">Email:</p>
-                <a href="mailto:info@virungaexpeditiontours.com" className="hover:text-secondary transition-colors">info@virungaexpeditiontours.com</a>
+                <a href={`mailto:${settings.emails[0]}`} className="hover:text-secondary transition-colors">{settings.emails[0]}</a>
               </div>
               <div>
                 <p className="font-semibold mb-1">Office:</p>
-                <p className="opacity-90">Kigali, Rwanda</p>
-                <p className="text-xs opacity-75">Mon-Sat: 8:00 AM - 6:00 PM CAT</p>
+                <p className="opacity-90">{settings.office_location}</p>
+                <p className="text-xs opacity-75">{settings.office_hours[0]}</p>
               </div>
               <div className="flex gap-3 pt-2">
-                <a href="#" className="hover:text-secondary transition-colors" aria-label="Facebook">
+                <a href={settings.social_links.facebook || "#"} className="hover:text-secondary transition-colors" aria-label="Facebook">
                   <Facebook className="h-5 w-5" />
                 </a>
-                <a href="#" className="hover:text-secondary transition-colors" aria-label="Instagram">
+                <a href={settings.social_links.instagram || "#"} className="hover:text-secondary transition-colors" aria-label="Instagram">
                   <Instagram className="h-5 w-5" />
                 </a>
               </div>
@@ -80,7 +83,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-sm">
-          <p>© 2025 Virunga Expedition Tours. All Rights Reserved.</p>
+          <p>© {new Date().getFullYear()} Virunga Expedition Tours. All Rights Reserved.</p>
           <div className="flex justify-center gap-4 mt-2">
             <Link to="/privacy-policy" className="hover:text-secondary transition-colors">Privacy Policy</Link>
             <span>|</span>
